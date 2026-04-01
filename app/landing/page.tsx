@@ -1,0 +1,3705 @@
+'use client'
+
+import { useState, useEffect, useRef, useCallback } from 'react'
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+} from 'framer-motion'
+
+/* ==============================================
+   PHASE 1 — FOUNDATION (Effects Layer)
+   ============================================== */
+
+// ---------- PRELOADER ----------
+function Preloader({ onComplete }: { onComplete: () => void }) {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    const start = Date.now()
+    const duration = 1200
+    const tick = () => {
+      const elapsed = Date.now() - start
+      const p = Math.min(elapsed / duration, 1)
+      setProgress(p)
+      if (p < 1) {
+        requestAnimationFrame(tick)
+      } else {
+        setTimeout(onComplete, 200)
+      }
+    }
+    requestAnimationFrame(tick)
+  }, [onComplete])
+
+  return (
+    <motion.div
+      key="preloader"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100000,
+        background: '#0D1117',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 20,
+      }}
+    >
+      <img
+        src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png"
+        alt="LegacyLoop"
+        style={{
+          width: 72,
+          height: 72,
+          objectFit: 'contain',
+          filter: 'drop-shadow(0 0 16px rgba(0,188,212,0.4))',
+        }}
+      />
+      <span
+        style={{
+          fontFamily: 'var(--font-data)',
+          fontWeight: 600,
+          fontSize: 14,
+          color: '#00BCD4',
+          letterSpacing: '0.25em',
+          textTransform: 'uppercase' as const,
+        }}
+      >
+        LEGACYLOOP
+      </span>
+      <div
+        style={{
+          width: 160,
+          height: 2,
+          background: 'rgba(255,255,255,0.08)',
+          borderRadius: 2,
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${progress * 100}%`,
+            background: 'linear-gradient(90deg, #00BCD4, #009688)',
+            borderRadius: 2,
+            transition: 'width 0.05s linear',
+          }}
+        />
+      </div>
+    </motion.div>
+  )
+}
+
+// ---------- CUSTOM CURSOR (Desktop Only) ----------
+function CustomCursor() {
+  const cursorRef = useRef<HTMLDivElement>(null)
+  const dotRef = useRef<HTMLDivElement>(null)
+  const pos = useRef({ x: 0, y: 0 })
+  const lerped = useRef({ x: 0, y: 0 })
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(pointer: fine)')
+    setIsDesktop(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!isDesktop) return
+    const onMove = (e: MouseEvent) => {
+      pos.current = { x: e.clientX, y: e.clientY }
+    }
+    window.addEventListener('mousemove', onMove)
+
+    let raf: number
+    const animate = () => {
+      lerped.current.x += (pos.current.x - lerped.current.x) * 0.12
+      lerped.current.y += (pos.current.y - lerped.current.y) * 0.12
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${lerped.current.x}px, ${lerped.current.y}px, 0)`
+      }
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0)`
+      }
+      raf = requestAnimationFrame(animate)
+    }
+    raf = requestAnimationFrame(animate)
+
+    const onOver = (e: MouseEvent) => {
+      const t = e.target as HTMLElement
+      if (t.closest('a, button, [role="button"], input, textarea, select')) {
+        setIsHovering(true)
+      }
+    }
+    const onOut = () => setIsHovering(false)
+    document.addEventListener('mouseover', onOver)
+    document.addEventListener('mouseout', onOut)
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      cancelAnimationFrame(raf)
+      document.removeEventListener('mouseover', onOver)
+      document.removeEventListener('mouseout', onOut)
+    }
+  }, [isDesktop])
+
+  if (!isDesktop) return null
+
+  const size = isHovering ? 56 : 32
+  return (
+    <>
+      <div
+        ref={cursorRef}
+        style={{
+          position: 'fixed',
+          top: -size / 2,
+          left: -size / 2,
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          background: '#fff',
+          mixBlendMode: 'difference',
+          pointerEvents: 'none',
+          zIndex: 99999,
+          transition: 'width 0.25s ease, height 0.25s ease, top 0.25s ease, left 0.25s ease',
+          willChange: 'transform',
+        }}
+      />
+      <div
+        ref={dotRef}
+        style={{
+          position: 'fixed',
+          top: -3,
+          left: -3,
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: '#00BCD4',
+          pointerEvents: 'none',
+          zIndex: 99999,
+          willChange: 'transform',
+        }}
+      />
+    </>
+  )
+}
+
+// ---------- GRADIENT ORB BACKGROUND ----------
+function GradientBackground() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: 'none',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: '-10%',
+          left: '50%',
+          width: 1000,
+          height: 800,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(0,188,212,0.08) 0%, transparent 70%)',
+          animation: 'float1 14s ease-in-out infinite',
+          willChange: 'transform',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: '40%',
+          right: '-10%',
+          width: 700,
+          height: 700,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(0,150,136,0.05) 0%, transparent 70%)',
+          animation: 'float2 18s ease-in-out infinite',
+          willChange: 'transform',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '-5%',
+          left: '-5%',
+          width: 600,
+          height: 600,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(212,160,23,0.04) 0%, transparent 70%)',
+          animation: 'float3 22s ease-in-out infinite',
+          willChange: 'transform',
+        }}
+      />
+    </div>
+  )
+}
+
+// ---------- NOISE TEXTURE OVERLAY ----------
+// Source: Apple, Vercel — SVG feTurbulence technique
+// Separate SVG defs + filter applied to div for cross-browser compat
+function NoiseOverlay() {
+  return (
+    <>
+      <svg
+        style={{ position: 'absolute', width: 0, height: 0 }}
+        aria-hidden="true"
+      >
+        <defs>
+          <filter id="noiseFilter">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.65"
+              numOctaves={3}
+              stitchTiles="stitch"
+            />
+          </filter>
+        </defs>
+      </svg>
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 2,
+          pointerEvents: 'none',
+          opacity: 0.04,
+          filter: 'url(#noiseFilter)',
+          background: 'rgba(255,255,255,1)',
+        }}
+      />
+    </>
+  )
+}
+
+/* ==============================================
+   PHASE 2 — NAV + HERO + TICKER
+   ============================================== */
+
+// ---------- HELPERS ----------
+function useScrollY() {
+  const [scrollY, setScrollY] = useState(0)
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return scrollY
+}
+
+function useWindowWidth() {
+  const [w, setW] = useState(1200)
+  useEffect(() => {
+    setW(window.innerWidth)
+    const onResize = () => setW(window.innerWidth)
+    window.addEventListener('resize', onResize, { passive: true })
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return w
+}
+
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReduced(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+  return reduced
+}
+
+// ---------- GLOW CARD (Reusable) ----------
+function GlowCard({
+  children,
+  style: extraStyle,
+  hoverBorderColor = 'rgba(0,188,212,0.5)',
+  defaultBorderColor = 'rgba(0,188,212,0.15)',
+  delay = 0,
+}: {
+  children: React.ReactNode
+  style?: React.CSSProperties
+  hoverBorderColor?: string
+  defaultBorderColor?: string
+  delay?: number
+}) {
+  const [hovered, setHovered] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(el)
+    // Fallback: ensure visibility after 3s even if observer doesn't fire
+    const fallback = setTimeout(() => setVisible(true), 3000)
+    return () => { observer.disconnect(); clearTimeout(fallback) }
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: `1px solid ${hovered ? hoverBorderColor : defaultBorderColor}`,
+        borderRadius: 16,
+        backdropFilter: 'blur(12px)',
+        padding: 28,
+        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+        transform: visible
+          ? hovered
+            ? 'translateY(-4px)'
+            : 'translateY(0) scale(1)'
+          : 'translateY(28px) scale(0.97)',
+        opacity: visible ? 1 : 0,
+        transitionDelay: visible ? `${delay}ms` : '0ms',
+        boxShadow: hovered
+          ? '0 0 30px rgba(0,188,212,0.12), inset 0 1px 0 rgba(255,255,255,0.05)'
+          : 'none',
+        ...extraStyle,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+// ---------- MAGNETIC BUTTON ----------
+function MagneticButton({
+  children,
+  href,
+  onClick,
+  style: extraStyle,
+}: {
+  children: React.ReactNode
+  href?: string
+  onClick?: () => void
+  style?: React.CSSProperties
+}) {
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const springX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.1 })
+  const springY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.1 })
+  const ref = useRef<HTMLAnchorElement>(null)
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      const rect = ref.current?.getBoundingClientRect()
+      if (!rect) return
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
+      x.set((e.clientX - cx) * 0.35)
+      y.set((e.clientY - cy) * 0.35)
+    },
+    [x, y]
+  )
+
+  const handleMouseLeave = useCallback(() => {
+    x.set(0)
+    y.set(0)
+  }, [x, y])
+
+  return (
+    <motion.a
+      ref={ref}
+      href={href}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        x: springX,
+        y: springY,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #00bcd4, #009688)',
+        color: '#fff',
+        fontFamily: 'var(--font-heading)',
+        fontWeight: 600,
+        fontSize: 18,
+        padding: '18px 42px',
+        borderRadius: 12,
+        border: 'none',
+        minHeight: 44,
+        textDecoration: 'none',
+        cursor: 'pointer',
+        boxShadow:
+          '0 0 32px rgba(0,188,212,0.35), 0 4px 16px rgba(0,188,212,0.2)',
+        transition: 'box-shadow 0.4s ease',
+        ...extraStyle,
+      }}
+      whileHover={{
+        boxShadow:
+          '0 0 60px rgba(0,188,212,0.55), 0 8px 30px rgba(0,188,212,0.3)',
+      }}
+    >
+      {children}
+    </motion.a>
+  )
+}
+
+// ---------- CHAR-BY-CHAR HEADLINE REVEAL ----------
+// Source: Dennis Snellenberg Awwwards winner, Olivier Larose rebuild
+// Uses CSS transition + overflow hidden wrapper per char
+function CharReveal({
+  text,
+  isLoaded,
+  gradient,
+  style: extraStyle,
+}: {
+  text: string
+  isLoaded: boolean
+  gradient?: boolean
+  style?: React.CSSProperties
+}) {
+  const reduced = useReducedMotion()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    if (isLoaded && !reduced) {
+      const t = setTimeout(() => setMounted(true), 300)
+      return () => clearTimeout(t)
+    }
+    if (isLoaded && reduced) {
+      setMounted(true)
+    }
+  }, [isLoaded, reduced])
+
+  const charGradient: React.CSSProperties = gradient
+    ? {
+        background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+      }
+    : {}
+
+  return (
+    <span style={{ display: 'inline-block', ...extraStyle }}>
+      {text.split('').map((char, i) => (
+        <span
+          key={i}
+          style={{
+            display: 'inline-block',
+            overflow: 'hidden',
+            verticalAlign: 'bottom',
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-block',
+              opacity: mounted ? 1 : 0,
+              transform: mounted ? 'translateY(0)' : 'translateY(110%)',
+              transition: reduced
+                ? 'opacity 0.3s ease'
+                : `opacity 0.01s linear ${i * 22}ms, transform 0.75s cubic-bezier(0.23, 1, 0.32, 1) ${i * 22}ms`,
+              whiteSpace: char === ' ' ? 'pre' : 'normal',
+              width: char === ' ' ? '0.3em' : undefined,
+              ...charGradient,
+            }}
+          >
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        </span>
+      ))}
+    </span>
+  )
+}
+
+// ---------- SCROLL REVEAL TEXT ----------
+// Source: Olivier Larose — github.com/olivierlarose/text-opacity-scroll
+// Ghost text holds layout, animated overlay reveals on scroll
+function ScrollRevealText({
+  text,
+  style: extraStyle,
+}: {
+  text: string
+  style?: React.CSSProperties
+}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start 0.9', 'start 0.2'],
+  })
+  const words = text.split(' ')
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', ...extraStyle }}>
+      <p
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          lineHeight: 1.6,
+          margin: 0,
+        }}
+      >
+        {words.map((word, i) => {
+          const start = i / words.length
+          const end = start + 1 / words.length
+          return (
+            <ScrollWord
+              key={i}
+              word={word}
+              scrollYProgress={scrollYProgress}
+              range={[start, end]}
+            />
+          )
+        })}
+      </p>
+    </div>
+  )
+}
+
+function ScrollWord({
+  word,
+  scrollYProgress,
+  range,
+}: {
+  word: string
+  scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress']
+  range: [number, number]
+}) {
+  const opacity = useTransform(scrollYProgress, range, [0.1, 1])
+  const y = useTransform(scrollYProgress, range, [6, 0])
+
+  return (
+    <span
+      style={{
+        position: 'relative',
+        display: 'inline-block',
+        marginRight: '0.32em',
+      }}
+    >
+      {/* Ghost text — holds layout space */}
+      <span style={{ opacity: 0.1, userSelect: 'none' }}>{word}</span>
+      {/* Animated overlay */}
+      <motion.span
+        style={{
+          opacity,
+          y,
+          position: 'absolute',
+          left: 0,
+          top: 0,
+        }}
+      >
+        {word}
+      </motion.span>
+    </span>
+  )
+}
+
+// ---------- ANIMATED STAT ----------
+function AnimatedStat({
+  target,
+  prefix = '',
+  suffix = '',
+  duration = 2200,
+  style: extraStyle,
+}: {
+  target: number
+  prefix?: string
+  suffix?: string
+  duration?: number
+  style?: React.CSSProperties
+}) {
+  const [count, setCount] = useState(0)
+  const [started, setStarted] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.6 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [started])
+
+  useEffect(() => {
+    if (!started) return
+    const start = Date.now()
+    const tick = () => {
+      const elapsed = Date.now() - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 4)
+      setCount(Math.round(eased * target))
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [started, target, duration])
+
+  return (
+    <span ref={ref} style={extraStyle}>
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  )
+}
+
+// ---------- TILT CARD (3D Perspective on Mouse) ----------
+// Source: Awwwards studios — mouse-reactive 3D rotation with glint
+function TiltCard({
+  children,
+  style: extraStyle,
+  intensity = 12,
+}: {
+  children: React.ReactNode
+  style?: React.CSSProperties
+  intensity?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [transform, setTransform] = useState('perspective(1200px) rotateX(0deg) rotateY(0deg)')
+  const [glint, setGlint] = useState({ x: 50, y: 50 })
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width
+      const y = (e.clientY - rect.top) / rect.height
+      const rotateX = (y - 0.5) * -intensity
+      const rotateY = (x - 0.5) * intensity
+      setTransform(`perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`)
+      setGlint({ x: x * 100, y: y * 100 })
+    },
+    [intensity]
+  )
+
+  const handleMouseLeave = useCallback(() => {
+    setTransform('perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)')
+    setGlint({ x: 50, y: 50 })
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform,
+        transition: 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+        position: 'relative',
+        overflow: 'hidden',
+        borderRadius: 16,
+        ...extraStyle,
+      }}
+    >
+      {children}
+      {/* Glint highlight */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: `radial-gradient(circle at ${glint.x}% ${glint.y}%, rgba(255,255,255,0.08) 0%, transparent 60%)`,
+          pointerEvents: 'none',
+          transition: 'background 0.2s ease',
+        }}
+      />
+    </div>
+  )
+}
+
+// ---------- KINETIC HEADLINE (Word Swap) ----------
+// Source: Premium SaaS sites — cycling word animation
+function KineticHeadline({
+  words,
+  style: extraStyle,
+}: {
+  words: string[]
+  style?: React.CSSProperties
+}) {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % words.length)
+    }, 2200)
+    return () => clearInterval(interval)
+  }, [words.length])
+
+  return (
+    <span style={{ display: 'inline-block', position: 'relative', overflow: 'hidden', verticalAlign: 'top', height: '1.5em', lineHeight: 1.5, ...extraStyle }}>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={words[index]}
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -30, opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+          style={{
+            display: 'inline-block',
+            background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          {words[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  )
+}
+
+// ---------- STICKY NAV ----------
+function StickyNav({ isLoaded }: { isLoaded: boolean }) {
+  const scrollY = useScrollY()
+  const width = useWindowWidth()
+  const isMobile = width < 768
+  const scrolled = scrollY > 20
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const navLinks = [
+    { label: 'How It Works', target: 'how-it-works' },
+    { label: 'AI Agents', target: 'bots' },
+    { label: 'Pricing', target: 'pricing' },
+    { label: 'Our Story', target: 'showcase' },
+  ]
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    setMenuOpen(false)
+  }
+
+  if (!isLoaded) return null
+
+  return (
+    <>
+      <nav
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          height: 68,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: scrolled ? 'rgba(13,17,23,0.9)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(24px) saturate(180%)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(24px) saturate(180%)' : 'none',
+          borderBottom: scrolled
+            ? '1px solid rgba(0,188,212,0.08)'
+            : '1px solid transparent',
+          transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1280,
+            width: '100%',
+            margin: '0 auto',
+            padding: '0 32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          {/* Left — Logo */}
+          <img
+            src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-04.png"
+            alt="LegacyLoop"
+            style={{
+              height: 48,
+              objectFit: 'contain',
+              cursor: 'pointer',
+            }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          />
+
+          {/* Center — Nav Links (desktop) */}
+          {!isMobile && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 32,
+              }}
+            >
+              {navLinks.map((link) => (
+                <span
+                  key={link.target}
+                  onClick={() => scrollTo(link.target)}
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 500,
+                    fontSize: 14,
+                    color: '#CBD5E1',
+                    cursor: 'pointer',
+                    transition: 'color 0.3s ease',
+                  }}
+                  onMouseEnter={(e) =>
+                    ((e.target as HTMLElement).style.color = '#FFFFFF')
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.target as HTMLElement).style.color = '#CBD5E1')
+                  }
+                >
+                  {link.label}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Right — Login + CTA */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {!isMobile && (
+              <a
+                href="https://app.legacy-loop.com/login"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 500,
+                  fontSize: 14,
+                  color: '#CBD5E1',
+                  textDecoration: 'none',
+                  transition: 'color 0.3s ease',
+                }}
+                onMouseEnter={(e) =>
+                  ((e.target as HTMLElement).style.color = '#FFFFFF')
+                }
+                onMouseLeave={(e) =>
+                  ((e.target as HTMLElement).style.color = '#CBD5E1')
+                }
+              >
+                Login
+              </a>
+            )}
+            <a
+              href="https://app.legacy-loop.com/signup"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, #00bcd4, #009688)',
+                color: '#fff',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 600,
+                fontSize: 14,
+                padding: '10px 24px',
+                borderRadius: 12,
+                minHeight: 44,
+                textDecoration: 'none',
+                boxShadow:
+                  '0 0 32px rgba(0,188,212,0.35), 0 4px 16px rgba(0,188,212,0.2)',
+                transition: 'box-shadow 0.3s ease',
+              }}
+              onMouseEnter={(e) =>
+                ((e.target as HTMLElement).style.boxShadow =
+                  '0 0 60px rgba(0,188,212,0.55), 0 8px 30px rgba(0,188,212,0.3)')
+              }
+              onMouseLeave={(e) =>
+                ((e.target as HTMLElement).style.boxShadow =
+                  '0 0 32px rgba(0,188,212,0.35), 0 4px 16px rgba(0,188,212,0.2)')
+              }
+            >
+              Get Started
+            </a>
+            {isMobile && (
+              <button
+                aria-label="Toggle menu"
+                onClick={() => setMenuOpen(!menuOpen)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#CBD5E1',
+                  fontSize: 24,
+                  cursor: 'pointer',
+                  padding: 8,
+                  minHeight: 44,
+                  minWidth: 44,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {menuOpen ? '✕' : '☰'}
+              </button>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {isMobile && menuOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 68,
+            left: 0,
+            right: 0,
+            zIndex: 999,
+            background: 'rgba(13,17,23,0.97)',
+            backdropFilter: 'blur(24px)',
+            borderBottom: '1px solid rgba(0,188,212,0.08)',
+            padding: '24px 32px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 20,
+          }}
+        >
+          {navLinks.map((link) => (
+            <span
+              key={link.target}
+              onClick={() => scrollTo(link.target)}
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 500,
+                fontSize: 16,
+                color: '#CBD5E1',
+                cursor: 'pointer',
+              }}
+            >
+              {link.label}
+            </span>
+          ))}
+          <a
+            href="https://app.legacy-loop.com/login"
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 16,
+              color: '#CBD5E1',
+              textDecoration: 'none',
+            }}
+          >
+            Login
+          </a>
+        </div>
+      )}
+    </>
+  )
+}
+
+// ---------- HERO SECTION ----------
+function HeroSection({ isLoaded }: { isLoaded: boolean }) {
+  const width = useWindowWidth()
+  const reduced = useReducedMotion()
+
+  return (
+    <section
+      id="hero"
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        padding: '120px 24px 80px',
+        textAlign: 'center',
+      }}
+    >
+      {/* Video Background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          opacity: 0.12,
+          zIndex: 0,
+        }}
+        onError={(e) => {
+          ;(e.target as HTMLVideoElement).style.display = 'none'
+        }}
+      >
+        <source src="/hero-loop.webm" type="video/webm" />
+        <source src="/hero-loop.mp4" type="video/mp4" />
+      </video>
+
+      {/* Fallback bg image — always layered underneath */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/images/hero/hero-bg-glow.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.08,
+          zIndex: 0,
+        }}
+      />
+
+      {/* Radial glow accent behind logo area */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '30%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 700,
+          height: 500,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(0,188,212,0.06) 0%, transparent 60%)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 5,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          maxWidth: 800,
+        }}
+      >
+        {/* Logo — stacked lockup, true transparent PNG */}
+        <motion.img
+          src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-03.png"
+          alt="LegacyLoop — Connecting Generations"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
+          style={{
+            maxWidth: width < 480 ? 220 : 300,
+            objectFit: 'contain',
+            marginBottom: 24,
+          }}
+        />
+
+        {/* Eyebrow Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          style={{
+            fontFamily: 'var(--font-data)',
+            fontWeight: 600,
+            fontSize: 12,
+            color: '#00BCD4',
+            background: 'rgba(0,188,212,0.1)',
+            border: '1px solid rgba(0,188,212,0.3)',
+            padding: '6px 16px',
+            borderRadius: 20,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase' as const,
+            marginBottom: 16,
+          }}
+        >
+          AI-POWERED RESALE PLATFORM — EARLY ACCESS
+        </motion.div>
+
+        {/* Headline */}
+        <h1
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 800,
+            fontSize: 'clamp(32px, 5.5vw, 68px)',
+            lineHeight: 1.1,
+            letterSpacing: '-1px',
+            margin: 0,
+            color: '#F1F5F9',
+            textAlign: 'center',
+          }}
+        >
+          {reduced ? (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={isLoaded ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              style={{
+                background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Connecting Generations.
+            </motion.span>
+          ) : (
+            <CharReveal
+              text="Connecting Generations."
+              isLoaded={isLoaded}
+              gradient
+            />
+          )}
+        </h1>
+
+        {/* Subheadline with kinetic word */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 18,
+            color: '#CBD5E1',
+            maxWidth: 560,
+            lineHeight: 1.65,
+            marginTop: 24,
+          }}
+        >
+          The platform that makes selling{' '}
+          <KineticHeadline
+            words={['Simple.', 'Fair.', 'Dignified.', 'Smarter.', 'Faster.']}
+            style={{ fontWeight: 600 }}
+          />
+        </motion.p>
+
+        {/* CTA Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 1.5 }}
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: 16,
+            marginTop: 40,
+          }}
+        >
+          <MagneticButton href="https://app.legacy-loop.com/signup">
+            Start Your Legacy
+          </MagneticButton>
+          <a
+            href="#how-it-works"
+            onClick={(e) => {
+              e.preventDefault()
+              document
+                .getElementById('how-it-works')
+                ?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'transparent',
+              color: '#00BCD4',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 14,
+              padding: '14px 28px',
+              borderRadius: 12,
+              border: '1px solid rgba(0,188,212,0.4)',
+              minHeight: 44,
+              textDecoration: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              ;(e.target as HTMLElement).style.borderColor =
+                'rgba(0,188,212,0.8)'
+              ;(e.target as HTMLElement).style.background =
+                'rgba(0,188,212,0.05)'
+            }}
+            onMouseLeave={(e) => {
+              ;(e.target as HTMLElement).style.borderColor =
+                'rgba(0,188,212,0.4)'
+              ;(e.target as HTMLElement).style.background = 'transparent'
+            }}
+          >
+            See How It Works
+          </a>
+        </motion.div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 32,
+          left: '50%',
+          animation: 'scrollBounce 2s ease-in-out infinite',
+          opacity: 0.5,
+          zIndex: 5,
+        }}
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#CBD5E1"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </div>
+    </section>
+  )
+}
+
+// ---------- MARKETPLACE TICKER ----------
+function MarketplaceTicker() {
+  const platforms = [
+    'eBay',
+    'Mercari',
+    'Poshmark',
+    'OfferUp',
+    'Etsy',
+    'Facebook Marketplace',
+    'Craigslist',
+    'Instagram',
+    'Amazon',
+    'TikTok Shop',
+    'Reverb',
+    'Pinterest',
+    'Depop',
+  ]
+  const doubled = [...platforms, ...platforms]
+
+  return (
+    <div
+      style={{
+        borderTop: '1px solid rgba(0,188,212,0.08)',
+        borderBottom: '1px solid rgba(0,188,212,0.08)',
+        padding: '16px 0',
+        overflow: 'hidden',
+        clipPath: 'polygon(0 5%, 100% 0%, 100% 100%, 0% 100%)',
+        marginTop: -80,
+        paddingTop: 40,
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          animation: 'ticker 35s linear infinite',
+          width: 'max-content',
+        }}
+        onMouseEnter={(e) =>
+          ((e.currentTarget as HTMLElement).style.animationPlayState = 'paused')
+        }
+        onMouseLeave={(e) =>
+          ((e.currentTarget as HTMLElement).style.animationPlayState =
+            'running')
+        }
+      >
+        {doubled.map((platform, i) => (
+          <span
+            key={i}
+            style={{
+              fontFamily: 'var(--font-data)',
+              fontWeight: 500,
+              fontSize: 13,
+              color: '#6B7280',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase' as const,
+              whiteSpace: 'nowrap',
+              padding: '0 20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 20,
+            }}
+          >
+            {platform}
+            <span style={{ color: '#00BCD4', fontSize: 8 }}>◆</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ==============================================
+   PHASE 3 — MARKET + MEGABOT + HOW IT WORKS + PRODUCT
+   ============================================== */
+
+// ---------- SECTION EYEBROW ----------
+function SectionEyebrow({
+  text,
+  color = '#00BCD4',
+}: {
+  text: string
+  color?: string
+}) {
+  return (
+    <div
+      style={{
+        fontFamily: 'var(--font-data)',
+        fontWeight: 600,
+        fontSize: 12,
+        color,
+        letterSpacing: '0.15em',
+        textTransform: 'uppercase' as const,
+        textAlign: 'center',
+        marginBottom: 16,
+      }}
+    >
+      {text}
+    </div>
+  )
+}
+
+// ---------- SECTION HEADING ----------
+function SectionHeading({
+  children,
+  style: extraStyle,
+}: {
+  children: React.ReactNode
+  style?: React.CSSProperties
+}) {
+  return (
+    <h2
+      style={{
+        fontFamily: 'var(--font-heading)',
+        fontWeight: 700,
+        fontSize: 'clamp(36px, 5vw, 48px)',
+        lineHeight: 1.2,
+        letterSpacing: '-0.5px',
+        color: '#F1F5F9',
+        textAlign: 'center',
+        margin: '0 0 24px',
+        ...extraStyle,
+      }}
+    >
+      {children}
+    </h2>
+  )
+}
+
+// ---------- GRADIENT TEXT (inline) ----------
+function GradientText({
+  children,
+  style: extraStyle,
+}: {
+  children: React.ReactNode
+  style?: React.CSSProperties
+}) {
+  return (
+    <span
+      style={{
+        background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        ...extraStyle,
+      }}
+    >
+      {children}
+    </span>
+  )
+}
+
+// ---------- MARKET OPPORTUNITY ----------
+function MarketOpportunitySection() {
+  const width = useWindowWidth()
+  const cols = width < 768 ? '1fr' : 'repeat(3, 1fr)'
+
+  return (
+    <section
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <SectionEyebrow text="THE OPPORTUNITY" />
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: cols,
+            gap: 20,
+            marginTop: 48,
+          }}
+        >
+          {[
+            {
+              target: 10000,
+              suffix: '+',
+              label: 'Americans turn 65 every day',
+            },
+            {
+              prefix: '$',
+              target: 48,
+              suffix: 'B',
+              label: 'Estate and resale market',
+            },
+            {
+              target: 76,
+              suffix: '%',
+              label: 'Of sellers say pricing is their biggest frustration',
+            },
+          ].map((stat, i) => (
+            <GlowCard key={i} delay={i * 80}>
+              <div style={{ textAlign: 'center' }}>
+                <AnimatedStat
+                  target={stat.target}
+                  prefix={stat.prefix || ''}
+                  suffix={stat.suffix}
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 700,
+                    fontSize: 'clamp(36px, 5vw, 48px)',
+                    lineHeight: 1.1,
+                    background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    display: 'block',
+                  }}
+                />
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 15,
+                    color: '#CBD5E1',
+                    marginTop: 8,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {stat.label}
+                </p>
+              </div>
+            </GlowCard>
+          ))}
+        </div>
+
+        <ScrollRevealText
+          text="Managing an estate should not require becoming an eBay expert. LegacyLoop was built for this moment."
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 600,
+            fontSize: 'clamp(20px, 3vw, 28px)',
+            lineHeight: 1.4,
+            color: '#F1F5F9',
+            textAlign: 'center',
+            maxWidth: 800,
+            margin: '64px auto 0',
+          }}
+        />
+      </div>
+    </section>
+  )
+}
+
+// ---------- MEGABOT SECTION ----------
+function MegaBotSection() {
+  const width = useWindowWidth()
+  const cols = width < 768 ? '1fr' : 'repeat(2, 1fr)'
+  const [fillActive, setFillActive] = useState(false)
+  const barRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = barRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setFillActive(true)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.3 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const engines = [
+    {
+      emoji: '🔍',
+      name: 'OpenAI',
+      role: 'Vision & Identification',
+      detail: 'Sees 48+ attributes from a single photo',
+      color: '#00BCD4',
+    },
+    {
+      emoji: '💎',
+      name: 'Claude',
+      role: 'Craftsmanship & Detail',
+      detail: 'Evaluates quality, materials, and hidden value',
+      color: '#8B5CF6',
+    },
+    {
+      emoji: '📊',
+      name: 'Gemini',
+      role: 'Market Intelligence',
+      detail: 'Real-time market conditions across platforms',
+      color: '#F59E0B',
+    },
+    {
+      emoji: '⚡',
+      name: 'Grok',
+      role: 'Speed & Patterns',
+      detail: 'Detects pricing anomalies in milliseconds',
+      color: '#94A3B8',
+    },
+  ]
+
+  return (
+    <section
+      id="megabot"
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Subtle purple ambient glow for MegaBot section */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '20%',
+          right: '-10%',
+          width: 600,
+          height: 600,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 65%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div style={{ maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <SectionEyebrow text="THE CROWN JEWEL" color="#8B5CF6" />
+        <SectionHeading>
+          Four AI Engines. <GradientText>One Fair Price.</GradientText>
+        </SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            maxWidth: 640,
+            margin: '0 auto 48px',
+            textAlign: 'center',
+            lineHeight: 1.65,
+          }}
+        >
+          Our proprietary MegaBot runs OpenAI, Claude, Gemini, and Grok
+          simultaneously. When 4 AIs agree on your item&apos;s value, you can trust
+          the number.
+        </p>
+
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <img
+            src="/images/megabot/four-engines.png"
+            alt="Four AI engines connected by light beams — MegaBot consensus visualization"
+            loading="lazy"
+            style={{
+              maxWidth: 560,
+              width: '100%',
+              borderRadius: 16,
+              boxShadow:
+                '0 0 60px rgba(139,92,246,0.15), 0 20px 40px rgba(0,0,0,0.3)',
+            }}
+            onError={(e) => {
+              ;(e.target as HTMLImageElement).style.display = 'none'
+            }}
+          />
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: cols,
+            gap: 20,
+          }}
+        >
+          {engines.map((engine, i) => (
+            <GlowCard key={engine.name} delay={i * 80}>
+              <div
+                style={{
+                  borderLeft: `3px solid ${engine.color}`,
+                  paddingLeft: 16,
+                }}
+              >
+                <span style={{ fontSize: 24 }}>{engine.emoji}</span>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 600,
+                    fontSize: 17,
+                    color: '#F1F5F9',
+                    marginTop: 8,
+                  }}
+                >
+                  {engine.name}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 500,
+                    fontSize: 14,
+                    color: engine.color,
+                    marginTop: 2,
+                  }}
+                >
+                  {engine.role}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 14,
+                    color: '#CBD5E1',
+                    marginTop: 4,
+                  }}
+                >
+                  {engine.detail}
+                </div>
+              </div>
+            </GlowCard>
+          ))}
+        </div>
+
+        {/* Consensus Bar */}
+        <div ref={barRef} style={{ marginTop: 48, textAlign: 'center' }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-data)',
+              fontWeight: 600,
+              fontSize: 16,
+              color: '#00BCD4',
+              textShadow: '0 0 20px rgba(0,188,212,0.3)',
+              marginBottom: 12,
+            }}
+          >
+            87% Average AI Agreement
+          </div>
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              borderRadius: 8,
+              height: 12,
+              maxWidth: 600,
+              margin: '0 auto',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                height: '100%',
+                background: 'linear-gradient(90deg, #00bcd4, #009688)',
+                borderRadius: 8,
+                width: fillActive ? '87%' : '0%',
+                transition: 'width 2s ease-out',
+              }}
+            />
+          </div>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 14,
+              color: '#94A3B8',
+              marginTop: 16,
+              textAlign: 'center',
+            }}
+          >
+            Cost per 4-AI analysis: less than a cup of coffee. Margin: 85%+
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------- HOW IT WORKS ----------
+function HowItWorksSection() {
+  const width = useWindowWidth()
+  const steps = [
+    {
+      num: 1,
+      emoji: '📷',
+      title: 'Upload a Photo',
+      desc: 'Snap a pic. Our AI handles the rest.',
+    },
+    {
+      num: 2,
+      emoji: '🧠',
+      title: 'AI Analysis & Pricing',
+      desc: '11 bots analyze your item. 4 engines agree on price.',
+    },
+    {
+      num: 3,
+      emoji: '📣',
+      title: 'List & Match Buyers',
+      desc: 'One click. 13 platforms. AI finds your buyers.',
+    },
+    {
+      num: 4,
+      emoji: '📦',
+      title: 'Ship & Get Paid',
+      desc: 'Print a label. Ship it. Money in your account.',
+    },
+  ]
+
+  return (
+    <section
+      id="how-it-works"
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        <SectionEyebrow text="THE PROCESS" />
+        <SectionHeading>From Photo to Sold in Four Steps</SectionHeading>
+
+        <div
+          style={{
+            position: 'relative',
+            marginTop: 48,
+          }}
+        >
+          {/* Connector Line */}
+          {width >= 640 && (
+            <div
+              style={{
+                position: 'absolute',
+                left: 19,
+                top: 20,
+                bottom: 20,
+                width: 2,
+                background: 'rgba(0,188,212,0.3)',
+                zIndex: 0,
+              }}
+            />
+          )}
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 20,
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            {steps.map((step, i) => (
+              <GlowCard key={step.num} delay={i * 80}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      minWidth: 40,
+                      borderRadius: '50%',
+                      background: '#00BCD4',
+                      color: '#0D1117',
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      fontSize: 20,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {step.num}
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-heading)',
+                        fontWeight: 600,
+                        fontSize: 18,
+                        color: '#F1F5F9',
+                      }}
+                    >
+                      {step.emoji} {step.title}
+                    </div>
+                    <p
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontWeight: 400,
+                        fontSize: 15,
+                        color: '#CBD5E1',
+                        marginTop: 4,
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {step.desc}
+                    </p>
+                  </div>
+                </div>
+              </GlowCard>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------- PRODUCT PREVIEW ----------
+function ProductPreviewSection() {
+  const width = useWindowWidth()
+  const isMobile = width < 768
+
+  const screenshots = [
+    {
+      src: '/images/screenshots/app-screenshot-01.png',
+      alt: 'LegacyLoop Dashboard — item management and AI analysis overview',
+      transform: isMobile
+        ? 'none'
+        : 'perspective(1200px) rotateY(8deg) rotateX(2deg) scale(0.92)',
+      zIndex: 1,
+    },
+    {
+      src: '/images/screenshots/app-screenshot-03.png',
+      alt: 'LegacyLoop AI Bot Results — detailed item valuation and pricing',
+      transform: isMobile ? 'none' : 'scale(1.02)',
+      zIndex: 2,
+    },
+    {
+      src: '/images/screenshots/app-screenshot-05.png',
+      alt: 'LegacyLoop Listing Manager — multi-platform listing creation',
+      transform: isMobile
+        ? 'none'
+        : 'perspective(1200px) rotateY(-8deg) rotateX(2deg) scale(0.92)',
+      zIndex: 1,
+    },
+  ]
+
+  return (
+    <section
+      id="product"
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <SectionEyebrow text="THE PRODUCT" />
+        <SectionHeading>See It In Action</SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            textAlign: 'center',
+            maxWidth: 640,
+            margin: '0 auto 48px',
+            lineHeight: 1.65,
+          }}
+        >
+          Real screenshots from the live LegacyLoop platform. Every feature you
+          see is built and working.
+        </p>
+
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: isMobile ? 24 : 16,
+          }}
+        >
+          {screenshots.map((shot, i) => (
+            <TiltCard
+              key={i}
+              intensity={isMobile ? 0 : 8}
+              style={{
+                transform: shot.transform,
+                zIndex: shot.zIndex,
+                maxWidth: isMobile ? '100%' : '33%',
+                flex: isMobile ? 'none' : '1',
+                boxShadow:
+                  '0 25px 50px rgba(0,0,0,0.4), 0 10px 20px rgba(0,0,0,0.3)',
+                border: '1px solid rgba(0,188,212,0.1)',
+              }}
+            >
+              <img
+                src={shot.src}
+                alt={shot.alt}
+                loading="lazy"
+                style={{
+                  width: '100%',
+                  display: 'block',
+                }}
+                onError={(e) => {
+                  ;(e.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
+            </TiltCard>
+          ))}
+        </div>
+
+        {/* Valuation Video */}
+        <div style={{ textAlign: 'center', marginTop: 64 }}>
+          <GlowCard
+            style={{
+              padding: 0,
+              overflow: 'hidden',
+              maxWidth: 680,
+              margin: '0 auto',
+              display: 'inline-block',
+            }}
+          >
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{
+                width: '100%',
+                display: 'block',
+                borderRadius: 16,
+              }}
+              onError={(e) => {
+                ;(e.target as HTMLVideoElement).style.display = 'none'
+              }}
+            >
+              <source src="/vintage-item-valuation.webm" type="video/webm" />
+              <source src="/vintage-item-valuation.mp4" type="video/mp4" />
+            </video>
+          </GlowCard>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 14,
+              color: '#94A3B8',
+              marginTop: 16,
+            }}
+          >
+            Watch our AI analyze and price a vintage item in real time.
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ==============================================
+   PHASE 4 — AI AGENTS + PRICING + ESTATE + SOCIAL
+   ============================================== */
+
+// ---------- 11 AI AGENTS ----------
+function AIAgentsSection() {
+  const width = useWindowWidth()
+  const cols =
+    width >= 1200
+      ? 'repeat(3, 1fr)'
+      : width >= 640
+        ? 'repeat(2, 1fr)'
+        : '1fr'
+
+  const bots = [
+    {
+      emoji: '🔍',
+      name: 'AnalyzeBot',
+      desc: '48+ attributes from one photo',
+      tier: 'ALL TIERS',
+      tierColor: '#00BCD4',
+      tierBg: 'rgba(0,188,212,0.15)',
+    },
+    {
+      emoji: '📊',
+      name: 'PriceBot',
+      desc: 'Fair market value, regional intelligence',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '📷',
+      name: 'PhotoBot',
+      desc: 'Photo quality scoring and tips',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '📝',
+      name: 'ListBot',
+      desc: 'Listings for 13 platforms',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '🎯',
+      name: 'BuyerBot',
+      desc: '6-12 buyer profiles before you list',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '📦',
+      name: 'ShipBot',
+      desc: 'AI shipping analysis, carrier comparisons',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '🛰️',
+      name: 'ReconBot',
+      desc: 'Real-time market monitoring',
+      tier: 'POWER+',
+      tierColor: '#8B5CF6',
+      tierBg: 'rgba(139,92,246,0.15)',
+    },
+    {
+      emoji: '⏳',
+      name: 'AntiqueBot',
+      desc: 'Never undersell a family heirloom',
+      tier: 'POWER+',
+      tierColor: '#8B5CF6',
+      tierBg: 'rgba(139,92,246,0.15)',
+    },
+    {
+      emoji: '⭐',
+      name: 'CollectiblesBot',
+      desc: 'Expert-level collectible analysis',
+      tier: 'POWER+',
+      tierColor: '#8B5CF6',
+      tierBg: 'rgba(139,92,246,0.15)',
+    },
+    {
+      emoji: '🎬',
+      name: 'VideoBot',
+      desc: 'AI video ads for TikTok, Reels, Shorts',
+      tier: 'POWER+',
+      tierColor: '#8B5CF6',
+      tierBg: 'rgba(139,92,246,0.15)',
+    },
+    {
+      emoji: '🚗',
+      name: 'CarBot',
+      desc: 'VIN decoding + condition grading',
+      tier: 'ESTATE',
+      tierColor: '#FBBF24',
+      tierBg: 'rgba(251,191,36,0.15)',
+    },
+  ]
+
+  return (
+    <section
+      id="bots"
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <SectionEyebrow text="YOUR AI TEAM" />
+        <SectionHeading>
+          Eleven Specialized AI Agents.{' '}
+          <GradientText>All Working For You.</GradientText>
+        </SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 15,
+            color: '#94A3B8',
+            textAlign: 'center',
+            maxWidth: 640,
+            margin: '0 auto 48px',
+            lineHeight: 1.65,
+          }}
+        >
+          MegaBot powers them all — our 4-engine consensus system that ensures
+          every valuation is fair.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: cols,
+            gap: 20,
+          }}
+        >
+          {bots.map((bot, i) => (
+            <GlowCard key={bot.name} delay={i * 60}>
+              <div style={{ fontSize: 28, marginBottom: 8 }}>{bot.emoji}</div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: 17,
+                  color: '#F1F5F9',
+                }}
+              >
+                {bot.name}
+              </div>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 400,
+                  fontSize: 14,
+                  color: '#CBD5E1',
+                  marginTop: 4,
+                }}
+              >
+                {bot.desc}
+              </p>
+              <span
+                style={{
+                  display: 'inline-block',
+                  fontFamily: 'var(--font-data)',
+                  fontWeight: 600,
+                  fontSize: 11,
+                  textTransform: 'uppercase' as const,
+                  letterSpacing: '0.05em',
+                  padding: '3px 8px',
+                  borderRadius: 4,
+                  marginTop: 12,
+                  background: bot.tierBg,
+                  color: bot.tierColor,
+                }}
+              >
+                {bot.tier}
+              </span>
+            </GlowCard>
+          ))}
+        </div>
+
+        {/* MegaBot Callout */}
+        <GlowCard
+          defaultBorderColor="rgba(139,92,246,0.3)"
+          hoverBorderColor="rgba(139,92,246,0.6)"
+          style={{ marginTop: 32, textAlign: 'center' }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: 18,
+              color: '#F1F5F9',
+            }}
+          >
+            🧠 MegaBot — 4-Engine Consensus Pricing
+          </div>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 15,
+              color: '#CBD5E1',
+              marginTop: 8,
+              lineHeight: 1.55,
+            }}
+          >
+            Available as a power-up on any tier. Run OpenAI, Claude, Gemini, and
+            Grok simultaneously on any item.
+          </p>
+        </GlowCard>
+      </div>
+    </section>
+  )
+}
+
+// ---------- PRICING ----------
+function PricingSection() {
+  const width = useWindowWidth()
+  const cols =
+    width >= 1200
+      ? 'repeat(4, 1fr)'
+      : width >= 640
+        ? 'repeat(2, 1fr)'
+        : '1fr'
+
+  const tiers = [
+    {
+      name: 'FREE',
+      oldPrice: null,
+      price: 0,
+      commission: '12%',
+      items: '3 items',
+      bots: ['AnalyzeBot only'],
+      cta: 'Get Started Free',
+      highlight: false,
+    },
+    {
+      name: 'DIY SELLER',
+      oldPrice: '$20',
+      price: 10,
+      commission: '8%',
+      items: '25 items',
+      bots: ['+PriceBot', '+PhotoBot', '+ListBot', '+BuyerBot', '+ShipBot'],
+      cta: 'Start Selling',
+      highlight: true,
+    },
+    {
+      name: 'POWER SELLER',
+      oldPrice: '$49',
+      price: 25,
+      commission: '5%',
+      items: '100 items',
+      bots: ['+ReconBot', '+AntiqueBot', '+CollectiblesBot', '+VideoBot'],
+      cta: 'Go Pro',
+      highlight: false,
+    },
+    {
+      name: 'ESTATE MANAGER',
+      oldPrice: '$99',
+      price: 75,
+      commission: '4%',
+      items: 'Unlimited',
+      bots: ['ALL 11 bots + CarBot'],
+      cta: 'Manage Estates',
+      highlight: false,
+    },
+  ]
+
+  return (
+    <section
+      id="pricing"
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <SectionEyebrow text="SIMPLE HONEST PRICING" />
+        <SectionHeading>Simple, Honest Pricing</SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            textAlign: 'center',
+            maxWidth: 520,
+            margin: '0 auto 48px',
+            lineHeight: 1.65,
+          }}
+        >
+          Processing fees are transparent on every transaction. Never hidden.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: cols,
+            gap: 20,
+            alignItems: 'start',
+          }}
+        >
+          {tiers.map((tier, i) => (
+            <div
+              key={tier.name}
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: `1px solid ${tier.highlight ? 'rgba(0,188,212,0.4)' : 'rgba(0,188,212,0.15)'}`,
+                borderRadius: 16,
+                backdropFilter: 'blur(12px)',
+                padding: '32px 24px 28px',
+                transform: tier.highlight ? 'scale(1.03)' : 'none',
+                position: 'relative',
+                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              {tier.highlight && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 600,
+                    fontSize: 10,
+                    textTransform: 'uppercase' as const,
+                    letterSpacing: '0.05em',
+                    background: '#00BCD4',
+                    color: '#0D1117',
+                    padding: '4px 12px',
+                    borderRadius: '0 0 8px 8px',
+                  }}
+                >
+                  MOST POPULAR
+                </div>
+              )}
+
+              <div
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: 16,
+                  textTransform: 'uppercase' as const,
+                  letterSpacing: '0.05em',
+                  color: '#F1F5F9',
+                }}
+              >
+                {tier.name}
+              </div>
+
+              <div>
+                {tier.oldPrice && (
+                  <s
+                    style={{
+                      color: '#6B7280',
+                      fontSize: 14,
+                      fontFamily: 'var(--font-body)',
+                      marginRight: 8,
+                    }}
+                  >
+                    {tier.oldPrice}
+                  </s>
+                )}
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 700,
+                    fontSize: 36,
+                    background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  ${tier.price}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 14,
+                    color: '#94A3B8',
+                  }}
+                >
+                  /mo
+                </span>
+              </div>
+
+              <span
+                style={{
+                  display: 'inline-block',
+                  fontFamily: 'var(--font-data)',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  background: 'rgba(0,188,212,0.1)',
+                  color: '#00BCD4',
+                  padding: '4px 10px',
+                  borderRadius: 6,
+                  alignSelf: 'flex-start',
+                }}
+              >
+                {tier.commission} commission
+              </span>
+
+              <div
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 14,
+                  color: '#CBD5E1',
+                }}
+              >
+                {tier.items}
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                  flex: 1,
+                }}
+              >
+                {tier.bots.map((bot) => (
+                  <span
+                    key={bot}
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 13,
+                      color: '#94A3B8',
+                    }}
+                  >
+                    ✓ {bot}
+                  </span>
+                ))}
+              </div>
+
+              <a
+                href="https://app.legacy-loop.com/signup"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: 44,
+                  borderRadius: 12,
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  ...(tier.name === 'FREE'
+                    ? {
+                        background: 'transparent',
+                        border: '1px solid rgba(0,188,212,0.4)',
+                        color: '#00BCD4',
+                      }
+                    : {
+                        background: 'linear-gradient(135deg, #00bcd4, #009688)',
+                        border: '1px solid transparent',
+                        color: '#fff',
+                        boxShadow:
+                          '0 0 20px rgba(0,188,212,0.2), 0 2px 8px rgba(0,188,212,0.15)',
+                      }),
+                }}
+              >
+                {tier.cta}
+              </a>
+            </div>
+          ))}
+        </div>
+
+        {/* Credit Packs */}
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: 40,
+            fontFamily: 'var(--font-body)',
+            fontSize: 14,
+            color: '#94A3B8',
+          }}
+        >
+          <span style={{ fontWeight: 500 }}>AI Credit Packs:</span> $25 / 30
+          credits &bull; $50 / 65 credits &bull; $100 / 140 credits &bull; $200
+          / 300 credits
+        </div>
+        <p
+          style={{
+            textAlign: 'center',
+            marginTop: 16,
+            fontFamily: 'var(--font-body)',
+            fontSize: 14,
+            color: '#94A3B8',
+          }}
+        >
+          First AI analysis is always free. 10 free credits when you sign up.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+// ---------- BUILT FOR ESTATES ----------
+function EstateSection() {
+  const width = useWindowWidth()
+  const isMobile = width < 768
+
+  const features = [
+    { emoji: '🏺', text: 'Antique detection that prevents underselling heirlooms' },
+    { emoji: '🌐', text: 'Post your entire estate to 13 platforms in one click' },
+    { emoji: '💬', text: 'AI Messaging Agent handles buyer conversations for you' },
+    { emoji: '🤝', text: 'White-glove service available for full estate liquidation' },
+  ]
+
+  return (
+    <section
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Warm background image */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/images/estate/generations-hands.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.06,
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(180deg, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.85) 50%, rgba(13,17,23,0.95) 100%)',
+          zIndex: 1,
+        }}
+      />
+
+      <div
+        style={{
+          maxWidth: 1080,
+          margin: '0 auto',
+          position: 'relative',
+          zIndex: 2,
+        }}
+      >
+        <SectionEyebrow text="FOR FAMILIES" color="#D4A017" />
+        <SectionHeading>Selling Should Not Add to the Grief.</SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            maxWidth: 640,
+            margin: '0 auto 48px',
+            textAlign: 'center',
+            lineHeight: 1.75,
+          }}
+        >
+          When a loved one passes, families face an overwhelming task — hundreds
+          of items, emotional weight, and no idea what anything is worth.
+          LegacyLoop was built for this moment.
+        </p>
+
+        <div
+          style={{
+            display: isMobile ? 'flex' : 'grid',
+            flexDirection: 'column',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 420px',
+            gap: 24,
+            alignItems: 'start',
+          }}
+        >
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+              gap: 20,
+            }}
+          >
+            {features.map((f, i) => (
+              <GlowCard
+                key={i}
+                delay={i * 80}
+                defaultBorderColor="rgba(212,160,23,0.2)"
+                hoverBorderColor="rgba(212,160,23,0.4)"
+              >
+                <div style={{ fontSize: 24, marginBottom: 8 }}>{f.emoji}</div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 15,
+                    color: '#CBD5E1',
+                    lineHeight: 1.55,
+                  }}
+                >
+                  {f.text}
+                </p>
+              </GlowCard>
+            ))}
+          </div>
+
+          {!isMobile && (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <img
+                src="/images/estate/senior-tablet.png"
+                alt="Senior woman using LegacyLoop on a tablet to manage estate items"
+                loading="lazy"
+                style={{
+                  maxWidth: 420,
+                  width: '100%',
+                  borderRadius: 16,
+                  boxShadow:
+                    '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
+                }}
+                onError={(e) => {
+                  ;(e.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------- SOCIAL PROOF / EARLY ACCESS ----------
+function SocialProofSection() {
+  const [barActive, setBarActive] = useState(false)
+  const barRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = barRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setBarActive(true)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <section
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+        textAlign: 'center',
+      }}
+    >
+      <div style={{ maxWidth: 600, margin: '0 auto' }}>
+        <AnimatedStat
+          target={47}
+          style={{
+            fontFamily: 'var(--font-data)',
+            fontWeight: 700,
+            fontSize: 'clamp(48px, 7vw, 72px)',
+            background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            display: 'block',
+            lineHeight: 1.1,
+          }}
+        />
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 18,
+            color: '#CBD5E1',
+            marginTop: 8,
+          }}
+        >
+          Beta signups and counting
+        </p>
+
+        <div ref={barRef} style={{ marginTop: 40 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 14,
+              color: '#CBD5E1',
+              marginBottom: 12,
+            }}
+          >
+            Pre-Launch Pricing: 47 of 100 early access spots remaining
+          </p>
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.06)',
+              borderRadius: 8,
+              height: 8,
+              maxWidth: 400,
+              margin: '0 auto',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                height: '100%',
+                background: 'linear-gradient(90deg, #00bcd4, #009688)',
+                borderRadius: 8,
+                width: barActive ? '47%' : '0%',
+                transition: 'width 1.5s ease-out',
+              }}
+            />
+          </div>
+        </div>
+
+        <p
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 600,
+            fontSize: 18,
+            color: '#F1F5F9',
+            marginTop: 32,
+          }}
+        >
+          Built in Maine. Serving America.
+        </p>
+
+        <GlowCard
+          defaultBorderColor="rgba(34,197,94,0.3)"
+          hoverBorderColor="rgba(34,197,94,0.5)"
+          style={{ marginTop: 32, display: 'inline-block' }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 16,
+              color: '#F1F5F9',
+            }}
+          >
+            🎖️ 25% off for veterans and first responders
+          </p>
+        </GlowCard>
+      </div>
+    </section>
+  )
+}
+
+/* ==============================================
+   PHASE 5 — TECH + INVESTORS + FOOTER
+   ============================================== */
+
+// ---------- TECHNOLOGY CREDIBILITY ----------
+function TechSection() {
+  const width = useWindowWidth()
+  const cols = width < 640 ? '1fr' : 'repeat(2, 1fr)'
+
+  const items = [
+    {
+      emoji: '⚡',
+      title: 'Next.js',
+      desc: 'React framework trusted by Netflix, TikTok, Notion',
+    },
+    {
+      emoji: '🔷',
+      title: 'TypeScript',
+      desc: '85+ routes. Zero type errors. Type-safe end to end.',
+    },
+    {
+      emoji: '🤖',
+      title: 'Real AI APIs',
+      desc: 'Every analysis is live AI. No fake data. No demos.',
+    },
+    {
+      emoji: '📦',
+      title: 'Shippo',
+      desc: 'Real carrier rates. Real labels. USPS, UPS, FedEx.',
+    },
+  ]
+
+  return (
+    <section
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/images/ai/network-nodes.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.05,
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(13,17,23,0.92)',
+          zIndex: 1,
+        }}
+      />
+
+      <div
+        style={{
+          maxWidth: 1080,
+          margin: '0 auto',
+          position: 'relative',
+          zIndex: 2,
+        }}
+      >
+        <SectionEyebrow text="THE INFRASTRUCTURE" />
+        <SectionHeading>Enterprise-Grade. Built to Scale.</SectionHeading>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: cols,
+            gap: 20,
+            marginTop: 48,
+          }}
+        >
+          {items.map((item, i) => (
+            <GlowCard key={item.title} delay={i * 80}>
+              <span style={{ fontSize: 24 }}>{item.emoji}</span>
+              <div
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: 18,
+                  color: '#F1F5F9',
+                  marginTop: 8,
+                }}
+              >
+                {item.title}
+              </div>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 400,
+                  fontSize: 15,
+                  color: '#CBD5E1',
+                  marginTop: 4,
+                  lineHeight: 1.55,
+                }}
+              >
+                {item.desc}
+              </p>
+            </GlowCard>
+          ))}
+        </div>
+
+        <ScrollRevealText
+          text="5 revenue streams. 85%+ margins on AI credits. Built for scale from day one."
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 600,
+            fontSize: 'clamp(20px, 3vw, 28px)',
+            lineHeight: 1.4,
+            color: '#F1F5F9',
+            textAlign: 'center',
+            maxWidth: 800,
+            margin: '64px auto 0',
+          }}
+        />
+      </div>
+    </section>
+  )
+}
+
+// ---------- CINEMATIC VIDEO SHOWCASE + OUR STORY ----------
+function VideoShowcaseSection() {
+  const width = useWindowWidth()
+  const isMobile = width < 768
+
+  return (
+    <>
+      {/* PART 1 — Cinematic video hero with headline overlay */}
+      <section
+        id="showcase"
+        style={{
+          position: 'relative',
+          zIndex: 5,
+          overflow: 'hidden',
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '120px 32px',
+        }}
+      >
+        {/* Full-bleed video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.18,
+            zIndex: 0,
+          }}
+          onError={(e) => {
+            ;(e.target as HTMLVideoElement).style.display = 'none'
+          }}
+        >
+          <source
+            src="/Legacy_Loop_Hero_Video_Connecting_Generations.mp4"
+            type="video/mp4"
+          />
+        </video>
+
+        {/* Dark gradient overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'linear-gradient(180deg, rgba(13,17,23,0.6) 0%, rgba(13,17,23,0.3) 35%, rgba(13,17,23,0.3) 65%, rgba(13,17,23,0.7) 100%)',
+            zIndex: 1,
+          }}
+        />
+
+        {/* Radial glow */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 1000,
+            height: 700,
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle, rgba(0,188,212,0.05) 0%, transparent 60%)',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
+
+        {/* Headline content — floats over video */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            maxWidth: 800,
+            textAlign: 'center',
+          }}
+        >
+          <SectionEyebrow text="OUR STORY" />
+          <SectionHeading>
+            Built with Purpose. <GradientText>Powered by AI.</GradientText>
+          </SectionHeading>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 18,
+              color: '#CBD5E1',
+              maxWidth: 600,
+              margin: '0 auto',
+              lineHeight: 1.65,
+            }}
+          >
+            LegacyLoop connects generations through technology built with heart.
+            Every item tells a story. Every sale preserves a legacy.
+          </p>
+        </div>
+      </section>
+
+      {/* PART 2 — Feature cards + Mission (below video, on solid bg) */}
+      <section
+        style={{
+          padding: isMobile ? '80px 24px' : '100px 32px',
+          position: 'relative',
+          zIndex: 5,
+          overflow: 'hidden',
+        }}
+      >
+        {/* Warm amber ambient glow */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '30%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 800,
+            height: 500,
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle, rgba(212,160,23,0.03) 0%, transparent 60%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div style={{ maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          {/* 3 Feature Cards */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gap: 24,
+              marginBottom: 80,
+            }}
+          >
+            {[
+              {
+                emoji: '🏺',
+                title: 'Estate Sales with Dignity',
+                desc: 'Walk alongside families during life\u2019s biggest transitions. AI handles the complexity so they don\u2019t have to.',
+              },
+              {
+                emoji: '🤖',
+                title: '13 AI Agents Working for You',
+                desc: 'From photo analysis to buyer matching to video ads. One platform replaces a dozen tools.',
+              },
+              {
+                emoji: '🌲',
+                title: 'Built in Maine. Serving America.',
+                desc: 'Founded with faith, grit, and a calling to serve families, seniors, veterans, and communities in need.',
+              },
+            ].map((item, i) => (
+              <GlowCard key={item.title} delay={i * 100}>
+                <span style={{ fontSize: 28, display: 'block', marginBottom: 12 }}>
+                  {item.emoji}
+                </span>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 600,
+                    fontSize: 18,
+                    color: '#F1F5F9',
+                    marginBottom: 8,
+                  }}
+                >
+                  {item.title}
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 15,
+                    color: '#CBD5E1',
+                    lineHeight: 1.55,
+                    margin: 0,
+                  }}
+                >
+                  {item.desc}
+                </p>
+              </GlowCard>
+            ))}
+          </div>
+
+          {/* Mission Statement — the heart of LegacyLoop */}
+          <div
+            style={{
+              maxWidth: 800,
+              margin: '0 auto',
+              textAlign: 'center',
+            }}
+          >
+            <SectionEyebrow text="OUR MISSION" color="#D4A017" />
+            <h3
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 700,
+                fontSize: 'clamp(24px, 3.5vw, 34px)',
+                color: '#F1F5F9',
+                lineHeight: 1.3,
+                margin: '0 0 32px',
+              }}
+            >
+              More Than Technology.{' '}
+              <span style={{ color: '#D4A017' }}>A Mission for Good.</span>
+            </h3>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 400,
+                fontSize: 17,
+                color: '#CBD5E1',
+                lineHeight: 1.75,
+                marginBottom: 48,
+              }}
+            >
+              LegacyLoop was built to honor something bigger than profit.
+              We combine the power of artificial intelligence with compassionate human values
+              to help families navigate life&apos;s transitions with dignity. Through every sale,
+              donation, and partnership, we provide resources and hope to those who need it most.
+            </p>
+
+            {/* Values grid */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+                gap: 16,
+                marginBottom: 48,
+              }}
+            >
+              {[
+                { icon: '✝️', title: 'Faith-Driven', desc: 'Guided by purpose and conviction in every decision we make.' },
+                { icon: '💛', title: 'Compassion', desc: 'Serving seniors, families, veterans, and communities with empathy.' },
+                { icon: '🤝', title: 'Integrity', desc: 'Honest, ethical, and transparent in every interaction.' },
+                { icon: '🎖️', title: 'Veterans First', desc: '25% off for those who served. A portion of our success funds veteran housing.' },
+              ].map((value, i) => (
+                <GlowCard
+                  key={value.title}
+                  delay={i * 80}
+                  defaultBorderColor="rgba(212,160,23,0.12)"
+                  hoverBorderColor="rgba(212,160,23,0.35)"
+                  style={{ textAlign: 'left' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                    <span style={{ fontSize: 24, flexShrink: 0 }}>{value.icon}</span>
+                    <div>
+                      <div
+                        style={{
+                          fontFamily: 'var(--font-heading)',
+                          fontWeight: 600,
+                          fontSize: 16,
+                          color: '#F1F5F9',
+                        }}
+                      >
+                        {value.title}
+                      </div>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontWeight: 400,
+                          fontSize: 14,
+                          color: '#94A3B8',
+                          marginTop: 4,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {value.desc}
+                      </p>
+                    </div>
+                  </div>
+                </GlowCard>
+              ))}
+            </div>
+
+            {/* Two Paths */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+                gap: 20,
+                marginBottom: 48,
+              }}
+            >
+              <GlowCard
+                defaultBorderColor="rgba(212,160,23,0.15)"
+                hoverBorderColor="rgba(212,160,23,0.4)"
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 600,
+                    fontSize: 11,
+                    letterSpacing: '0.12em',
+                    color: '#D4A017',
+                    textTransform: 'uppercase' as const,
+                  }}
+                >
+                  ESTATE &amp; SENIOR PATH
+                </span>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 600,
+                    fontSize: 20,
+                    color: '#F1F5F9',
+                    marginTop: 8,
+                    marginBottom: 8,
+                  }}
+                >
+                  Legacy Transitions
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 15,
+                    color: '#CBD5E1',
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  Warmth, dignity, patience, and trust. We walk alongside seniors and families
+                  during life&apos;s most significant moments with compassion and care.
+                </p>
+              </GlowCard>
+              <GlowCard
+                defaultBorderColor="rgba(0,188,212,0.15)"
+                hoverBorderColor="rgba(0,188,212,0.4)"
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 600,
+                    fontSize: 11,
+                    letterSpacing: '0.12em',
+                    color: '#00BCD4',
+                    textTransform: 'uppercase' as const,
+                  }}
+                >
+                  GARAGE &amp; YARD SALE PATH
+                </span>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 600,
+                    fontSize: 20,
+                    color: '#F1F5F9',
+                    marginTop: 8,
+                    marginBottom: 8,
+                  }}
+                >
+                  Smart Everyday Selling
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 15,
+                    color: '#CBD5E1',
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  Energetic, modern, and clear. The smartest, easiest way for everyday
+                  families to sell — fast, intelligent, and completely stress-free.
+                </p>
+              </GlowCard>
+            </div>
+
+            {/* Closing tagline */}
+            <ScrollRevealText
+              text="Connecting Generations — one family, one item, one act of generosity at a time."
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 600,
+                fontSize: 'clamp(18px, 2.5vw, 24px)',
+                lineHeight: 1.5,
+                color: '#D4A017',
+                textAlign: 'center',
+                maxWidth: 700,
+                margin: '0 auto',
+              }}
+            />
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+// ---------- FINAL CTA ----------
+function FinalCTASection() {
+  return (
+    <section
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+        textAlign: 'center',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Ambient glow */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 800,
+          height: 600,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(0,188,212,0.06) 0%, transparent 65%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div
+        style={{
+          maxWidth: 640,
+          margin: '0 auto',
+          position: 'relative',
+          zIndex: 2,
+        }}
+      >
+        <SectionHeading
+          style={{
+            fontSize: 'clamp(28px, 4vw, 42px)',
+          }}
+        >
+          Your Items Have Value.{' '}
+          <GradientText>We Help You Prove It.</GradientText>
+        </SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            lineHeight: 1.65,
+            marginBottom: 40,
+          }}
+        >
+          Start for free. No credit card required.
+        </p>
+
+        <MagneticButton href="https://app.legacy-loop.com/signup">
+          Join Early Access
+        </MagneticButton>
+
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 14,
+            color: '#94A3B8',
+            marginTop: 20,
+          }}
+        >
+          Join 47+ sellers already on the waitlist
+        </p>
+      </div>
+    </section>
+  )
+}
+
+// ---------- FOOTER — AWWWARDS PREMIUM ----------
+function Footer() {
+  const width = useWindowWidth()
+  const isMobile = width < 768
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const linkStyle: React.CSSProperties = {
+    fontFamily: 'var(--font-body)',
+    fontWeight: 400,
+    fontSize: 14,
+    color: '#6B7280',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    transition: 'color 0.3s ease',
+    display: 'block',
+    padding: '6px 0',
+  }
+
+  const colHeading: React.CSSProperties = {
+    fontFamily: 'var(--font-data)',
+    fontWeight: 600,
+    fontSize: 11,
+    letterSpacing: '0.15em',
+    textTransform: 'uppercase' as const,
+    color: '#94A3B8',
+    marginBottom: 16,
+  }
+
+  return (
+    <footer
+      style={{
+        position: 'relative',
+        zIndex: 5,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Teal accent line at top */}
+      <div
+        style={{
+          height: 1,
+          background:
+            'linear-gradient(90deg, transparent 0%, rgba(0,188,212,0.3) 50%, transparent 100%)',
+        }}
+      />
+
+      {/* Main footer content */}
+      <div
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(13,17,23,0.95) 0%, rgba(10,12,16,1) 100%)',
+          padding: isMobile ? '60px 24px 40px' : '80px 48px 48px',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: '0 auto',
+          }}
+        >
+          {/* Top row — Logo + tagline large */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'space-between',
+              alignItems: isMobile ? 'flex-start' : 'flex-end',
+              gap: 32,
+              marginBottom: 64,
+            }}
+          >
+            <div>
+              <img
+                src="/logos/LegacyLoop-Logo-Master-Outlines-11.png"
+                alt="LegacyLoop"
+                style={{ maxWidth: 200, objectFit: 'contain', display: 'block' }}
+              />
+              <div
+                style={{
+                  fontFamily: 'var(--font-data)',
+                  fontWeight: 600,
+                  fontSize: 11,
+                  letterSpacing: '4px',
+                  color: '#4B5563',
+                  marginTop: 0,
+                  textTransform: 'uppercase' as const,
+                }}
+              >
+                CONNECTING GENERATIONS
+              </div>
+            </div>
+            <div style={{ textAlign: isMobile ? 'left' : 'right' }}>
+              <p
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: isMobile ? 20 : 24,
+                  color: '#F1F5F9',
+                  margin: 0,
+                  lineHeight: 1.3,
+                }}
+              >
+                Every item tells a story.
+              </p>
+              <p
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: isMobile ? 20 : 24,
+                  margin: '4px 0 0',
+                  lineHeight: 1.3,
+                  background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                We help you tell it.
+              </p>
+            </div>
+          </div>
+
+          {/* Link columns */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+              gap: isMobile ? 32 : 48,
+              paddingBottom: 48,
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            {/* Column 1 — Navigate */}
+            <div>
+              <div style={colHeading}>Navigate</div>
+              {[
+                { label: 'How It Works', action: () => scrollTo('how-it-works') },
+                { label: 'AI Agents', action: () => scrollTo('bots') },
+                { label: 'Pricing', action: () => scrollTo('pricing') },
+                { label: 'Our Story', action: () => scrollTo('showcase') },
+              ].map((link) => (
+                <span
+                  key={link.label}
+                  onClick={link.action}
+                  style={linkStyle}
+                  onMouseEnter={(e) =>
+                    ((e.target as HTMLElement).style.color = '#FFFFFF')
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.target as HTMLElement).style.color = '#6B7280')
+                  }
+                >
+                  {link.label}
+                </span>
+              ))}
+            </div>
+
+            {/* Column 2 — Product */}
+            <div>
+              <div style={colHeading}>Product</div>
+              <a href="https://app.legacy-loop.com/signup" style={linkStyle}
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#FFFFFF')}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
+              >Get Started</a>
+              <a href="https://app.legacy-loop.com/login" style={linkStyle}
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#FFFFFF')}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
+              >Login</a>
+            </div>
+
+            {/* Column 3 — Legal */}
+            <div>
+              <div style={colHeading}>Legal</div>
+              <a href="/privacy" style={linkStyle}
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#FFFFFF')}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
+              >Privacy Policy</a>
+              <a href="/terms" style={linkStyle}
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#FFFFFF')}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
+              >Terms of Service</a>
+            </div>
+
+            {/* Column 4 — Contact */}
+            <div>
+              <div style={colHeading}>Contact</div>
+              <a href="mailto:support@legacy-loop.com" style={linkStyle}
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#00BCD4')}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
+              >support@legacy-loop.com</a>
+              <a href="mailto:ryan@legacy-loop.com" style={linkStyle}
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#00BCD4')}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
+              >ryan@legacy-loop.com</a>
+              <span style={{ ...linkStyle, cursor: 'default', color: '#4B5563', fontSize: 13, marginTop: 8 }}>
+                Maine, USA
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 16,
+              paddingTop: 24,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 12,
+                color: '#4B5563',
+              }}
+            >
+              &copy; 2026 LegacyLoop Tech LLC. All rights reserved.
+            </span>
+            <span
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 12,
+                color: '#4B5563',
+              }}
+            >
+              Built with heart in Maine. 🌲
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+/* CharReveal now uses CSS transitions, no @keyframes needed */
+
+/* ==============================================
+   PAGE COMPONENT — DEFAULT EXPORT
+   ============================================== */
+export default function LandingPage() {
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Lenis Smooth Scroll — inject CSS + init with error fallback
+  useEffect(() => {
+    // Inject Lenis CSS so scroll isn't blocked
+    const style = document.createElement('style')
+    style.textContent = `
+      html.lenis, html.lenis body { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto !important; }
+      .lenis.lenis-smooth iframe { pointer-events: none; }
+    `
+    document.head.appendChild(style)
+
+    let lenis: any
+    let rafId: number
+    ;(async () => {
+      try {
+        const Lenis = (await import('lenis')).default
+        lenis = new Lenis({
+          duration: 1.2,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+          autoRaf: false,
+        })
+        const raf = (time: number) => {
+          lenis.raf(time)
+          rafId = requestAnimationFrame(raf)
+        }
+        rafId = requestAnimationFrame(raf)
+      } catch {
+        // If Lenis fails, ensure native scroll works
+        document.documentElement.style.overflow = ''
+        document.body.style.overflow = ''
+      }
+    })()
+    return () => {
+      if (lenis) lenis.destroy()
+      if (rafId) cancelAnimationFrame(rafId)
+      style.remove()
+    }
+  }, [])
+
+  return (
+    <>
+      <AnimatePresence>
+        {!isLoaded && (
+          <Preloader onComplete={() => setIsLoaded(true)} />
+        )}
+      </AnimatePresence>
+      <CustomCursor />
+      <GradientBackground />
+      <NoiseOverlay />
+      <StickyNav isLoaded={isLoaded} />
+      <main style={{ position: 'relative', zIndex: 5, background: 'transparent' }}>
+        <HeroSection isLoaded={isLoaded} />
+        <MarketplaceTicker />
+        <MarketOpportunitySection />
+        <MegaBotSection />
+        <HowItWorksSection />
+        <ProductPreviewSection />
+        <AIAgentsSection />
+        <PricingSection />
+        <EstateSection />
+        <SocialProofSection />
+        <TechSection />
+        <VideoShowcaseSection />
+        <FinalCTASection />
+        <Footer />
+      </main>
+    </>
+  )
+}

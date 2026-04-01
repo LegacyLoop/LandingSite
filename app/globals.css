@@ -1,17 +1,62 @@
+/* ============================================
+   LEGACYLOOP LANDING PAGE — GLOBAL CSS
+   Only @keyframes and CSS custom properties.
+   All component styling is inline style={{}}.
+   ============================================ */
+
+/* --- Design Tokens --- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --bg-primary: #0D1117;
+  --bg-secondary: #1A1F2E;
+  --bg-card: rgba(255, 255, 255, 0.03);
+
+  /* Accent */
+  --accent: #00BCD4;
+  --accent-bright: #22D3EE;
+  --accent-deep: #0097A7;
+  --accent-secondary: #009688;
+
+  /* Text */
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-dim: #6B7280;
+
+  /* Semantic */
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --antique: #FBBF24;
+  --megabot: #8B5CF6;
+  --estate-warm: #D4A017;
+
+  /* Fonts */
+  --font-heading: var(--font-exo2), 'Exo 2', sans-serif;
+  --font-body: var(--font-plus-jakarta), 'Plus Jakarta Sans', sans-serif;
+  --font-data: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
+
+  /* Spring easing — matches Raycast / Awwwards standard */
+  --spring-easing: linear(
+    0, 0.006, 0.024, 0.055, 0.097, 0.148, 0.209, 0.276,
+    0.347, 0.42, 0.494, 0.567, 0.637, 0.703, 0.762, 0.815,
+    0.86, 0.897, 0.926, 0.948, 0.963, 0.974, 0.981, 0.986,
+    0.989, 0.992, 0.994, 0.996, 0.997, 0.998, 0.999, 1
+  );
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* --- Base Reset --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html {
   height: 100%;
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
 }
 
 html,
@@ -24,17 +69,12 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -42,8 +82,78 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* --- Custom Cursor (desktop only) --- */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+/* --- Floating Gradient Orbs --- */
+@keyframes float1 {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50% { transform: translateX(-50%) translateY(-40px); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(30px) scale(0.95); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+/* --- Marketplace Ticker --- */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* --- Scroll Bounce Indicator --- */
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.4; }
+  50% { transform: translateX(-50%) translateY(10px); opacity: 1; }
+}
+
+/* --- Skeleton Shimmer (loading states) --- */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* --- Gradient Border Spin --- */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes borderSpin {
+  to { --angle: 360deg; }
+}
+
+/* --- Pulse Glow (for CTAs) --- */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 188, 212, 0.25); }
+  50% { box-shadow: 0 0 40px rgba(0, 188, 212, 0.45); }
+}
+
+/* --- Consensus Bar Fill --- */
+@keyframes consensusFill {
+  from { width: 0%; }
+  to { width: 87%; }
+}
+
+/* --- Accessibility: Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
