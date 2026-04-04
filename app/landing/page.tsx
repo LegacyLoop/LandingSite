@@ -314,6 +314,58 @@ function useWindowWidth() {
   return w
 }
 
+/** Auto-play video when it enters viewport — fixes mobile autoplay restrictions */
+function AutoPlayVideo({ style, sources, ...props }: { style: React.CSSProperties; sources: { src: string; type: string }[] } & Omit<React.VideoHTMLAttributes<HTMLVideoElement>, 'style'>) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {})
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(video)
+
+    // Also try playing on first user interaction as fallback
+    const handleInteraction = () => {
+      if (video.paused) video.play().catch(() => {})
+    }
+    document.addEventListener('touchstart', handleInteraction, { once: true, passive: true })
+    document.addEventListener('scroll', handleInteraction, { once: true, passive: true })
+
+    return () => {
+      observer.disconnect()
+      document.removeEventListener('touchstart', handleInteraction)
+      document.removeEventListener('scroll', handleInteraction)
+    }
+  }, [])
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      muted
+      loop
+      playsInline
+      style={style}
+      onError={(e) => {
+        ;(e.target as HTMLVideoElement).style.display = 'none'
+      }}
+      {...props}
+    >
+      {sources.map((s) => (
+        <source key={s.src} src={s.src} type={s.type} />
+      ))}
+    </video>
+  )
+}
+
 function useReducedMotion() {
   const [reduced, setReduced] = useState(false)
   useEffect(() => {
@@ -1055,8 +1107,109 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
     }
   }, [])
 
-  if (!isLoaded || width < 1024) return null
+  if (!isLoaded) return null
 
+  const isMobile = width < 1024
+
+  // ── MOBILE: bottom bar ──
+  if (isMobile) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 900,
+          opacity: visible ? 1 : 0,
+          pointerEvents: visible ? 'auto' : 'none',
+          transition: 'opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+          background: 'rgba(13,17,23,0.92)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderTop: '1px solid rgba(0,188,212,0.15)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+      >
+        {/* Scroll progress bar */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'rgba(255,255,255,0.06)' }}>
+          <motion.div
+            style={{
+              height: '100%',
+              width: progressHeight,
+              background: 'linear-gradient(90deg, #00BCD4, #009688)',
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            padding: '10px 8px 8px',
+            maxWidth: 480,
+            margin: '0 auto',
+          }}
+        >
+          {sections.map((section) => {
+            const isActive = activeSection === section.id
+            return (
+              <div
+                key={section.id}
+                onClick={() => {
+                  document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 4,
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                  minWidth: 0,
+                }}
+              >
+                <div
+                  style={{
+                    width: isActive ? 10 : 6,
+                    height: isActive ? 10 : 6,
+                    borderRadius: '50%',
+                    background: isActive
+                      ? 'linear-gradient(135deg, #00BCD4, #009688)'
+                      : 'rgba(255,255,255,0.2)',
+                    boxShadow: isActive
+                      ? '0 0 8px rgba(0,188,212,0.4)'
+                      : 'none',
+                    transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: isActive ? 600 : 400,
+                    fontSize: 8,
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase' as const,
+                    color: isActive ? '#00BCD4' : '#6B7280',
+                    transition: 'color 0.3s ease',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: width < 380 ? 36 : 48,
+                  }}
+                >
+                  {section.label}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  // ── DESKTOP: side dots ──
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -1189,11 +1342,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
       }}
     >
       {/* Video Background */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
+      <AutoPlayVideo
         style={{
           position: 'absolute',
           inset: 0,
@@ -1203,13 +1352,11 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           opacity: 0.12,
           zIndex: 0,
         }}
-        onError={(e) => {
-          ;(e.target as HTMLVideoElement).style.display = 'none'
-        }}
-      >
-        <source src="/hero-loop.webm" type="video/webm" />
-        <source src="/hero-loop.mp4" type="video/mp4" />
-      </video>
+        sources={[
+          { src: '/hero-loop.webm', type: 'video/webm' },
+          { src: '/hero-loop.mp4', type: 'video/mp4' },
+        ]}
+      />
 
       {/* Fallback bg image — always layered underneath */}
       <div
@@ -2279,23 +2426,17 @@ function ProductPreviewSection() {
               display: 'inline-block',
             }}
           >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
+            <AutoPlayVideo
               style={{
                 width: '100%',
                 display: 'block',
                 borderRadius: 16,
               }}
-              onError={(e) => {
-                ;(e.target as HTMLVideoElement).style.display = 'none'
-              }}
-            >
-              <source src="/vintage-item-valuation.webm" type="video/webm" />
-              <source src="/vintage-item-valuation.mp4" type="video/mp4" />
-            </video>
+              sources={[
+                { src: '/vintage-item-valuation.webm', type: 'video/webm' },
+                { src: '/vintage-item-valuation.mp4', type: 'video/mp4' },
+              ]}
+            />
           </GlowCard>
           <p
             style={{
@@ -3714,11 +3855,7 @@ function VideoShowcaseSection() {
         }}
       >
         {/* Full-bleed video background */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
+        <AutoPlayVideo
           style={{
             position: 'absolute',
             inset: 0,
@@ -3728,15 +3865,10 @@ function VideoShowcaseSection() {
             opacity: 0.18,
             zIndex: 0,
           }}
-          onError={(e) => {
-            ;(e.target as HTMLVideoElement).style.display = 'none'
-          }}
-        >
-          <source
-            src="/Legacy_Loop_Hero_Video_Connecting_Generations.mp4"
-            type="video/mp4"
-          />
-        </video>
+          sources={[
+            { src: '/Legacy_Loop_Hero_Video_Connecting_Generations.mp4', type: 'video/mp4' },
+          ]}
+        />
 
         {/* Dark gradient overlay */}
         <div
