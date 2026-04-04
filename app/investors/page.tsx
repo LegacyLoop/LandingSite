@@ -43,7 +43,7 @@ export default function InvestorsPage() {
     { value: '$48B', label: 'Market Size' },
     { value: '85%+', label: 'AI Credit Margins' },
     { value: '5', label: 'Revenue Streams' },
-    { value: '13', label: 'AI Agents' },
+    { value: '10+1', label: 'AI Bots + MegaBot' },
     { value: '50+', label: 'Platform Integrations' },
   ]
 
@@ -124,7 +124,7 @@ export default function InvestorsPage() {
 
           <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(24px, 3vw, 34px)', color: '#F1F5F9', marginBottom: 24, textAlign: 'center' }}>Why LegacyLoop</h2>
           {[
-            { icon: '🤖', title: '13 Specialized AI Agents', desc: 'From item identification to video ad creation — every step automated with purpose-built AI.' },
+            { icon: '🤖', title: '10 AI Bots + MegaBot', desc: 'From item identification to video ad creation — every step automated with purpose-built AI.' },
             { icon: '🧠', title: '4-Engine MegaBot Consensus', desc: 'OpenAI, Claude, Gemini, and Grok run in parallel. When 4 AIs agree, you can trust the number.' },
             { icon: '📦', title: 'Full-Stack Resale Automation', desc: 'Photo to listing to shipping to payment. One platform replaces a dozen tools.' },
             { icon: '💛', title: 'Built for Families First', desc: 'Estate sales with dignity. Garage sales made simple. Veterans get 25% off. Nothing goes to waste.' },

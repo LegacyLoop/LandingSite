@@ -26,11 +26,11 @@ const barlowCondensed = Barlow_Condensed({
 export const metadata: Metadata = {
   title: "LegacyLoop — AI-Powered Resale Platform | Connecting Generations",
   description:
-    "LegacyLoop makes selling simple, fair, and dignified. 11 AI agents, 13 platforms, 4-engine MegaBot consensus pricing. Built for estates, families, and everyday sellers.",
+    "LegacyLoop makes selling simple, fair, and dignified. 10 AI bots + MegaBot consensus engine, 13 platforms, AI Shipping Center. Built for estates, families, and everyday sellers.",
   openGraph: {
     title: "LegacyLoop — Connecting Generations",
     description:
-      "AI-powered resale automation. 11 specialized bots. 13 platforms. Fair pricing powered by 4 AI engines.",
+      "AI-powered resale automation. 10 specialized bots + MegaBot. 13 platforms. Fair pricing powered by 4 AI engines.",
     type: "website",
     url: "https://legacy-loop.com",
   },
@@ -47,7 +47,9 @@ export default function RootLayout({
       className={`${exo2.variable} ${plusJakarta.variable} ${barlowCondensed.variable}`}
     >
       <head>
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="/favicon-bw-64.png" type="image/png" sizes="64x64" />
+        <link rel="icon" href="/favicon-bw.png" type="image/png" sizes="any" />
+        <link rel="apple-touch-icon" href="/favicon-bw.png" />
       </head>
       <body>{children}</body>
     </html>

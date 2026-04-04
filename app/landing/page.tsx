@@ -1007,6 +1007,167 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
   )
 }
 
+// ---------- FLOATING SECTION NAVIGATOR ----------
+function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
+  const width = useWindowWidth()
+  const [activeSection, setActiveSection] = useState('hero')
+  const [isHovered, setIsHovered] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const { scrollYProgress } = useScroll()
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+  const progressHeight = useTransform(smoothProgress, [0, 1], ['0%', '100%'])
+
+  const sections = [
+    { id: 'hero', label: 'Home', icon: '◆' },
+    { id: 'megabot', label: 'MegaBot', icon: '◆' },
+    { id: 'how-it-works', label: 'How It Works', icon: '◆' },
+    { id: 'shipping', label: 'Shipping', icon: '◆' },
+    { id: 'bots', label: 'AI Bots', icon: '◆' },
+    { id: 'pricing', label: 'Pricing', icon: '◆' },
+    { id: 'estate', label: 'Estates', icon: '◆' },
+    { id: 'showcase', label: 'Our Story', icon: '◆' },
+  ]
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setVisible(window.scrollY > 400)
+    }
+
+    const observers: IntersectionObserver[] = []
+    sections.forEach((section) => {
+      const el = document.getElementById(section.id)
+      if (!el) return
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(section.id)
+        },
+        { rootMargin: '-40% 0px -40% 0px', threshold: 0 }
+      )
+      observer.observe(el)
+      observers.push(observer)
+    })
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      observers.forEach((o) => o.disconnect())
+    }
+  }, [])
+
+  if (!isLoaded || width < 1024) return null
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        position: 'fixed',
+        right: 24,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        zIndex: 900,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: 0,
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? 'auto' : 'none',
+        transition: 'opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+      }}
+    >
+      {/* Scroll progress line */}
+      <div
+        style={{
+          position: 'absolute',
+          right: 7,
+          top: 0,
+          bottom: 0,
+          width: 2,
+          background: 'rgba(255,255,255,0.06)',
+          borderRadius: 1,
+          overflow: 'hidden',
+          zIndex: 0,
+        }}
+      >
+        <motion.div
+          style={{
+            width: '100%',
+            height: progressHeight,
+            background: 'linear-gradient(180deg, #00BCD4, #009688)',
+            borderRadius: 1,
+          }}
+        />
+      </div>
+
+      {sections.map((section, i) => {
+        const isActive = activeSection === section.id
+        return (
+          <div
+            key={section.id}
+            onClick={() => {
+              document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              cursor: 'pointer',
+              padding: '8px 0',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            {/* Label — reveals on hover */}
+            <div
+              style={{
+                overflow: 'hidden',
+                maxWidth: isHovered ? 140 : 0,
+                opacity: isHovered ? 1 : 0,
+                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-data)',
+                  fontWeight: isActive ? 600 : 400,
+                  fontSize: 11,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase' as const,
+                  color: isActive ? '#00BCD4' : '#6B7280',
+                  transition: 'color 0.3s ease',
+                  paddingRight: 6,
+                }}
+              >
+                {section.label}
+              </span>
+            </div>
+
+            {/* Dot */}
+            <div
+              style={{
+                width: isActive ? 16 : 8,
+                height: isActive ? 16 : 8,
+                borderRadius: '50%',
+                background: isActive
+                  ? 'linear-gradient(135deg, #00BCD4, #009688)'
+                  : 'rgba(255,255,255,0.15)',
+                border: isActive ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                boxShadow: isActive
+                  ? '0 0 12px rgba(0,188,212,0.4), 0 0 4px rgba(0,188,212,0.2)'
+                  : 'none',
+                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+                flexShrink: 0,
+              }}
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ---------- HERO SECTION ----------
 function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   const width = useWindowWidth()
@@ -1619,15 +1780,14 @@ function MegaBotSection() {
 
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <img
-            src="/images/megabot/four-engines.png"
+            src="/Pictures & Videos for Landing Page/_Four_identical_translucent_202603311353-Trans.png"
             alt="Four AI engines connected by light beams — MegaBot consensus visualization"
             loading="lazy"
             style={{
               maxWidth: 560,
               width: '100%',
-              borderRadius: 16,
-              boxShadow:
-                '0 0 60px rgba(139,92,246,0.15), 0 20px 40px rgba(0,0,0,0.3)',
+              borderRadius: 0,
+              mixBlendMode: 'screen' as const,
             }}
             onError={(e) => {
               ;(e.target as HTMLImageElement).style.display = 'none'
@@ -1755,7 +1915,7 @@ function HowItWorksSection() {
       num: 2,
       emoji: '🧠',
       title: 'AI Analysis & Pricing',
-      desc: '11 bots analyze your item. 4 engines agree on price.',
+      desc: '10 AI bots analyze your item. MegaBot confirms the price.',
     },
     {
       num: 3,
@@ -1767,7 +1927,7 @@ function HowItWorksSection() {
       num: 4,
       emoji: '📦',
       title: 'Ship & Get Paid',
-      desc: 'Print a label. Ship it. Money in your account.',
+      desc: 'AI Shipping Center picks the best carrier. Print a label. Get paid.',
     },
   ]
 
@@ -1869,6 +2029,142 @@ function HowItWorksSection() {
               </GlowCard>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------- AI SHIPPING CENTER ----------
+function ShippingCenterSection() {
+  const width = useWindowWidth()
+  const isMobile = width < 768
+
+  const carriers = [
+    { name: 'USPS', emoji: '📬' },
+    { name: 'UPS', emoji: '📦' },
+    { name: 'FedEx', emoji: '🚚' },
+    { name: 'DHL', emoji: '✈️' },
+    { name: 'Arta', emoji: '🎨' },
+  ]
+
+  const features = [
+    { emoji: '🤖', title: 'AI Rate Optimization', desc: 'Instantly compares carriers and selects the cheapest, fastest option for every shipment.' },
+    { emoji: '📐', title: 'Parcel + LTL Freight', desc: 'From a vintage watch to a full dining set — small parcels and large freight handled seamlessly.' },
+    { emoji: '🏠', title: 'Local Pickup', desc: 'Coordinate local buyer pickup with built-in scheduling. No shipping needed.' },
+    { emoji: '🎩', title: 'White-Glove Delivery', desc: 'Arta fine art and specialty logistics for high-value antiques and collectibles.' },
+  ]
+
+  return (
+    <section
+      id="shipping"
+      style={{
+        padding: '120px 32px',
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <SectionEyebrow text="BUILT-IN LOGISTICS" />
+        <SectionHeading>
+          AI Shipping Center.{' '}
+          <GradientText>Every Carrier. One Click.</GradientText>
+        </SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            textAlign: 'center',
+            maxWidth: 600,
+            margin: '0 auto 48px',
+            lineHeight: 1.65,
+          }}
+        >
+          A full Transportation Management System built right into the platform.
+          Compare rates, print labels, and track shipments — without leaving LegacyLoop.
+        </p>
+
+        {/* Carrier badges */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 16,
+            flexWrap: 'wrap',
+            marginBottom: 48,
+          }}
+        >
+          {carriers.map((c) => (
+            <div
+              key={c.name}
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(0,188,212,0.2)',
+                borderRadius: 12,
+                padding: '12px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <span style={{ fontSize: 20 }}>{c.emoji}</span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-data)',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  color: '#F1F5F9',
+                  letterSpacing: '0.03em',
+                }}
+              >
+                {c.name}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Feature cards */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: 20,
+          }}
+        >
+          {features.map((f, i) => (
+            <GlowCard key={f.title} delay={i * 80}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                <span style={{ fontSize: 24, flexShrink: 0 }}>{f.emoji}</span>
+                <div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 600,
+                      fontSize: 17,
+                      color: '#F1F5F9',
+                    }}
+                  >
+                    {f.title}
+                  </div>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontWeight: 400,
+                      fontSize: 15,
+                      color: '#CBD5E1',
+                      marginTop: 4,
+                      lineHeight: 1.55,
+                    }}
+                  >
+                    {f.desc}
+                  </p>
+                </div>
+              </div>
+            </GlowCard>
+          ))}
         </div>
       </div>
     </section>
@@ -2022,7 +2318,7 @@ function ProductPreviewSection() {
    PHASE 4 — AI AGENTS + PRICING + ESTATE + SOCIAL
    ============================================== */
 
-// ---------- 11 AI AGENTS ----------
+// ---------- 10 AI BOTS + MEGABOT ----------
 function AIAgentsSection() {
   const width = useWindowWidth()
   const cols =
@@ -2035,7 +2331,7 @@ function AIAgentsSection() {
   const bots = [
     {
       emoji: '🔍',
-      name: 'AnalyzeBot',
+      name: 'AI AnalysisBot',
       desc: '48+ attributes from one photo',
       tier: 'ALL TIERS',
       tierColor: '#00BCD4',
@@ -2059,7 +2355,7 @@ function AIAgentsSection() {
     },
     {
       emoji: '📝',
-      name: 'ListBot',
+      name: 'ListingBot',
       desc: 'Listings for 13 platforms',
       tier: 'DIY+',
       tierColor: '#22C55E',
@@ -2069,14 +2365,6 @@ function AIAgentsSection() {
       emoji: '🎯',
       name: 'BuyerBot',
       desc: '6-12 buyer profiles before you list',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: '📦',
-      name: 'ShipBot',
-      desc: 'AI shipping analysis, carrier comparisons',
       tier: 'DIY+',
       tierColor: '#22C55E',
       tierBg: 'rgba(34,197,94,0.15)',
@@ -2116,7 +2404,7 @@ function AIAgentsSection() {
     {
       emoji: '🚗',
       name: 'CarBot',
-      desc: 'VIN decoding + condition grading',
+      desc: 'VIN decoding + vehicle specialist',
       tier: 'ESTATE',
       tierColor: '#FBBF24',
       tierBg: 'rgba(251,191,36,0.15)',
@@ -2135,7 +2423,7 @@ function AIAgentsSection() {
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <SectionEyebrow text="YOUR AI TEAM" />
         <SectionHeading>
-          Eleven Specialized AI Agents.{' '}
+          Ten Specialized AI Bots.{' '}
           <GradientText>All Working For You.</GradientText>
         </SectionHeading>
         <p
@@ -2220,7 +2508,7 @@ function AIAgentsSection() {
               color: '#F1F5F9',
             }}
           >
-            🧠 MegaBot — 4-Engine Consensus Pricing
+            🧠 MegaBot — Master Consensus Engine
           </div>
           <p
             style={{
@@ -2232,8 +2520,8 @@ function AIAgentsSection() {
               lineHeight: 1.55,
             }}
           >
-            Available as a power-up on any tier. Run OpenAI, Claude, Gemini, and
-            Grok simultaneously on any item.
+            The 11th bot. Runs all 10 bots together through OpenAI, Claude, Gemini, and
+            Grok simultaneously. When 4 AI engines agree, you can trust the number.
           </p>
         </GlowCard>
       </div>
@@ -2257,8 +2545,7 @@ function PricingSection() {
       oldPrice: null,
       price: 0,
       commission: '12%',
-      items: '3 items',
-      bots: ['AnalyzeBot only'],
+      features: ['Basic AI identification', 'Public store page', 'Email support'],
       cta: 'Get Started Free',
       highlight: false,
     },
@@ -2267,28 +2554,25 @@ function PricingSection() {
       oldPrice: '$20',
       price: 10,
       commission: '8%',
-      items: '25 items',
-      bots: ['+PriceBot', '+PhotoBot', '+ListBot', '+BuyerBot', '+ShipBot'],
+      features: ['Enhanced AI pricing', '5 core bots included', '20 credits/month included', 'BuyerBot matching', 'Priority email support'],
       cta: 'Start Selling',
-      highlight: true,
+      highlight: false,
     },
     {
       name: 'POWER SELLER',
       oldPrice: '$49',
       price: 25,
       commission: '5%',
-      items: '100 items',
-      bots: ['+ReconBot', '+AntiqueBot', '+CollectiblesBot', '+VideoBot'],
+      features: ['MegaBot (credit-based)', 'All specialty bots', '50 credits/month included', 'Advanced analytics', 'Phone support'],
       cta: 'Go Pro',
-      highlight: false,
+      highlight: true,
     },
     {
       name: 'ESTATE MANAGER',
       oldPrice: '$99',
       price: 75,
       commission: '4%',
-      items: 'Unlimited',
-      bots: ['ALL 11 bots + CarBot'],
+      features: ['All bots including CarBot', '100 credits/month included', 'White-label store', 'Dedicated account manager', 'API access'],
       cta: 'Manage Estates',
       highlight: false,
     },
@@ -2318,7 +2602,7 @@ function PricingSection() {
             lineHeight: 1.65,
           }}
         >
-          Processing fees are transparent on every transaction. Never hidden.
+          1.75% buyer + 1.75% seller = 3.5% total on sales. Subscriptions = 0% processing. Always transparent.
         </p>
 
         <div
@@ -2436,32 +2720,23 @@ function PricingSection() {
 
               <div
                 style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 14,
-                  color: '#CBD5E1',
-                }}
-              >
-                {tier.items}
-              </div>
-
-              <div
-                style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 4,
+                  gap: 6,
                   flex: 1,
                 }}
               >
-                {tier.bots.map((bot) => (
+                {tier.features.map((feature) => (
                   <span
-                    key={bot}
+                    key={feature}
                     style={{
                       fontFamily: 'var(--font-body)',
                       fontSize: 13,
-                      color: '#94A3B8',
+                      color: '#CBD5E1',
                     }}
                   >
-                    ✓ {bot}
+                    <span style={{ color: '#00BCD4', marginRight: 6 }}>✓</span>
+                    {feature}
                   </span>
                 ))}
               </div>
@@ -2501,6 +2776,87 @@ function PricingSection() {
           ))}
         </div>
 
+        {/* Feature Comparison Table */}
+        <div
+          style={{
+            marginTop: 64,
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(0,188,212,0.15)',
+            borderRadius: 16,
+            backdropFilter: 'blur(12px)',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Table Header */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: width >= 640 ? '1.8fr 1fr 1fr 1fr 1fr' : '1.5fr 1fr 1fr',
+              padding: '16px 20px',
+              borderBottom: '1px solid rgba(0,188,212,0.15)',
+              background: 'rgba(0,188,212,0.05)',
+            }}
+          >
+            <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Feature</span>
+            {(width >= 640 ? ['Free', 'DIY Seller', 'Power Seller', 'Estate Manager'] : ['Free', 'DIY', 'Power']).map((h) => (
+              <span key={h} style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em', textAlign: 'center' }}>{h}</span>
+            ))}
+          </div>
+          {/* Table Rows */}
+          {[
+            { feature: 'AI Item Analysis', free: 'Limited', diy: '✓', power: '✓', estate: '✓' },
+            { feature: 'PriceBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
+            { feature: 'PhotoBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
+            { feature: 'ReconBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+            { feature: 'AntiqueBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+            { feature: 'CollectorBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+            { feature: 'CarBot', free: '—', diy: '—', power: '—', estate: '✓' },
+            { feature: 'MegaBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
+            { feature: 'Monthly Credits', free: '—', diy: '20/mo', power: '50/mo', estate: '100/mo' },
+            { feature: 'Active Items', free: '3', diy: '25', power: '100', estate: 'Unlimited' },
+            { feature: 'Photos Per Item', free: '2', diy: '5', power: '8', estate: '15' },
+            { feature: 'Commission', free: '12%', diy: '8%', power: '5%', estate: '4%' },
+            { feature: 'Garage Sale Network', free: 'Browse', diy: '✓', power: '✓', estate: '✓' },
+            { feature: 'Neighborhood Sale Events', free: '—', diy: '✓', power: '✓', estate: '✓' },
+            { feature: 'Estate Sale Events', free: '—', diy: '—', power: '—', estate: '✓' },
+          ].map((row, i) => (
+            <div
+              key={row.feature}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: width >= 640 ? '1.8fr 1fr 1fr 1fr 1fr' : '1.5fr 1fr 1fr',
+                padding: '12px 20px',
+                borderBottom: i < 14 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                transition: 'background 0.2s ease',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,188,212,0.04)' }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+            >
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#CBD5E1', fontWeight: 500 }}>{row.feature}</span>
+              {(width >= 640 ? [row.free, row.diy, row.power, row.estate] : [row.free, row.diy, row.power]).map((val, j) => (
+                <span
+                  key={j}
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    color: val === '✓' ? '#00BCD4' : val === '—' ? '#4B5563' : '#CBD5E1',
+                    fontWeight: val === '✓' ? 600 : 400,
+                  }}
+                >
+                  {val}
+                </span>
+              ))}
+            </div>
+          ))}
+          {/* Mobile note for Estate column */}
+          {width < 640 && (
+            <div style={{ padding: '12px 20px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280' }}>Estate Manager includes all features above + CarBot + Estate Sale Events</span>
+            </div>
+          )}
+        </div>
+
         {/* Credit Packs */}
         <div
           style={{
@@ -2524,7 +2880,7 @@ function PricingSection() {
             color: '#94A3B8',
           }}
         >
-          First AI analysis is always free. 10 free credits when you sign up.
+          First AI analysis is always free. 10 free credits when you sign up. Credits &amp; add-ons: 3.5% processing.
         </p>
       </div>
     </section>
@@ -2535,13 +2891,58 @@ function PricingSection() {
 function EstateSection() {
   const width = useWindowWidth()
   const isMobile = width < 768
+  const [activeTab, setActiveTab] = useState<'estate' | 'neighborhood'>('estate')
 
   const features = [
     { emoji: '🏺', text: 'Antique detection that prevents underselling heirlooms' },
     { emoji: '🌐', text: 'Post your entire estate to 13 platforms in one click' },
     { emoji: '💬', text: 'AI Messaging Agent handles buyer conversations for you' },
-    { emoji: '🤝', text: 'White-glove service available for full estate liquidation' },
+    { emoji: '🚚', text: 'AI Shipping Center — USPS, UPS, FedEx, DHL, Arta white-glove. Parcel, LTL freight, and local pickup' },
   ]
+
+  const whiteGloveTiers = [
+    {
+      name: 'Estate Essentials',
+      price: '$1,750',
+      oldPrice: '$2,500',
+      commission: '25% commission',
+      features: ['Item photography', 'AI listing creation', 'Buyer outreach', 'Shipping coordination', 'Donation management'],
+    },
+    {
+      name: 'Estate Professional',
+      price: '$3,500',
+      oldPrice: '$5,000',
+      commission: '30% commission',
+      features: ['Everything in Essentials', 'Buyer negotiation', 'Premium listing placement', 'Dedicated estate manager', 'Full reporting'],
+      recommended: true,
+    },
+    {
+      name: 'Estate Legacy',
+      price: '$7,000',
+      oldPrice: '$10,000',
+      commission: '35% commission',
+      features: ['Everything in Professional', 'White-glove concierge', 'Family coordination tools', 'Archive and documentation', 'Priority support'],
+    },
+  ]
+
+  const neighborhoodFeatures = [
+    { col: 'left', items: ['On-site planning with all families', 'AI pricing for all items', 'Custom event flyer (digital + print-ready)', 'Email campaign to local buyers', 'Individual family sales reports'] },
+    { col: 'right', items: ['Professional photography (all items)', 'Unified public sale page', 'Social media graphics', 'Day-of coordination materials', 'Donation coordination (shared pickup)'] },
+  ]
+
+  const tabStyle = (isActive: boolean) => ({
+    fontFamily: 'var(--font-heading)',
+    fontWeight: 600 as const,
+    fontSize: 14,
+    padding: '10px 24px',
+    borderRadius: 24,
+    border: 'none',
+    cursor: 'pointer' as const,
+    transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+    background: isActive ? 'linear-gradient(135deg, #D4A017, #B8860B)' : 'transparent',
+    color: isActive ? '#0D1117' : '#94A3B8',
+    letterSpacing: '0.02em',
+  })
 
   return (
     <section
@@ -2551,6 +2952,7 @@ function EstateSection() {
         zIndex: 5,
         overflow: 'hidden',
       }}
+      id="estate"
     >
       {/* Warm background image */}
       <div
@@ -2582,7 +2984,7 @@ function EstateSection() {
           zIndex: 2,
         }}
       >
-        <SectionEyebrow text="FOR FAMILIES" color="#D4A017" />
+        <SectionEyebrow text="FOR FAMILIES & COMMUNITIES" color="#D4A017" />
         <SectionHeading>Selling Should Not Add to the Grief.</SectionHeading>
         <p
           style={{
@@ -2660,6 +3062,378 @@ function EstateSection() {
             </div>
           )}
         </div>
+
+        {/* Services Tab Toggle */}
+        <div style={{ marginTop: 80, textAlign: 'center' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              gap: 4,
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(212,160,23,0.15)',
+              borderRadius: 28,
+              padding: 4,
+              marginBottom: 48,
+            }}
+          >
+            <button
+              onClick={() => setActiveTab('estate')}
+              style={tabStyle(activeTab === 'estate')}
+            >
+              Estate Sale Services
+            </button>
+            <button
+              onClick={() => setActiveTab('neighborhood')}
+              style={tabStyle(activeTab === 'neighborhood')}
+            >
+              Neighborhood Bundle
+            </button>
+          </div>
+        </div>
+
+        {/* Pre-Launch Banner */}
+        <div
+          style={{
+            background: 'rgba(212,160,23,0.06)',
+            border: '1px solid rgba(212,160,23,0.2)',
+            borderRadius: 12,
+            padding: '14px 24px',
+            textAlign: 'center',
+            marginBottom: 48,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 15,
+              color: '#D4A017',
+              margin: 0,
+            }}
+          >
+            Pre-Launch Pricing Active — Founding clients receive discounted rates locked in at launch price.
+          </p>
+        </div>
+
+        {/* Estate Sale Services Tab */}
+        {activeTab === 'estate' && (
+          <div>
+            <h3
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 600,
+                fontSize: 22,
+                color: '#D4A017',
+                textAlign: 'center',
+                marginBottom: 32,
+              }}
+            >
+              White-Glove Estate Services
+            </h3>
+            <div
+              style={{
+                display: isMobile ? 'flex' : 'grid',
+                flexDirection: 'column',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                gap: 20,
+              }}
+            >
+              {whiteGloveTiers.map((tier) => (
+                <GlowCard
+                  key={tier.name}
+                  defaultBorderColor={tier.recommended ? 'rgba(212,160,23,0.4)' : 'rgba(212,160,23,0.2)'}
+                  hoverBorderColor="rgba(212,160,23,0.5)"
+                  style={{
+                    textAlign: 'center',
+                    position: 'relative',
+                    transform: tier.recommended ? 'scale(1.03)' : 'none',
+                  }}
+                >
+                  {tier.recommended && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 600,
+                        fontSize: 10,
+                        textTransform: 'uppercase' as const,
+                        letterSpacing: '0.05em',
+                        background: '#D4A017',
+                        color: '#0D1117',
+                        padding: '4px 12px',
+                        borderRadius: '0 0 8px 8px',
+                      }}
+                    >
+                      RECOMMENDED
+                    </div>
+                  )}
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 600,
+                      fontSize: 17,
+                      color: '#F1F5F9',
+                      marginBottom: 12,
+                      marginTop: tier.recommended ? 8 : 0,
+                    }}
+                  >
+                    {tier.name}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 8 }}>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 700,
+                        fontSize: 32,
+                        background: 'linear-gradient(135deg, #D4A017, #FFFFFF)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      {tier.price}
+                    </span>
+                    {tier.oldPrice && (
+                      <s
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: 14,
+                          color: '#6B7280',
+                        }}
+                      >
+                        {tier.oldPrice}
+                      </s>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 13,
+                      color: '#94A3B8',
+                      marginTop: 4,
+                      marginBottom: 16,
+                    }}
+                  >
+                    {tier.commission}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, textAlign: 'left' }}>
+                    {tier.features.map((f) => (
+                      <span
+                        key={f}
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: 13,
+                          color: '#CBD5E1',
+                        }}
+                      >
+                        <span style={{ color: '#D4A017', marginRight: 6 }}>&#10003;</span>
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </GlowCard>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Neighborhood Bundle Tab */}
+        {activeTab === 'neighborhood' && (
+          <div>
+            <div
+              style={{
+                display: isMobile ? 'flex' : 'grid',
+                flexDirection: 'column',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 380px',
+                gap: 32,
+                alignItems: 'start',
+              }}
+            >
+              <GlowCard
+                defaultBorderColor="rgba(212,160,23,0.2)"
+                hoverBorderColor="rgba(212,160,23,0.4)"
+                style={{ padding: '32px 28px' }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 600,
+                    fontSize: 11,
+                    textTransform: 'uppercase' as const,
+                    letterSpacing: '0.15em',
+                    color: '#D4A017',
+                    marginBottom: 8,
+                  }}
+                >
+                  COMMUNITY SALE PROGRAM
+                </div>
+                <h3
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 700,
+                    fontSize: 24,
+                    color: '#F1F5F9',
+                    marginBottom: 16,
+                  }}
+                >
+                  Neighborhood Bundle
+                </h3>
+
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      fontSize: 40,
+                      background: 'linear-gradient(135deg, #D4A017, #FFFFFF)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
+                    $239
+                  </span>
+                  <s style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: '#6B7280' }}>$399</s>
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 14,
+                    color: '#CBD5E1',
+                    marginBottom: 2,
+                  }}
+                >
+                  20% commission on sales
+                </p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 13,
+                    color: '#94A3B8',
+                    marginBottom: 24,
+                  }}
+                >
+                  2&ndash;8 families per bundle
+                </p>
+
+                {/* Two-column feature list */}
+                <div
+                  style={{
+                    display: isMobile ? 'flex' : 'grid',
+                    flexDirection: 'column',
+                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                    gap: isMobile ? 6 : 16,
+                  }}
+                >
+                  {neighborhoodFeatures.map((col) => (
+                    <div key={col.col} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {col.items.map((item) => (
+                        <span
+                          key={item}
+                          style={{
+                            fontFamily: 'var(--font-body)',
+                            fontSize: 13,
+                            color: '#CBD5E1',
+                          }}
+                        >
+                          <span style={{ color: '#D4A017', marginRight: 6 }}>&#10003;</span>
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Additional families callout */}
+                <div
+                  style={{
+                    marginTop: 24,
+                    background: 'rgba(212,160,23,0.06)',
+                    border: '1px solid rgba(212,160,23,0.15)',
+                    borderRadius: 10,
+                    padding: '12px 16px',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 14,
+                      color: '#CBD5E1',
+                    }}
+                  >
+                    Additional families:{' '}
+                    <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#D4A017' }}>
+                      $89/family
+                    </span>
+                    {' '}
+                    <s style={{ fontSize: 13, color: '#6B7280' }}>$149</s>
+                  </span>
+                </div>
+
+                {/* CTA */}
+                <a
+                  href="https://app.legacy-loop.com/signup"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 48,
+                    borderRadius: 12,
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 600,
+                    fontSize: 15,
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    marginTop: 24,
+                    background: 'linear-gradient(135deg, #D4A017, #B8860B)',
+                    color: '#0D1117',
+                    border: '1px solid transparent',
+                    boxShadow: '0 0 20px rgba(212,160,23,0.15), 0 2px 8px rgba(212,160,23,0.1)',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  Start a Neighborhood Bundle
+                </a>
+              </GlowCard>
+
+              {/* Garage sale image */}
+              {!isMobile && (
+                <div style={{ position: 'sticky', top: 100 }}>
+                  <img
+                    src="/images/garage/garage-sale.png"
+                    alt="Organized neighborhood garage sale with electronics, vintage finds, and clothing"
+                    loading="lazy"
+                    style={{
+                      width: '100%',
+                      borderRadius: 16,
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
+                    }}
+                    onError={(e) => {
+                      ;(e.target as HTMLImageElement).style.display = 'none'
+                    }}
+                  />
+                  <img
+                    src="/images/garage/family-garage.png"
+                    alt="Family using LegacyLoop to manage their garage sale"
+                    loading="lazy"
+                    style={{
+                      width: '100%',
+                      borderRadius: 16,
+                      marginTop: 16,
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
+                    }}
+                    onError={(e) => {
+                      ;(e.target as HTMLImageElement).style.display = 'none'
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )
@@ -2781,7 +3555,7 @@ function SocialProofSection() {
               color: '#F1F5F9',
             }}
           >
-            🎖️ 25% off for veterans and first responders
+            🎖️ Veterans &amp; First Responders: 25% off subscriptions &bull; 20% off white-glove services &bull; 25% reduced commissions
           </p>
         </GlowCard>
       </div>
@@ -2816,8 +3590,8 @@ function TechSection() {
     },
     {
       emoji: '📦',
-      title: 'Shippo',
-      desc: 'Real carrier rates. Real labels. USPS, UPS, FedEx.',
+      title: 'AI Shipping Center',
+      desc: 'Full TMS — USPS, UPS, FedEx, DHL, Arta. Parcel, LTL freight, local pickup.',
     },
   ]
 
@@ -2900,7 +3674,7 @@ function TechSection() {
         </div>
 
         <ScrollRevealText
-          text="5 revenue streams. 85%+ margins on AI credits. Built for scale from day one."
+          text="10 AI bots. 4 consensus engines. One AI Shipping Center. Every tool you need — in one platform."
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 600,
@@ -3065,7 +3839,7 @@ function VideoShowcaseSection() {
               },
               {
                 emoji: '🤖',
-                title: '13 AI Agents Working for You',
+                title: '10 AI Bots + MegaBot',
                 desc: 'From photo analysis to buyer matching to video ads. One platform replaces a dozen tools.',
               },
               {
@@ -3156,7 +3930,7 @@ function VideoShowcaseSection() {
                 { icon: '✝️', title: 'Faith-Driven', desc: 'Guided by purpose and conviction in every decision we make.' },
                 { icon: '💛', title: 'Compassion', desc: 'Serving seniors, families, veterans, and communities with empathy.' },
                 { icon: '🤝', title: 'Integrity', desc: 'Honest, ethical, and transparent in every interaction.' },
-                { icon: '🎖️', title: 'Veterans First', desc: '25% off for those who served. A portion of our success funds veteran housing.' },
+                { icon: '🎖️', title: 'Veterans First', desc: '25% off subscriptions, 20% off white-glove, 25% reduced commissions. A portion of our success funds veteran housing.' },
               ].map((value, i) => (
                 <GlowCard
                   key={value.title}
@@ -3684,12 +4458,14 @@ export default function LandingPage() {
       <GradientBackground />
       <NoiseOverlay />
       <StickyNav isLoaded={isLoaded} />
+      <SectionNavigator isLoaded={isLoaded} />
       <main style={{ position: 'relative', zIndex: 5, background: 'transparent' }}>
         <HeroSection isLoaded={isLoaded} />
         <MarketplaceTicker />
         <MarketOpportunitySection />
         <MegaBotSection />
         <HowItWorksSection />
+        <ShippingCenterSection />
         <ProductPreviewSection />
         <AIAgentsSection />
         <PricingSection />
