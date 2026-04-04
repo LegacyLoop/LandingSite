@@ -1439,9 +1439,9 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 800,
-            fontSize: 'clamp(32px, 5.5vw, 68px)',
+            fontSize: width < 400 ? 28 : 'clamp(32px, 5.5vw, 68px)',
             lineHeight: 1.1,
-            letterSpacing: '-1px',
+            letterSpacing: width < 400 ? '-0.5px' : '-1px',
             margin: 0,
             color: '#F1F5F9',
             textAlign: 'center',
