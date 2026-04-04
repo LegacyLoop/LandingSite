@@ -1066,7 +1066,7 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
   const [isHovered, setIsHovered] = useState(false)
   const [visible, setVisible] = useState(false)
   const { scrollYProgress } = useScroll()
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 300, damping: 40, restDelta: 0.0001 })
   const progressHeight = useTransform(smoothProgress, [0, 1], ['0%', '100%'])
 
   const sections = [
