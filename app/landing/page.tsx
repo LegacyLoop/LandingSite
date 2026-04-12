@@ -1449,6 +1449,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
       />
 
       <div
+        data-hero-content
         style={{
           position: 'relative',
           zIndex: 5,
@@ -5809,8 +5810,14 @@ function Footer() {
 export default function LandingPage() {
   const [isLoaded, setIsLoaded] = useState(false)
 
-  // Hard 3-second timeout — page MUST be visible within 3s on any device
+  // On touch devices: show IMMEDIATELY — framer-motion animations are unreliable
+  // on iPad Safari/Chrome. Desktop: 3s delay for entrance animation.
   useEffect(() => {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) {
+      setIsLoaded(true)
+      return
+    }
     const timeout = setTimeout(() => setIsLoaded(true), 3000)
     return () => clearTimeout(timeout)
   }, [])
