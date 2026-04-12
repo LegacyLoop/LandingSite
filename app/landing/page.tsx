@@ -930,7 +930,9 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
           borderBottom: scrolled
             ? '1px solid rgba(0,188,212,0.08)'
             : '1px solid transparent',
-          transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+          // Explicit properties — 'all' transitions backdrop-filter which
+          // causes GPU compositing bugs on iPad Safari
+          transition: 'background 0.4s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
         }}
       >
         <div
@@ -956,13 +958,13 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           />
 
-          {/* Center — Nav Links (desktop + tablet) */}
-          {!isMobile && (
+          {/* Center — Nav Links (desktop only, not tablet) */}
+          {!isMobile && !isTablet && (
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: isTablet ? 12 : 32,
+                gap: 32,
               }}
             >
               {navLinks.map((link) => (
@@ -972,7 +974,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
                   style={{
                     fontFamily: 'var(--font-body)',
                     fontWeight: 500,
-                    fontSize: isTablet ? 12 : 14,
+                    fontSize: 14,
                     color: '#CBD5E1',
                     cursor: 'pointer',
                     transition: 'color 0.3s ease',
@@ -990,7 +992,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
             </div>
           )}
 
-          {/* Right — Login + CTA */}
+          {/* Right — Login + CTA + Hamburger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: isTablet ? 12 : 16 }}>
             {!isMobile && !isTablet && (
               <a
@@ -1044,7 +1046,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
             >
               Get Started
             </a>
-            {isMobile && (
+            {(isMobile || isTablet) && (
               <button
                 aria-label="Toggle menu"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -1069,8 +1071,8 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      {isMobile && menuOpen && (
+      {/* Mobile / Tablet Menu */}
+      {(isMobile || isTablet) && menuOpen && (
         <div
           style={{
             position: 'fixed',
