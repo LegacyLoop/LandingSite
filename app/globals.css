@@ -167,6 +167,15 @@ a {
   to { transform: rotate(360deg); }
 }
 
+/* GlowCard CSS fallback — forces card visible even if JS state never triggers.
+   CSS animation fill-mode 'forwards' overrides inline opacity: 0 from React.
+   Only defined for touch devices so it doesn't interfere with desktop scroll-reveal. */
+@media (pointer: coarse) {
+  @keyframes glowCardReveal {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
 /* --- Accessibility: Reduced Motion --- */
 @media (prefers-reduced-motion: reduce) {
   *,

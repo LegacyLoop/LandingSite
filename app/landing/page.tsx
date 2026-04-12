@@ -466,18 +466,29 @@ function GlowCard({
         border: `1px solid ${hovered ? hoverBorderColor : defaultBorderColor}`,
         borderRadius: 16,
         backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         padding: 'clamp(18px, 3vw, 28px)',
-        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+        // Explicit properties — 'all' transitions backdrop-filter which causes
+        // GPU compositing bugs on iPad Safari, making cards invisible
+        transition: [
+          `opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1) ${visible ? delay : 0}ms`,
+          `transform 0.4s cubic-bezier(0.23, 1, 0.32, 1) ${visible ? delay : 0}ms`,
+          'border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+          'box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+        ].join(', '),
         transform: visible
           ? hovered
             ? 'translateY(-4px)'
             : 'translateY(0) scale(1)'
           : 'translateY(28px) scale(0.97)',
         opacity: visible ? 1 : 0,
-        transitionDelay: visible ? `${delay}ms` : '0ms',
         boxShadow: hovered
           ? '0 0 30px rgba(0,188,212,0.12), inset 0 1px 0 rgba(255,255,255,0.05)'
           : 'none',
+        // CSS animation fallback: guarantees card becomes visible even if
+        // all JS visibility triggers fail (covers iPad edge cases)
+        animation: `glowCardReveal 0.6s ease ${delay + 500}ms forwards`,
+        WebkitAnimation: `glowCardReveal 0.6s ease ${delay + 500}ms forwards`,
         ...extraStyle,
       }}
     >
@@ -5804,8 +5815,13 @@ export default function LandingPage() {
     return () => clearTimeout(timeout)
   }, [])
 
-  // Lenis Smooth Scroll — inject CSS + init with error fallback
+  // Lenis Smooth Scroll — desktop only.
+  // Lenis breaks IntersectionObserver and scroll behavior on iPad/touch devices,
+  // causing content to stay invisible. Use native scroll on touch devices.
   useEffect(() => {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) return // Native scroll works perfectly on touch devices
+
     // Inject Lenis CSS so scroll isn't blocked
     const style = document.createElement('style')
     style.textContent = `
