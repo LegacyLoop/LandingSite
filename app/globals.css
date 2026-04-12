@@ -169,28 +169,21 @@ a {
 
 /* GlowCard CSS fallback — forces card visible even if JS state never triggers.
    CSS animation fill-mode 'forwards' overrides inline opacity: 0 from React.
-   Only defined for touch devices so it doesn't interfere with desktop scroll-reveal. */
-@media (pointer: coarse) {
+   Only defined for touch devices so it doesn't interfere with desktop scroll-reveal.
+   any-pointer catches iPads with keyboard trackpads (pointer: fine primary). */
+@media (any-pointer: coarse) {
   @keyframes glowCardReveal {
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
 }
 
 /* --- iPad / Touch Device Nuclear Fallback ---
-   framer-motion's animation engine fails on iPad Safari/Chrome.
-   motion.* elements get initial={{ opacity: 0 }} applied as inline styles
-   but never animate to opacity: 1. CSS !important overrides inline styles.
-   Scoped to hero content wrapper (z-index: 5) to avoid breaking background
-   elements that intentionally use low opacity (0.06, 0.12, etc.).
-   Does NOT affect desktop (pointer: fine). */
-@media (pointer: coarse) {
-  /* Hero content — force ALL text, buttons, logo visible on touch devices.
-     framer-motion sets inline opacity: 0 and transform: translateY(...)
-     but never animates to final values on iPad Safari/Chrome.
-     Also catches CharReveal's transform: translateY(110%) which pushes
-     text off-screen inside overflow: hidden containers.
-     !important overrides inline styles from both framer-motion and React.
-     data-hero-content is on the content wrapper only (not bg elements). */
+   framer-motion v12 uses Web Animations API (WAAPI). Stuck WAAPI animations
+   sit ABOVE CSS !important in the cascade, so this alone won't fix iPad.
+   The JS fix in HeroSection cancels WAAPI animations; this CSS is a belt-
+   and-suspenders fallback for when JS hasn't run yet.
+   any-pointer: coarse catches iPads even with keyboard trackpads attached. */
+@media (any-pointer: coarse) {
   [data-hero-content],
   [data-hero-content] * {
     opacity: 1 !important;

@@ -589,6 +589,12 @@ function CharReveal({
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // Touch devices: show text immediately — no animation delay
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) {
+      setMounted(true)
+      return
+    }
     if (isLoaded && !reduced) {
       const t = setTimeout(() => setMounted(true), 300)
       return () => clearTimeout(t)
@@ -1387,6 +1393,34 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
 function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   const width = useWindowWidth()
   const reduced = useReducedMotion()
+  const heroContentRef = useRef<HTMLDivElement>(null)
+
+  // Nuclear iPad fix: framer-motion v12 uses Web Animations API (WAAPI).
+  // WAAPI animations sit ABOVE CSS !important in the cascade, so even our
+  // globals.css override can't unstick them. On touch devices, cancel every
+  // WAAPI animation inside the hero and force inline visibility.
+  useEffect(() => {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (!isTouch || !heroContentRef.current) return
+
+    const forceVisible = () => {
+      const root = heroContentRef.current
+      if (!root) return
+      const els = [root, ...Array.from(root.querySelectorAll('*'))]
+      els.forEach((el) => {
+        // Cancel stuck WAAPI animations from framer-motion
+        if (el.getAnimations) {
+          el.getAnimations().forEach((a) => a.cancel())
+        }
+        const htmlEl = el as HTMLElement
+        htmlEl.style.opacity = '1'
+        htmlEl.style.transform = 'none'
+      })
+    }
+
+    // Double rAF: wait for framer-motion to finish WAAPI setup, then override
+    requestAnimationFrame(() => requestAnimationFrame(forceVisible))
+  }, [isLoaded])
 
   return (
     <section
@@ -1451,6 +1485,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
       />
 
       <div
+        ref={heroContentRef}
         data-hero-content
         style={{
           position: 'relative',
