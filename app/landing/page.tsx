@@ -16,20 +16,14 @@ import { QRCodeSVG } from 'qrcode.react'
    ============================================== */
 
 // ---------- PRELOADER ----------
-function Preloader({ onComplete }: { onComplete: () => void }) {
+// Uses plain CSS transitions — NOT AnimatePresence.
+// AnimatePresence exit animations fail on iPad Safari,
+// causing the preloader to permanently block the page.
+function Preloader({ isLoaded }: { isLoaded: boolean }) {
   const [progress, setProgress] = useState(0)
-  const completedRef = useRef(false)
+  const [hidden, setHidden] = useState(false)
 
   useEffect(() => {
-    const finish = () => {
-      if (completedRef.current) return
-      completedRef.current = true
-      onComplete()
-    }
-
-    // Hard fallback — never let preloader block longer than 2.5s
-    const fallback = setTimeout(finish, 2500)
-
     const start = Date.now()
     const duration = 1200
     const tick = () => {
@@ -38,21 +32,23 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
       setProgress(p)
       if (p < 1) {
         requestAnimationFrame(tick)
-      } else {
-        setTimeout(finish, 200)
       }
     }
     requestAnimationFrame(tick)
+  }, [])
 
-    return () => clearTimeout(fallback)
-  }, [onComplete])
+  // When isLoaded, fade out then fully hide after transition
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => setHidden(true), 700)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoaded])
+
+  if (hidden) return null
 
   return (
-    <motion.div
-      key="preloader"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+    <div
       style={{
         position: 'fixed',
         inset: 0,
@@ -63,6 +59,9 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         alignItems: 'center',
         justifyContent: 'center',
         gap: 20,
+        opacity: isLoaded ? 0 : 1,
+        pointerEvents: isLoaded ? 'none' : 'auto',
+        transition: 'opacity 0.6s cubic-bezier(0.76, 0, 0.24, 1)',
       }}
     >
       <img
@@ -106,7 +105,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
           }}
         />
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -5809,11 +5808,7 @@ export default function LandingPage() {
 
   return (
     <>
-      <AnimatePresence>
-        {!isLoaded && (
-          <Preloader onComplete={() => setIsLoaded(true)} />
-        )}
-      </AnimatePresence>
+      <Preloader isLoaded={isLoaded} />
       <CustomCursor />
       <GradientBackground />
       <NoiseOverlay />
