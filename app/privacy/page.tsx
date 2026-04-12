@@ -95,7 +95,7 @@ export default function PrivacyPolicyPage() {
           <li style={li}>Profile information: address, phone number, seller preferences</li>
           <li style={li}>Item listings: photos, item descriptions, pricing preferences</li>
           <li style={li}>Communications: messages sent through our platform</li>
-          <li style={li}>Payment information: processed through Square — we do not store full payment card details</li>
+          <li style={li}>Payment information: processed through Stripe — we do not store full payment card details</li>
         </ul>
         <h3 style={subheading}>Information Collected Automatically</h3>
         <ul style={list}>
@@ -109,7 +109,7 @@ export default function PrivacyPolicyPage() {
         <ul style={list}>
           <li style={li}>Facebook and Instagram: if you connect your accounts, we receive basic profile and page information as permitted by Meta&apos;s policies</li>
           <li style={li}>eBay and other marketplace integrations: listing and pricing data used to improve valuation accuracy</li>
-          <li style={li}>Square: payment confirmation and transaction identifiers</li>
+          <li style={li}>Stripe: payment confirmation and transaction identifiers</li>
         </ul>
 
         {/* Section 3 */}
@@ -131,7 +131,7 @@ export default function PrivacyPolicyPage() {
         <h2 style={heading}>4. Sharing Your Information</h2>
         <p style={body}>We do not sell your personal information. We may share your information in the following limited circumstances:</p>
         <ul style={list}>
-          <li style={li}>Service providers: companies that help us operate (Square for payments, Resend for email, Shippo for shipping, Supabase for data storage) under strict confidentiality agreements</li>
+          <li style={li}>Service providers: companies that help us operate (Stripe for payments, Resend for email, Shippo for shipping, Supabase for data storage) under strict confidentiality agreements</li>
           <li style={li}>Platform integrations: when you authorize connections to Facebook, Instagram, eBay, or other platforms</li>
           <li style={li}>Legal requirements: when required by law, subpoena, or to protect the rights and safety of our users</li>
           <li style={li}>Business transfers: in connection with a merger, acquisition, or sale of assets — you will be notified beforehand</li>

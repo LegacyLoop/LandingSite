@@ -150,7 +150,7 @@ export default function TermsOfServicePage() {
         {/* Section 6 */}
         <h2 style={heading}>6. Fees and Payments</h2>
         <p style={body}>LegacyLoop operates on a tiered service model. Applicable fees, commission rates, and subscription terms are described at legacy-loop.com and in your account dashboard. By using paid features, you agree to those fees.</p>
-        <p style={body}>Payments are processed through Square. By making a payment, you also agree to Square&apos;s terms of service. LegacyLoop does not store your full payment card information.</p>
+        <p style={body}>Payments are processed through Stripe. By making a payment, you also agree to Stripe&apos;s terms of service. LegacyLoop does not store your full payment card information.</p>
 
         {/* Section 7 */}
         <h2 style={heading}>7. AI Features and Accuracy</h2>
@@ -164,7 +164,7 @@ export default function TermsOfServicePage() {
 
         {/* Section 8 */}
         <h2 style={heading}>8. Third-Party Integrations</h2>
-        <p style={body}>The Service integrates with third-party platforms including Facebook, Instagram, eBay, Square, Shippo, and others. Use of these integrations is subject to the respective third-party terms of service. LegacyLoop is not responsible for the actions, content, or policies of third-party platforms.</p>
+        <p style={body}>The Service integrates with third-party platforms including Facebook, Instagram, eBay, Stripe, Shippo, and others. Use of these integrations is subject to the respective third-party terms of service. LegacyLoop is not responsible for the actions, content, or policies of third-party platforms.</p>
 
         {/* Section 9 */}
         <h2 style={heading}>9. Intellectual Property</h2>

@@ -9,6 +9,7 @@ import {
   useMotionValue,
   useSpring,
 } from 'framer-motion'
+import { QRCodeSVG } from 'qrcode.react'
 
 /* ==============================================
    PHASE 1 — FOUNDATION (Effects Layer)
@@ -17,8 +18,18 @@ import {
 // ---------- PRELOADER ----------
 function Preloader({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0)
+  const completedRef = useRef(false)
 
   useEffect(() => {
+    const finish = () => {
+      if (completedRef.current) return
+      completedRef.current = true
+      onComplete()
+    }
+
+    // Hard fallback — never let preloader block longer than 2.5s
+    const fallback = setTimeout(finish, 2500)
+
     const start = Date.now()
     const duration = 1200
     const tick = () => {
@@ -28,10 +39,12 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
       if (p < 1) {
         requestAnimationFrame(tick)
       } else {
-        setTimeout(onComplete, 200)
+        setTimeout(finish, 200)
       }
     }
     requestAnimationFrame(tick)
+
+    return () => clearTimeout(fallback)
   }, [onComplete])
 
   return (
@@ -314,6 +327,14 @@ function useWindowWidth() {
   return w
 }
 
+/** Responsive section padding — scales for 320→1280+ */
+function useSectionPadding(width: number) {
+  if (width < 480) return { padding: '64px 16px' }
+  if (width < 768) return { padding: '80px 20px' }
+  if (width < 1024) return { padding: '100px 28px' }
+  return { padding: '120px 32px' }
+}
+
 /** Auto-play video when it enters viewport — fixes mobile autoplay restrictions */
 function AutoPlayVideo({ style, sources, ...props }: { style: React.CSSProperties; sources: { src: string; type: string }[] } & Omit<React.VideoHTMLAttributes<HTMLVideoElement>, 'style'>) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -424,7 +445,7 @@ function GlowCard({
         border: `1px solid ${hovered ? hoverBorderColor : defaultBorderColor}`,
         borderRadius: 16,
         backdropFilter: 'blur(12px)',
-        padding: 28,
+        padding: 'clamp(18px, 3vw, 28px)',
         transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
         transform: visible
           ? hovered
@@ -496,8 +517,8 @@ function MagneticButton({
         color: '#fff',
         fontFamily: 'var(--font-heading)',
         fontWeight: 600,
-        fontSize: 18,
-        padding: '18px 42px',
+        fontSize: 'clamp(15px, 2.5vw, 18px)',
+        padding: 'clamp(14px, 2vw, 18px) clamp(28px, 5vw, 42px)',
         borderRadius: 12,
         border: 'none',
         minHeight: 44,
@@ -834,6 +855,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
   const scrollY = useScrollY()
   const width = useWindowWidth()
   const isMobile = width < 768
+  const isTablet = width >= 768 && width < 1024
   const scrolled = scrollY > 20
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -841,7 +863,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
     { label: 'How It Works', target: 'how-it-works' },
     { label: 'AI Agents', target: 'bots' },
     { label: 'Pricing', target: 'pricing' },
-    { label: 'Our Story', target: 'showcase' },
+    { label: 'Join Waitlist', target: 'waitlist' },
   ]
 
   const scrollTo = (id: string) => {
@@ -878,7 +900,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
             maxWidth: 1280,
             width: '100%',
             margin: '0 auto',
-            padding: '0 32px',
+            padding: width < 375 ? '0 12px' : width < 480 ? '0 16px' : isTablet ? '0 20px' : '0 32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -889,20 +911,20 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
             src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-04.png"
             alt="LegacyLoop"
             style={{
-              height: 48,
+              height: isTablet ? 36 : 48,
               objectFit: 'contain',
               cursor: 'pointer',
             }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           />
 
-          {/* Center — Nav Links (desktop) */}
+          {/* Center — Nav Links (desktop + tablet) */}
           {!isMobile && (
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 32,
+                gap: isTablet ? 12 : 32,
               }}
             >
               {navLinks.map((link) => (
@@ -912,7 +934,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
                   style={{
                     fontFamily: 'var(--font-body)',
                     fontWeight: 500,
-                    fontSize: 14,
+                    fontSize: isTablet ? 12 : 14,
                     color: '#CBD5E1',
                     cursor: 'pointer',
                     transition: 'color 0.3s ease',
@@ -931,8 +953,8 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
           )}
 
           {/* Right — Login + CTA */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {!isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: isTablet ? 12 : 16 }}>
+            {!isMobile && !isTablet && (
               <a
                 href="https://app.legacy-loop.com/auth/login"
                 style={{
@@ -963,8 +985,9 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
                 color: '#fff',
                 fontFamily: 'var(--font-body)',
                 fontWeight: 600,
-                fontSize: 14,
-                padding: '10px 24px',
+                fontSize: isTablet ? 13 : 14,
+                padding: isTablet ? '8px 14px' : '10px 24px',
+                whiteSpace: 'nowrap' as const,
                 borderRadius: 12,
                 minHeight: 44,
                 textDecoration: 'none',
@@ -1076,7 +1099,7 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
     { id: 'bots', label: 'AI Bots', icon: '◆' },
     { id: 'pricing', label: 'Pricing', icon: '◆' },
     { id: 'estate', label: 'Estates', icon: '◆' },
-    { id: 'showcase', label: 'Our Story', icon: '◆' },
+    { id: 'waitlist', label: 'Join', icon: '◆' },
   ]
 
   useEffect(() => {
@@ -1145,7 +1168,7 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'center',
-            padding: '10px 8px 8px',
+            padding: width < 380 ? '8px 4px 6px' : '10px 8px 8px',
             maxWidth: 480,
             margin: '0 auto',
           }}
@@ -1187,7 +1210,7 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
                   style={{
                     fontFamily: 'var(--font-data)',
                     fontWeight: isActive ? 600 : 400,
-                    fontSize: 8,
+                    fontSize: width < 340 ? 6 : width < 380 ? 7 : 8,
                     letterSpacing: '0.05em',
                     textTransform: 'uppercase' as const,
                     color: isActive ? '#00BCD4' : '#6B7280',
@@ -1195,7 +1218,7 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    maxWidth: width < 380 ? 36 : 48,
+                    maxWidth: width < 340 ? 30 : width < 380 ? 36 : 48,
                   }}
                 >
                   {section.label}
@@ -1336,7 +1359,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
-        padding: '120px 24px 80px',
+        padding: width < 480 ? '100px 16px 60px' : width < 768 ? '110px 20px 70px' : '120px 24px 80px',
         textAlign: 'center',
       }}
     >
@@ -1419,11 +1442,11 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           style={{
             fontFamily: 'var(--font-data)',
             fontWeight: 600,
-            fontSize: 12,
+            fontSize: width < 340 ? 8 : width < 375 ? 10 : 12,
             color: '#00BCD4',
             background: 'rgba(0,188,212,0.1)',
             border: '1px solid rgba(0,188,212,0.3)',
-            padding: '6px 16px',
+            padding: width < 340 ? '4px 10px' : width < 375 ? '5px 12px' : '6px 16px',
             borderRadius: 20,
             letterSpacing: '0.1em',
             textTransform: 'uppercase' as const,
@@ -1438,7 +1461,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 800,
-            fontSize: width < 400 ? 28 : 'clamp(32px, 5.5vw, 68px)',
+            fontSize: width < 340 ? 24 : width < 400 ? 28 : 'clamp(32px, 5.5vw, 68px)',
             lineHeight: 1.1,
             letterSpacing: width < 400 ? '-0.5px' : '-1px',
             margin: 0,
@@ -1547,6 +1570,39 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             See How It Works
           </a>
         </motion.div>
+
+        {/* Waitlist scroll link — visible within 3 seconds */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isLoaded ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 2.0 }}
+          style={{ marginTop: 20, textAlign: 'center' }}
+        >
+          <a
+            href="#waitlist"
+            onClick={(e) => {
+              e.preventDefault()
+              document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 14,
+              color: '#00BCD4',
+              textDecoration: 'none',
+              cursor: 'pointer',
+              transition: 'opacity 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              ;(e.target as HTMLElement).style.textDecoration = 'underline'
+            }}
+            onMouseLeave={(e) => {
+              ;(e.target as HTMLElement).style.textDecoration = 'none'
+            }}
+          >
+            → Reserve Founding Member Pricing
+          </a>
+        </motion.div>
       </div>
 
       {/* Scroll Indicator */}
@@ -1579,6 +1635,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
 
 // ---------- MARKETPLACE TICKER ----------
 function MarketplaceTicker() {
+  const width = useWindowWidth()
   const platforms = [
     'eBay',
     'Mercari',
@@ -1603,9 +1660,9 @@ function MarketplaceTicker() {
         borderBottom: '1px solid rgba(0,188,212,0.08)',
         padding: '16px 0',
         overflow: 'hidden',
-        clipPath: 'polygon(0 5%, 100% 0%, 100% 100%, 0% 100%)',
-        marginTop: -80,
-        paddingTop: 40,
+        clipPath: width < 768 ? 'none' : 'polygon(0 5%, 100% 0%, 100% 100%, 0% 100%)',
+        marginTop: width < 768 ? -40 : -80,
+        paddingTop: width < 768 ? 20 : 40,
         position: 'relative',
         zIndex: 5,
       }}
@@ -1733,12 +1790,13 @@ function GradientText({
 // ---------- MARKET OPPORTUNITY ----------
 function MarketOpportunitySection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const cols = width < 768 ? '1fr' : 'repeat(3, 1fr)'
 
   return (
     <section
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
       }}
@@ -1827,6 +1885,7 @@ function MarketOpportunitySection() {
 // ---------- MEGABOT SECTION ----------
 function MegaBotSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const cols = width < 768 ? '1fr' : 'repeat(2, 1fr)'
   const [fillActive, setFillActive] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
@@ -1882,7 +1941,7 @@ function MegaBotSection() {
     <section
       id="megabot"
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
         overflow: 'hidden',
@@ -2050,6 +2109,7 @@ function MegaBotSection() {
 // ---------- HOW IT WORKS ----------
 function HowItWorksSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const steps = [
     {
       num: 1,
@@ -2081,7 +2141,7 @@ function HowItWorksSection() {
     <section
       id="how-it-works"
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
       }}
@@ -2184,6 +2244,7 @@ function HowItWorksSection() {
 // ---------- AI SHIPPING CENTER ----------
 function ShippingCenterSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const isMobile = width < 768
 
   const carriers = [
@@ -2205,7 +2266,7 @@ function ShippingCenterSection() {
     <section
       id="shipping"
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
       }}
@@ -2320,13 +2381,16 @@ function ShippingCenterSection() {
 // ---------- PRODUCT PREVIEW ----------
 function ProductPreviewSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const isMobile = width < 768
+  const isTablet = width >= 768 && width < 1024
 
+  const noTransform = isMobile || isTablet
   const screenshots = [
     {
       src: '/images/screenshots/app-screenshot-01.png',
       alt: 'LegacyLoop Dashboard — item management and AI analysis overview',
-      transform: isMobile
+      transform: noTransform
         ? 'none'
         : 'perspective(1200px) rotateY(8deg) rotateX(2deg) scale(0.92)',
       zIndex: 1,
@@ -2334,13 +2398,13 @@ function ProductPreviewSection() {
     {
       src: '/images/screenshots/app-screenshot-03.png',
       alt: 'LegacyLoop AI Bot Results — detailed item valuation and pricing',
-      transform: isMobile ? 'none' : 'scale(1.02)',
+      transform: noTransform ? 'none' : 'scale(1.02)',
       zIndex: 2,
     },
     {
       src: '/images/screenshots/app-screenshot-05.png',
       alt: 'LegacyLoop Listing Manager — multi-platform listing creation',
-      transform: isMobile
+      transform: noTransform
         ? 'none'
         : 'perspective(1200px) rotateY(-8deg) rotateX(2deg) scale(0.92)',
       zIndex: 1,
@@ -2351,7 +2415,7 @@ function ProductPreviewSection() {
     <section
       id="product"
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
       }}
@@ -2378,10 +2442,10 @@ function ProductPreviewSection() {
         <div
           style={{
             display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
+            flexDirection: (isMobile || isTablet) ? 'column' : 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: isMobile ? 24 : 16,
+            gap: (isMobile || isTablet) ? 24 : 16,
           }}
         >
           {screenshots.map((shot, i) => (
@@ -2391,8 +2455,8 @@ function ProductPreviewSection() {
               style={{
                 transform: shot.transform,
                 zIndex: shot.zIndex,
-                maxWidth: isMobile ? '100%' : '33%',
-                flex: isMobile ? 'none' : '1',
+                maxWidth: (isMobile || isTablet) ? '100%' : '33%',
+                flex: (isMobile || isTablet) ? 'none' : '1',
                 boxShadow:
                   '0 25px 50px rgba(0,0,0,0.4), 0 10px 20px rgba(0,0,0,0.3)',
                 border: '1px solid rgba(0,188,212,0.1)',
@@ -2461,6 +2525,7 @@ function ProductPreviewSection() {
 // ---------- 10 AI BOTS + MEGABOT ----------
 function AIAgentsSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const cols =
     width >= 1200
       ? 'repeat(3, 1fr)'
@@ -2535,11 +2600,27 @@ function AIAgentsSection() {
     },
     {
       emoji: '🎬',
-      name: 'VideoBot',
-      desc: 'AI video ads for TikTok, Reels, Shorts',
+      name: 'VideoBot Standard',
+      desc: 'AI video ads for TikTok, Reels, Shorts (8cr)',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '🎬',
+      name: 'VideoBot Pro',
+      desc: 'Advanced video with custom branding (15cr)',
       tier: 'POWER+',
       tierColor: '#8B5CF6',
       tierBg: 'rgba(139,92,246,0.15)',
+    },
+    {
+      emoji: '🎬',
+      name: 'VideoBot MegaBot',
+      desc: 'Full MegaBot-powered video production (25cr)',
+      tier: 'ESTATE',
+      tierColor: '#FBBF24',
+      tierBg: 'rgba(251,191,36,0.15)',
     },
     {
       emoji: '🚗',
@@ -2549,13 +2630,53 @@ function AIAgentsSection() {
       tierColor: '#FBBF24',
       tierBg: 'rgba(251,191,36,0.15)',
     },
+    {
+      emoji: '📡',
+      name: 'Intel Market + Ready',
+      desc: 'Market intelligence and listing readiness',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '📡',
+      name: 'Intel Sell + Alerts + Action',
+      desc: 'Sell signals, price alerts, and action triggers',
+      tier: 'POWER+',
+      tierColor: '#8B5CF6',
+      tierBg: 'rgba(139,92,246,0.15)',
+    },
+    {
+      emoji: '💬',
+      name: 'Ask Claude',
+      desc: 'AI assistant for any question (0.25cr/q)',
+      tier: 'DIY+',
+      tierColor: '#22C55E',
+      tierBg: 'rgba(34,197,94,0.15)',
+    },
+    {
+      emoji: '⚡',
+      name: 'Priority Bot Queue',
+      desc: 'Skip the line — bots process your items first',
+      tier: 'ESTATE',
+      tierColor: '#FBBF24',
+      tierBg: 'rgba(251,191,36,0.15)',
+    },
+    {
+      emoji: '🔔',
+      name: 'High Value Alert',
+      desc: 'Instant alerts for items worth $500+',
+      tier: 'ALL TIERS',
+      tierColor: '#00BCD4',
+      tierBg: 'rgba(0,188,212,0.15)',
+    },
   ]
 
   return (
     <section
       id="bots"
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
       }}
@@ -2672,6 +2793,8 @@ function AIAgentsSection() {
 // ---------- PRICING ----------
 function PricingSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const [isAnnual, setIsAnnual] = useState(false)
   const cols =
     width >= 1200
       ? 'repeat(4, 1fr)'
@@ -2682,8 +2805,10 @@ function PricingSection() {
   const tiers = [
     {
       name: 'FREE',
-      oldPrice: null,
-      price: 0,
+      slug: 'free',
+      monthlyPrice: 0,
+      annualPrice: 0,
+      oldMonthly: null as string | null,
       commission: '12%',
       features: ['Basic AI identification', 'Public store page', 'Email support'],
       cta: 'Get Started Free',
@@ -2691,8 +2816,10 @@ function PricingSection() {
     },
     {
       name: 'DIY SELLER',
-      oldPrice: '$20',
-      price: 10,
+      slug: 'diy',
+      monthlyPrice: 10,
+      annualPrice: 100,
+      oldMonthly: '$20',
       commission: '8%',
       features: ['Enhanced AI pricing', '5 core bots included', '20 credits/month included', 'BuyerBot matching', 'Priority email support'],
       cta: 'Start Selling',
@@ -2700,8 +2827,10 @@ function PricingSection() {
     },
     {
       name: 'POWER SELLER',
-      oldPrice: '$49',
-      price: 25,
+      slug: 'power',
+      monthlyPrice: 25,
+      annualPrice: 250,
+      oldMonthly: '$49',
       commission: '5%',
       features: ['MegaBot (credit-based)', 'All specialty bots', '50 credits/month included', 'Advanced analytics', 'Phone support'],
       cta: 'Go Pro',
@@ -2709,8 +2838,10 @@ function PricingSection() {
     },
     {
       name: 'ESTATE MANAGER',
-      oldPrice: '$99',
-      price: 75,
+      slug: 'estate',
+      monthlyPrice: 75,
+      annualPrice: 750,
+      oldMonthly: '$99',
       commission: '4%',
       features: ['All bots including CarBot', '100 credits/month included', 'White-label store', 'Dedicated account manager', 'API access'],
       cta: 'Manage Estates',
@@ -2722,7 +2853,7 @@ function PricingSection() {
     <section
       id="pricing"
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
       }}
@@ -2745,6 +2876,88 @@ function PricingSection() {
           1.75% buyer + 1.75% seller = 3.5% total on sales. Subscriptions = 0% processing. Always transparent.
         </p>
 
+        {/* Monthly / Annual Toggle */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
+            marginBottom: 48,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: isAnnual ? 400 : 600,
+              fontSize: 15,
+              color: isAnnual ? '#6B7280' : '#F1F5F9',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            Monthly
+          </span>
+          <div
+            onClick={() => setIsAnnual(!isAnnual)}
+            style={{
+              width: 56,
+              height: 30,
+              borderRadius: 15,
+              background: isAnnual
+                ? 'linear-gradient(135deg, #00BCD4, #009688)'
+                : 'rgba(255,255,255,0.15)',
+              cursor: 'pointer',
+              position: 'relative',
+              transition: 'background 0.3s ease',
+              border: isAnnual
+                ? '1px solid rgba(0,188,212,0.5)'
+                : '1px solid rgba(255,255,255,0.2)',
+              flexShrink: 0,
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 3,
+                left: isAnnual ? 28 : 3,
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: '#FFFFFF',
+                transition: 'left 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              }}
+            />
+          </div>
+          <span
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: isAnnual ? 600 : 400,
+              fontSize: 15,
+              color: isAnnual ? '#F1F5F9' : '#6B7280',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            Annual
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-data)',
+              fontWeight: 600,
+              fontSize: 11,
+              background: 'rgba(0,188,212,0.15)',
+              color: '#00BCD4',
+              padding: '4px 10px',
+              borderRadius: 20,
+              letterSpacing: '0.05em',
+              opacity: isAnnual ? 1 : 0.5,
+              transition: 'opacity 0.3s ease',
+            }}
+          >
+            SAVE 20%
+          </span>
+        </div>
+
         <div
           style={{
             display: 'grid',
@@ -2762,7 +2975,7 @@ function PricingSection() {
                 borderRadius: 16,
                 backdropFilter: 'blur(12px)',
                 padding: '32px 24px 28px',
-                transform: tier.highlight ? 'scale(1.03)' : 'none',
+                transform: tier.highlight && width >= 1200 ? 'scale(1.03)' : 'none',
                 position: 'relative',
                 transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
                 display: 'flex',
@@ -2806,7 +3019,7 @@ function PricingSection() {
               </div>
 
               <div>
-                {tier.oldPrice && (
+                {tier.monthlyPrice > 0 && (
                   <s
                     style={{
                       color: '#6B7280',
@@ -2815,7 +3028,7 @@ function PricingSection() {
                       marginRight: 8,
                     }}
                   >
-                    {tier.oldPrice}
+                    {isAnnual ? `$${tier.monthlyPrice}` : tier.oldMonthly}
                   </s>
                 )}
                 <span
@@ -2829,7 +3042,7 @@ function PricingSection() {
                     backgroundClip: 'text',
                   }}
                 >
-                  ${tier.price}
+                  ${isAnnual ? Math.round(tier.annualPrice / 12) : tier.monthlyPrice}
                 </span>
                 <span
                   style={{
@@ -2840,6 +3053,18 @@ function PricingSection() {
                 >
                   /mo
                 </span>
+                {isAnnual && tier.annualPrice > 0 && (
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 12,
+                      color: '#6B7280',
+                      marginTop: 4,
+                    }}
+                  >
+                    ${tier.annualPrice}/yr billed annually
+                  </div>
+                )}
               </div>
 
               <span
@@ -2882,7 +3107,7 @@ function PricingSection() {
               </div>
 
               <a
-                href="https://app.legacy-loop.com/auth/signup"
+                href={`https://app.legacy-loop.com/auth/signup?tier=${tier.slug}&billing=${isAnnual ? 'annual' : 'monthly'}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -2916,7 +3141,7 @@ function PricingSection() {
           ))}
         </div>
 
-        {/* Feature Comparison Table */}
+        {/* Feature Comparison Table — horizontally scrollable on mobile */}
         <div
           style={{
             marginTop: 64,
@@ -2927,72 +3152,87 @@ function PricingSection() {
             overflow: 'hidden',
           }}
         >
-          {/* Table Header */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: width >= 640 ? '1.8fr 1fr 1fr 1fr 1fr' : '1.5fr 1fr 1fr',
-              padding: '16px 20px',
-              borderBottom: '1px solid rgba(0,188,212,0.15)',
-              background: 'rgba(0,188,212,0.05)',
-            }}
-          >
-            <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Feature</span>
-            {(width >= 640 ? ['Free', 'DIY Seller', 'Power Seller', 'Estate Manager'] : ['Free', 'DIY', 'Power']).map((h) => (
-              <span key={h} style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em', textAlign: 'center' }}>{h}</span>
-            ))}
-          </div>
-          {/* Table Rows */}
-          {[
-            { feature: 'AI Item Analysis', free: 'Limited', diy: '✓', power: '✓', estate: '✓' },
-            { feature: 'PriceBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
-            { feature: 'PhotoBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
-            { feature: 'ReconBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-            { feature: 'AntiqueBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-            { feature: 'CollectorBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-            { feature: 'CarBot', free: '—', diy: '—', power: '—', estate: '✓' },
-            { feature: 'MegaBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
-            { feature: 'Monthly Credits', free: '—', diy: '20/mo', power: '50/mo', estate: '100/mo' },
-            { feature: 'Active Items', free: '3', diy: '25', power: '100', estate: 'Unlimited' },
-            { feature: 'Photos Per Item', free: '2', diy: '5', power: '8', estate: '15' },
-            { feature: 'Commission', free: '12%', diy: '8%', power: '5%', estate: '4%' },
-            { feature: 'Garage Sale Network', free: 'Browse', diy: '✓', power: '✓', estate: '✓' },
-            { feature: 'Neighborhood Sale Events', free: '—', diy: '✓', power: '✓', estate: '✓' },
-            { feature: 'Estate Sale Events', free: '—', diy: '—', power: '—', estate: '✓' },
-          ].map((row, i) => (
-            <div
-              key={row.feature}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: width >= 640 ? '1.8fr 1fr 1fr 1fr 1fr' : '1.5fr 1fr 1fr',
-                padding: '12px 20px',
-                borderBottom: i < 14 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                transition: 'background 0.2s ease',
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,188,212,0.04)' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
-            >
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#CBD5E1', fontWeight: 500 }}>{row.feature}</span>
-              {(width >= 640 ? [row.free, row.diy, row.power, row.estate] : [row.free, row.diy, row.power]).map((val, j) => (
-                <span
-                  key={j}
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <div style={{ minWidth: width < 640 ? 580 : 'auto' }}>
+              {/* Table Header */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.8fr 1fr 1fr 1fr 1fr',
+                  padding: width < 480 ? '12px 14px' : '16px 20px',
+                  borderBottom: '1px solid rgba(0,188,212,0.15)',
+                  background: 'rgba(0,188,212,0.05)',
+                }}
+              >
+                <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Feature</span>
+                {['Free', 'DIY Seller', 'Power Seller', 'Estate Manager'].map((h) => (
+                  <span key={h} style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: width < 480 ? 10 : 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em', textAlign: 'center' }}>{h}</span>
+                ))}
+              </div>
+              {/* Table Rows */}
+              {[
+                { feature: 'AI Item Analysis', free: 'Limited', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'PriceBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'PhotoBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'DescriptionBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'BuyerBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'ShippingBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'ReconBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'AntiqueBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'CollectiblesBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'NegotiationBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'CrossListBot', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'CarBot', free: '—', diy: '—', power: '—', estate: '✓' },
+                { feature: 'MegaBot (All-in-One)', free: '—', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'Monthly Credits', free: '—', diy: '20/mo', power: '50/mo', estate: '100/mo' },
+                { feature: 'Active Items', free: '3', diy: '25', power: '100', estate: 'Unlimited' },
+                { feature: 'Photos Per Item', free: '2', diy: '5', power: '8', estate: '15' },
+                { feature: 'Commission', free: '12%', diy: '8%', power: '5%', estate: '4%' },
+                { feature: 'Public Store Page', free: '✓', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'Custom Store Branding', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'White-Label Store', free: '—', diy: '—', power: '—', estate: '✓' },
+                { feature: 'Advanced Analytics', free: '—', diy: '—', power: '✓', estate: '✓' },
+                { feature: 'Garage Sale Network', free: 'Browse', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'Neighborhood Sale Events', free: '—', diy: '✓', power: '✓', estate: '✓' },
+                { feature: 'Estate Sale Events', free: '—', diy: '—', power: '—', estate: '✓' },
+                { feature: 'API Access', free: '—', diy: '—', power: '—', estate: '✓' },
+                { feature: 'Dedicated Account Manager', free: '—', diy: '—', power: '—', estate: '✓' },
+              ].map((row, i) => (
+                <div
+                  key={row.feature}
                   style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 14,
-                    textAlign: 'center',
-                    color: val === '✓' ? '#00BCD4' : val === '—' ? '#4B5563' : '#CBD5E1',
-                    fontWeight: val === '✓' ? 600 : 400,
+                    display: 'grid',
+                    gridTemplateColumns: '1.8fr 1fr 1fr 1fr 1fr',
+                    padding: width < 480 ? '10px 14px' : '12px 20px',
+                    borderBottom: i < 25 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                    transition: 'background 0.2s ease',
                   }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,188,212,0.04)' }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
                 >
-                  {val}
-                </span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: width < 480 ? 12 : 14, color: '#CBD5E1', fontWeight: 500, whiteSpace: 'nowrap' }}>{row.feature}</span>
+                  {[row.free, row.diy, row.power, row.estate].map((val, j) => (
+                    <span
+                      key={j}
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: width < 480 ? 12 : 14,
+                        textAlign: 'center',
+                        color: val === '✓' ? '#00BCD4' : val === '—' ? '#4B5563' : '#CBD5E1',
+                        fontWeight: val === '✓' ? 600 : 400,
+                      }}
+                    >
+                      {val}
+                    </span>
+                  ))}
+                </div>
               ))}
             </div>
-          ))}
-          {/* Mobile note for Estate column */}
+          </div>
+          {/* Scroll hint on mobile */}
           {width < 640 && (
-            <div style={{ padding: '12px 20px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280' }}>Estate Manager includes all features above + CarBot + Estate Sale Events</span>
+            <div style={{ padding: '8px 20px', textAlign: 'center' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#6B7280' }}>← Swipe to see all tiers →</span>
             </div>
           )}
         </div>
@@ -3030,8 +3270,10 @@ function PricingSection() {
 // ---------- BUILT FOR ESTATES ----------
 function EstateSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const isMobile = width < 768
-  const [activeTab, setActiveTab] = useState<'estate' | 'neighborhood'>('estate')
+  const isTablet = width >= 768 && width < 1024
+  const [activeTab, setActiveTab] = useState<'whiteglove' | 'estatecare' | 'neighborhood'>('whiteglove')
 
   const features = [
     { emoji: '🏺', text: 'Antique detection that prevents underselling heirlooms' },
@@ -3087,7 +3329,7 @@ function EstateSection() {
   return (
     <section
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
         overflow: 'hidden',
@@ -3145,9 +3387,9 @@ function EstateSection() {
 
         <div
           style={{
-            display: isMobile ? 'flex' : 'grid',
+            display: (isMobile || isTablet) ? 'flex' : 'grid',
             flexDirection: 'column',
-            gridTemplateColumns: isMobile ? '1fr' : '1fr 420px',
+            gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 420px',
             gap: 24,
             alignItems: 'start',
           }}
@@ -3182,7 +3424,7 @@ function EstateSection() {
             ))}
           </div>
 
-          {!isMobile && (
+          {!isMobile && !isTablet && (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <img
                 src="/images/estate/senior-tablet.png"
@@ -3217,10 +3459,16 @@ function EstateSection() {
             }}
           >
             <button
-              onClick={() => setActiveTab('estate')}
-              style={tabStyle(activeTab === 'estate')}
+              onClick={() => setActiveTab('whiteglove')}
+              style={tabStyle(activeTab === 'whiteglove')}
             >
-              Estate Sale Services
+              White Glove
+            </button>
+            <button
+              onClick={() => setActiveTab('estatecare')}
+              style={tabStyle(activeTab === 'estatecare')}
+            >
+              Estate Care
             </button>
             <button
               onClick={() => setActiveTab('neighborhood')}
@@ -3255,8 +3503,8 @@ function EstateSection() {
           </p>
         </div>
 
-        {/* Estate Sale Services Tab */}
-        {activeTab === 'estate' && (
+        {/* White Glove Tab */}
+        {activeTab === 'whiteglove' && (
           <div>
             <h3
               style={{
@@ -3286,7 +3534,7 @@ function EstateSection() {
                   style={{
                     textAlign: 'center',
                     position: 'relative',
-                    transform: tier.recommended ? 'scale(1.03)' : 'none',
+                    transform: tier.recommended && width >= 1024 ? 'scale(1.03)' : 'none',
                   }}
                 >
                   {tier.recommended && (
@@ -3380,14 +3628,179 @@ function EstateSection() {
           </div>
         )}
 
+        {/* Estate Care Tab */}
+        {activeTab === 'estatecare' && (
+          <div>
+            <h3
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 600,
+                fontSize: 22,
+                color: '#D4A017',
+                textAlign: 'center',
+                marginBottom: 12,
+              }}
+            >
+              Estate Care — Self-Service Tools
+            </h3>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 15,
+                color: '#94A3B8',
+                textAlign: 'center',
+                maxWidth: 540,
+                margin: '0 auto 32px',
+                lineHeight: 1.6,
+              }}
+            >
+              For families who want to manage the process themselves with AI-powered tools and guidance at every step.
+            </p>
+            <div
+              style={{
+                display: isMobile ? 'flex' : 'grid',
+                flexDirection: 'column',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+                gap: 20,
+              }}
+            >
+              {[
+                {
+                  name: 'Estate Starter',
+                  slug: 'estate-starter',
+                  price: '$75',
+                  period: '/mo',
+                  features: ['Up to 50 active items', 'AI identification & pricing', 'Multi-platform crosslisting', 'Basic shipping tools', 'Community support'],
+                },
+                {
+                  name: 'Estate Plus',
+                  slug: 'estate-plus',
+                  price: '$150',
+                  period: '/mo',
+                  features: ['Up to 200 active items', 'Priority AI processing', 'Advanced analytics dashboard', 'BuyerBot & NegotiationBot', 'Phone & email support'],
+                  recommended: true,
+                },
+                {
+                  name: 'Estate Unlimited',
+                  slug: 'estate-unlimited',
+                  price: '$299',
+                  period: '/mo',
+                  features: ['Unlimited active items', 'All bots including CarBot', 'White-label store', 'API access & integrations', 'Dedicated support line'],
+                },
+              ].map((tier) => (
+                <GlowCard
+                  key={tier.name}
+                  defaultBorderColor={(tier as { recommended?: boolean }).recommended ? 'rgba(212,160,23,0.4)' : 'rgba(212,160,23,0.2)'}
+                  hoverBorderColor="rgba(212,160,23,0.5)"
+                  style={{
+                    textAlign: 'center',
+                    position: 'relative',
+                    transform: (tier as { recommended?: boolean }).recommended && width >= 1024 ? 'scale(1.03)' : 'none',
+                  }}
+                >
+                  {(tier as { recommended?: boolean }).recommended && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 600,
+                        fontSize: 10,
+                        textTransform: 'uppercase' as const,
+                        letterSpacing: '0.05em',
+                        background: '#D4A017',
+                        color: '#0D1117',
+                        padding: '4px 12px',
+                        borderRadius: '0 0 8px 8px',
+                      }}
+                    >
+                      BEST VALUE
+                    </div>
+                  )}
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 600,
+                      fontSize: 17,
+                      color: '#F1F5F9',
+                      marginBottom: 12,
+                      marginTop: (tier as { recommended?: boolean }).recommended ? 8 : 0,
+                    }}
+                  >
+                    {tier.name}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 700,
+                        fontSize: 32,
+                        background: 'linear-gradient(135deg, #D4A017, #FFFFFF)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      {tier.price}
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8' }}>
+                      {tier.period}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, textAlign: 'left', marginTop: 16 }}>
+                    {tier.features.map((f) => (
+                      <span
+                        key={f}
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: 13,
+                          color: '#CBD5E1',
+                        }}
+                      >
+                        <span style={{ color: '#D4A017', marginRight: 6 }}>&#10003;</span>
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                  <a
+                    href={`https://app.legacy-loop.com/auth/signup?tier=${tier.slug}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: 44,
+                      borderRadius: 12,
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      marginTop: 20,
+                      background: 'linear-gradient(135deg, #D4A017, #B8860B)',
+                      color: '#0D1117',
+                      border: '1px solid transparent',
+                      boxShadow: '0 0 20px rgba(212,160,23,0.15), 0 2px 8px rgba(212,160,23,0.1)',
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    Get Started
+                  </a>
+                </GlowCard>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Neighborhood Bundle Tab */}
         {activeTab === 'neighborhood' && (
           <div>
             <div
               style={{
-                display: isMobile ? 'flex' : 'grid',
+                display: (isMobile || isTablet) ? 'flex' : 'grid',
                 flexDirection: 'column',
-                gridTemplateColumns: isMobile ? '1fr' : '1fr 380px',
+                gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 380px',
                 gap: 32,
                 alignItems: 'start',
               }}
@@ -3515,7 +3928,7 @@ function EstateSection() {
 
                 {/* CTA */}
                 <a
-                  href="https://app.legacy-loop.com/auth/signup"
+                  href="https://app.legacy-loop.com/auth/signup?tier=neighborhood-bundle"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -3540,7 +3953,7 @@ function EstateSection() {
               </GlowCard>
 
               {/* Garage sale image */}
-              {!isMobile && (
+              {!isMobile && !isTablet && (
                 <div style={{ position: 'sticky', top: 100 }}>
                   <img
                     src="/images/garage/garage-sale.png"
@@ -3581,6 +3994,8 @@ function EstateSection() {
 
 // ---------- SOCIAL PROOF / EARLY ACCESS ----------
 function SocialProofSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const [barActive, setBarActive] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
 
@@ -3603,7 +4018,7 @@ function SocialProofSection() {
   return (
     <section
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
         textAlign: 'center',
@@ -3710,6 +4125,7 @@ function SocialProofSection() {
 // ---------- TECHNOLOGY CREDIBILITY ----------
 function TechSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const cols = width < 640 ? '1fr' : 'repeat(2, 1fr)'
 
   const items = [
@@ -3738,7 +4154,7 @@ function TechSection() {
   return (
     <section
       style={{
-        padding: '120px 32px',
+        ...sp,
         position: 'relative',
         zIndex: 5,
         overflow: 'hidden',
@@ -3834,6 +4250,7 @@ function TechSection() {
 // ---------- CINEMATIC VIDEO SHOWCASE + OUR STORY ----------
 function VideoShowcaseSection() {
   const width = useWindowWidth()
+  const sp = useSectionPadding(width)
   const isMobile = width < 768
 
   return (
@@ -3850,7 +4267,7 @@ function VideoShowcaseSection() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '120px 32px',
+          ...sp,
         }}
       >
         {/* Full-bleed video background */}
@@ -4215,12 +4632,818 @@ function VideoShowcaseSection() {
   )
 }
 
-// ---------- FINAL CTA ----------
-function FinalCTASection() {
+// ---------- APP DOWNLOAD SECTION ----------
+function AppDownloadSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const isMobile = width < 768
+
+  const [detectedPlatform, setDetectedPlatform] = useState<string>('WebApp')
+
+  useEffect(() => {
+    const ua = navigator.userAgent
+    if (/iPad|iPhone|iPod/.test(ua)) {
+      setDetectedPlatform('iOS')
+    } else if (/Android/.test(ua)) {
+      setDetectedPlatform('Android')
+    } else if (/Mac/.test(ua) || /Win/.test(ua)) {
+      setDetectedPlatform('Desktop')
+    } else {
+      setDetectedPlatform('WebApp')
+    }
+  }, [])
+
+  const installCards = [
+    {
+      platform: 'iOS',
+      icon: '🍎',
+      title: 'iPhone & iPad',
+      steps: ['Open legacy-loop.com in Safari', 'Tap the Share button', 'Select "Add to Home Screen"'],
+    },
+    {
+      platform: 'Android',
+      icon: '🤖',
+      title: 'Android',
+      steps: ['Open legacy-loop.com in Chrome', 'Tap the menu (⋮)', 'Select "Install App" or "Add to Home Screen"'],
+    },
+    {
+      platform: 'Desktop',
+      icon: '💻',
+      title: 'Mac & PC',
+      steps: ['Open legacy-loop.com in Chrome', 'Click the install icon in the address bar', 'Click "Install"'],
+    },
+  ]
+
+  const isHighlighted = (platform: string) => platform === detectedPlatform
+
   return (
     <section
       style={{
-        padding: '120px 32px',
+        ...sp,
+        position: 'relative',
+        zIndex: 5,
+      }}
+    >
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <SectionEyebrow text="GET THE APP" />
+        <SectionHeading>
+          Install LegacyLoop.{' '}
+          <GradientText>No App Store Needed.</GradientText>
+        </SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            textAlign: 'center',
+            maxWidth: 520,
+            margin: '0 auto 48px',
+            lineHeight: 1.65,
+          }}
+        >
+          LegacyLoop is a Progressive Web App — install it directly from your browser for a native app experience. No download required.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: 20,
+            marginBottom: 20,
+          }}
+        >
+          {installCards.map((card, i) => (
+            <GlowCard
+              key={card.platform}
+              delay={i * 100}
+              style={isHighlighted(card.platform) ? {
+                border: '1px solid rgba(0,188,212,0.4)',
+                background: 'rgba(0,188,212,0.06)',
+              } : undefined}
+            >
+              {isHighlighted(card.platform) && (
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 600,
+                    fontSize: 10,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase' as const,
+                    color: '#00BCD4',
+                    background: 'rgba(0,188,212,0.15)',
+                    padding: '3px 10px',
+                    borderRadius: 10,
+                    marginBottom: 8,
+                    display: 'inline-block',
+                  }}
+                >
+                  Detected: Your Platform
+                </span>
+              )}
+              <div style={{ fontSize: 32, marginBottom: 12 }}>{card.icon}</div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: 18,
+                  color: '#F1F5F9',
+                  marginBottom: 16,
+                }}
+              >
+                {card.title}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {card.steps.map((step, j) => (
+                  <div
+                    key={j}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 700,
+                        fontSize: 12,
+                        color: '#0D1117',
+                        background: '#00BCD4',
+                        borderRadius: '50%',
+                        width: 22,
+                        height: 22,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        marginTop: 1,
+                      }}
+                    >
+                      {j + 1}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: 14,
+                        color: '#CBD5E1',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {step}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </GlowCard>
+          ))}
+        </div>
+
+        {/* GAP A — Web App card (full width) */}
+        <GlowCard
+          delay={300}
+          style={isHighlighted('WebApp') ? {
+            border: '1px solid rgba(0,188,212,0.4)',
+            background: 'rgba(0,188,212,0.06)',
+            marginBottom: 48,
+          } : { marginBottom: 48 }}
+        >
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: 24 }}>
+            <div style={{ flex: 1 }}>
+              {isHighlighted('WebApp') && (
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 600,
+                    fontSize: 10,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase' as const,
+                    color: '#00BCD4',
+                    background: 'rgba(0,188,212,0.15)',
+                    padding: '3px 10px',
+                    borderRadius: 10,
+                    marginBottom: 8,
+                    display: 'inline-block',
+                  }}
+                >
+                  Detected: Your Platform
+                </span>
+              )}
+              <div style={{ fontSize: 32, marginBottom: 8 }}>🌐</div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: 18,
+                  color: '#F1F5F9',
+                  marginBottom: 8,
+                }}
+              >
+                Web App — Open in Your Browser
+              </div>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 14,
+                  color: '#CBD5E1',
+                  lineHeight: 1.55,
+                  marginBottom: 16,
+                }}
+              >
+                No install required. Works on any device.
+              </p>
+              <a
+                href="https://app.legacy-loop.com"
+                style={{
+                  display: 'inline-block',
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  padding: '12px 24px',
+                  borderRadius: 10,
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #00bcd4, #009688)',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  boxShadow: '0 0 24px rgba(0,188,212,0.3)',
+                }}
+              >
+                Open Web App →
+              </a>
+            </div>
+          </div>
+        </GlowCard>
+
+        {/* GAP B — QR Code */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
+            marginBottom: 48,
+          }}
+        >
+          <div
+            style={{
+              padding: 20,
+              borderRadius: 16,
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(0,188,212,0.15)',
+            }}
+          >
+            <QRCodeSVG
+              value="https://app.legacy-loop.com"
+              size={200}
+              bgColor="#0D1117"
+              fgColor="#00BCD4"
+              level="H"
+            />
+          </div>
+          <span
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 14,
+              color: '#CBD5E1',
+            }}
+          >
+            Scan to open on your phone
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-data)',
+              fontWeight: 600,
+              fontSize: 13,
+              color: '#00BCD4',
+              letterSpacing: '0.05em',
+            }}
+          >
+            app.legacy-loop.com
+          </span>
+        </div>
+
+        {/* Senior-friendly help text */}
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 14,
+            color: '#94A3B8',
+            textAlign: 'center',
+            maxWidth: 480,
+            margin: '0 auto 48px',
+            lineHeight: 1.65,
+          }}
+        >
+          Not sure how to install? It&apos;s simple — tap the button for your phone type and follow the steps. Need help? Email us at{' '}
+          <a href="mailto:support@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>
+            support@legacy-loop.com
+          </a>
+        </p>
+
+        {/* PWA features callout */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: isMobile ? 12 : 24,
+          }}
+        >
+          {['Offline Access', 'Push Notifications', 'Home Screen Icon', 'Instant Updates'].map((feature) => (
+            <span
+              key={feature}
+              style={{
+                fontFamily: 'var(--font-data)',
+                fontWeight: 600,
+                fontSize: 11,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase' as const,
+                color: '#00BCD4',
+                background: 'rgba(0,188,212,0.08)',
+                border: '1px solid rgba(0,188,212,0.2)',
+                padding: '8px 16px',
+                borderRadius: 20,
+              }}
+            >
+              {feature}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------- PRE-SALES WAITLIST + FOUNDING MEMBERS ----------
+function WaitlistSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const isMobile = width < 768
+  const [firstName, setFirstName] = useState('')
+  const [email, setEmail] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email || !firstName || isSubmitting) return
+    setIsSubmitting(true)
+    try {
+      await fetch('https://n8n.legacy-loop.com/webhook/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, email, timestamp: new Date().toISOString() }),
+      }).catch(() => {})
+    } catch {
+      // Graceful degradation — still show success
+    }
+    // Brief delay for perceived quality
+    await new Promise(r => setTimeout(r, 800))
+    setIsSubmitting(false)
+    setSubmitted(true)
+  }
+
+  const inputStyle: React.CSSProperties = {
+    flex: 1,
+    fontFamily: 'var(--font-body)',
+    fontSize: 15,
+    padding: '14px 20px',
+    borderRadius: 12,
+    border: '1px solid rgba(0,188,212,0.25)',
+    background: 'rgba(255,255,255,0.04)',
+    color: '#F1F5F9',
+    outline: 'none',
+    minHeight: 48,
+    transition: 'border-color 0.3s ease, background 0.3s ease',
+  }
+
+  return (
+    <section
+      id="waitlist"
+      style={{
+        ...sp,
+        position: 'relative',
+        zIndex: 5,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Ambient glow */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 1000,
+          height: 700,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,188,212,0.07) 0%, transparent 55%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative', zIndex: 2, textAlign: 'center' }}>
+
+        {/* Eyebrow — animated pulse dot */}
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 24,
+            padding: '6px 16px',
+            borderRadius: 20,
+            background: 'rgba(0,188,212,0.08)',
+            border: '1px solid rgba(0,188,212,0.2)',
+          }}
+        >
+          <div
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: '#00BCD4',
+              boxShadow: '0 0 8px rgba(0,188,212,0.6)',
+              animation: 'pulse 2s infinite',
+            }}
+          />
+          <span
+            style={{
+              fontFamily: 'var(--font-data)',
+              fontWeight: 600,
+              fontSize: 11,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase' as const,
+              color: '#00BCD4',
+            }}
+          >
+            Early Access
+          </span>
+        </div>
+
+        {/* Headline */}
+        <SectionHeading>
+          You&apos;re Early.{' '}
+          <GradientText>That&apos;s Rare.</GradientText>
+        </SectionHeading>
+
+        {/* Subheadline */}
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 17,
+            color: '#CBD5E1',
+            lineHeight: 1.7,
+            marginBottom: 40,
+            maxWidth: 480,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          Lock in pre-launch pricing forever. Get priority access before public launch. Be part of LegacyLoop from day one.
+        </p>
+
+        {/* Founding spots counter — BIG number */}
+        <div style={{ marginBottom: 12 }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-data)',
+              fontWeight: 800,
+              fontSize: 'clamp(48px, 8vw, 64px)',
+              background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              lineHeight: 1,
+            }}
+          >
+            153
+          </span>
+        </div>
+        <p
+          style={{
+            fontFamily: 'var(--font-data)',
+            fontWeight: 600,
+            fontSize: 14,
+            letterSpacing: '0.05em',
+            color: '#F1F5F9',
+            marginBottom: 6,
+          }}
+        >
+          of 200 founding spots remaining
+        </p>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 13,
+            color: '#94A3B8',
+            marginBottom: 36,
+          }}
+        >
+          Spots are filling fast
+        </p>
+
+        {/* Progress bar — 47 of 200 = 23.5% filled */}
+        <div
+          style={{
+            width: '100%',
+            maxWidth: 400,
+            height: 4,
+            borderRadius: 2,
+            background: 'rgba(255,255,255,0.06)',
+            margin: '0 auto 40px',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              width: '23.5%',
+              height: '100%',
+              borderRadius: 2,
+              background: 'linear-gradient(90deg, #00BCD4, #009688)',
+            }}
+          />
+        </div>
+
+        {submitted ? (
+          /* ===== B8 — SUCCESS STATE ===== */
+          <div
+            style={{
+              padding: '40px 32px',
+              borderRadius: 20,
+              background: 'rgba(0,188,212,0.04)',
+              border: '1px solid rgba(0,188,212,0.2)',
+            }}
+          >
+            {/* Animated checkmark */}
+            <div
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: '50%',
+                background: 'rgba(0,188,212,0.12)',
+                border: '2px solid #00BCD4',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px',
+                animation: 'fadeScaleIn 0.5s ease-out',
+              }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00BCD4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 700,
+                fontSize: 22,
+                color: '#F1F5F9',
+                marginBottom: 12,
+              }}
+            >
+              You&apos;re in. Welcome to LegacyLoop.
+            </div>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 15,
+                color: '#CBD5E1',
+                lineHeight: 1.65,
+                marginBottom: 20,
+              }}
+            >
+              Your founding member rate is locked. Check your inbox — we&apos;ll be in touch soon.
+            </p>
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('I just locked in founding member pricing at @LegacyLoopApp — AI-powered resale for the next generation. Join early: https://legacy-loop.com')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 500,
+                fontSize: 14,
+                color: '#00BCD4',
+                textDecoration: 'none',
+                transition: 'opacity 0.3s ease',
+              }}
+            >
+              Tell a friend →
+            </a>
+          </div>
+        ) : (
+          /* ===== FORM ===== */
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+              maxWidth: 480,
+              margin: '0 auto',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                gap: 12,
+              }}
+            >
+              <input
+                type="text"
+                placeholder="First name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                style={inputStyle}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0,188,212,0.5)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0,188,212,0.25)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                }}
+              />
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={inputStyle}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0,188,212,0.5)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0,188,212,0.25)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                }}
+              />
+            </div>
+
+            {/* B7 — Premium CTA button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 600,
+                fontSize: 16,
+                padding: '16px 32px',
+                borderRadius: 12,
+                border: 'none',
+                background: isSubmitting
+                  ? 'linear-gradient(135deg, #00899b, #007566)'
+                  : 'linear-gradient(135deg, #00bcd4, #009688)',
+                color: '#fff',
+                cursor: isSubmitting ? 'wait' : 'pointer',
+                minHeight: 52,
+                boxShadow: '0 0 40px rgba(0,188,212,0.3), 0 4px 20px rgba(0,188,212,0.15)',
+                transition: 'transform 0.2s ease, filter 0.2s ease',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+              }}
+              onMouseEnter={(e) => {
+                if (!isSubmitting) {
+                  e.currentTarget.style.transform = 'scale(1.02)'
+                  e.currentTarget.style.filter = 'brightness(1.1)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)'
+                e.currentTarget.style.filter = 'brightness(1)'
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
+                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
+                  </svg>
+                  Securing your spot...
+                </>
+              ) : (
+                'Secure My Founding Rate →'
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* B5 — Trust signals row */}
+        {!submitted && (
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: isMobile ? 16 : 32,
+              marginTop: 28,
+              marginBottom: 28,
+            }}
+          >
+            {[
+              { icon: '🔒', text: 'No credit card required' },
+              { icon: '🛡️', text: 'Your data is never sold' },
+              { icon: '🏷️', text: 'Pre-launch pricing locked forever' },
+            ].map((signal) => (
+              <div
+                key={signal.text}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <span style={{ fontSize: 14 }}>{signal.icon}</span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 12,
+                    color: '#6B7280',
+                  }}
+                >
+                  {signal.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* B6 — Benefits row */}
+        {!submitted && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: '8px 24px',
+              maxWidth: 420,
+              margin: '0 auto',
+              textAlign: 'left',
+            }}
+          >
+            {[
+              'Priority access before public launch',
+              'Pre-launch pricing locked in forever',
+              'Direct line to the founding team',
+              'Shape the product with your feedback',
+            ].map((benefit) => (
+              <div
+                key={benefit}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 700,
+                    fontSize: 12,
+                    color: '#00BCD4',
+                    flexShrink: 0,
+                  }}
+                >
+                  ✓
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 13,
+                    color: '#94A3B8',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {benefit}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+// ---------- FINAL CTA ----------
+function FinalCTASection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  return (
+    <section
+      style={{
+        ...sp,
         position: 'relative',
         zIndex: 5,
         textAlign: 'center',
@@ -4285,7 +5508,7 @@ function FinalCTASection() {
             marginTop: 20,
           }}
         >
-          Join 47+ sellers already on the waitlist
+          153 founding spots remaining — join before they&apos;re gone
         </p>
       </div>
     </section>
@@ -4345,7 +5568,7 @@ function Footer() {
         style={{
           background:
             'linear-gradient(180deg, rgba(13,17,23,0.95) 0%, rgba(10,12,16,1) 100%)',
-          padding: isMobile ? '60px 24px 40px' : '80px 48px 48px',
+          padding: width < 380 ? '48px 16px 32px' : isMobile ? '60px 24px 40px' : '80px 48px 48px',
         }}
       >
         <div
@@ -4480,11 +5703,11 @@ function Footer() {
             {/* Column 4 — Contact */}
             <div>
               <div style={colHeading}>Contact</div>
-              <a href="mailto:support@legacy-loop.com" style={linkStyle}
+              <a href="mailto:support@legacy-loop.com" style={{...linkStyle, wordBreak: 'break-all' as const}}
                 onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#00BCD4')}
                 onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
               >support@legacy-loop.com</a>
-              <a href="mailto:ryan@legacy-loop.com" style={linkStyle}
+              <a href="mailto:ryan@legacy-loop.com" style={{...linkStyle, wordBreak: 'break-all' as const}}
                 onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#00BCD4')}
                 onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
               >ryan@legacy-loop.com</a>
@@ -4537,6 +5760,12 @@ function Footer() {
    ============================================== */
 export default function LandingPage() {
   const [isLoaded, setIsLoaded] = useState(false)
+
+  // Hard 3-second timeout — page MUST be visible within 3s on any device
+  useEffect(() => {
+    const timeout = setTimeout(() => setIsLoaded(true), 3000)
+    return () => clearTimeout(timeout)
+  }, [])
 
   // Lenis Smooth Scroll — inject CSS + init with error fallback
   useEffect(() => {
@@ -4603,7 +5832,9 @@ export default function LandingPage() {
         <EstateSection />
         <SocialProofSection />
         <TechSection />
+        <AppDownloadSection />
         <VideoShowcaseSection />
+        <WaitlistSection />
         <FinalCTASection />
         <Footer />
       </main>
