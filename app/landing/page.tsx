@@ -45,6 +45,14 @@ function Preloader({ isLoaded }: { isLoaded: boolean }) {
     }
   }, [isLoaded])
 
+  // Nuclear failsafe: if preloader is still visible after 5s, force-remove it.
+  // This catches Chrome iPad and any other edge case where CSS animation +
+  // JS state both fail to dismiss the preloader.
+  useEffect(() => {
+    const nuke = setTimeout(() => setHidden(true), 5000)
+    return () => clearTimeout(nuke)
+  }, [])
+
   if (hidden) return null
 
   return (
@@ -65,6 +73,7 @@ function Preloader({ isLoaded }: { isLoaded: boolean }) {
         // CSS-only failsafe: even if ALL JavaScript fails,
         // this animation guarantees the preloader disappears in 4s
         animation: 'preloaderFallback 4s ease-in-out forwards',
+        WebkitAnimation: 'preloaderFallback 4s ease-in-out forwards',
       }}
     >
       <img
@@ -422,6 +431,16 @@ function GlowCard({
   useEffect(() => {
     const el = ref.current
     if (!el) return
+
+    // On touch devices (iPad, phones), show immediately — IntersectionObserver
+    // combined with Lenis smooth scroll fails to trigger on iPad Safari/Chrome,
+    // leaving all GlowCard content permanently at opacity: 0
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) {
+      setVisible(true)
+      return
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -712,6 +731,12 @@ function AnimatedStat({
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    // On touch devices, start immediately — IO can fail with Lenis smooth scroll
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) {
+      setStarted(true)
+      return
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !started) {
@@ -1895,6 +1920,11 @@ function MegaBotSection() {
   useEffect(() => {
     const el = barRef.current
     if (!el) return
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) {
+      setFillActive(true)
+      return
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -4004,6 +4034,11 @@ function SocialProofSection() {
   useEffect(() => {
     const el = barRef.current
     if (!el) return
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) {
+      setBarActive(true)
+      return
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
