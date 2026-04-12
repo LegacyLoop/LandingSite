@@ -62,6 +62,9 @@ function Preloader({ isLoaded }: { isLoaded: boolean }) {
         opacity: isLoaded ? 0 : 1,
         pointerEvents: isLoaded ? 'none' : 'auto',
         transition: 'opacity 0.6s cubic-bezier(0.76, 0, 0.24, 1)',
+        // CSS-only failsafe: even if ALL JavaScript fails,
+        // this animation guarantees the preloader disappears in 4s
+        animation: 'preloaderFallback 4s ease-in-out forwards',
       }}
     >
       <img

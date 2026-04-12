@@ -56,7 +56,13 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="LegacyLoop" />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* If JS fails completely, force-hide any preloader overlay */}
+        <noscript>
+          <style>{`[style*="z-index: 100000"], [style*="zIndex"] { display: none !important; }`}</style>
+        </noscript>
+        {children}
+      </body>
     </html>
   );
 }
