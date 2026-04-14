@@ -3,7 +3,27 @@
 # Read every session. Non-negotiable. This is law.
 # ════════════════════════════════════════════════════════════════
 
+@WORLD_CLASS_STANDARDS.md
 @AGENTS.md
+
+## ═══════════════════════════════════════════
+## STANDARDS IMPORT — READ FIRST
+## ═══════════════════════════════════════════
+
+Before anything else you MUST have internalized `WORLD_CLASS_STANDARDS.md`
+in this directory. That file defines the identity we build to:
+
+- The 7 pillars (motion, type, purpose, depth, micro, story, craft)
+- The 12 Awwwards effects with canonical recipes
+- The 18 reference benchmarks (Agency · SaaS · Meta)
+- The 7-point billion-dollar acceptance test
+- The 5 build laws
+- The CMD vocabulary
+
+The landing site is where these standards are most visible. It is also
+our scoring baseline — if it's at 9/10 on landing, the app must reach
+the same mark. Every command, commit, and V15 report is evaluated
+against WORLD_CLASS_STANDARDS.md.
 
 ## WHO WE ARE
 
