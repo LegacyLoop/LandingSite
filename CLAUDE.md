@@ -22,7 +22,7 @@ in this directory. That file defines the identity we build to:
 
 The landing site is where these standards are most visible. It is also
 our scoring baseline — if it's at 9/10 on landing, the app must reach
-the same mark. Every command, commit, and V15 report is evaluated
+the same mark. Every command, commit, and V17.1 report is evaluated
 against WORLD_CLASS_STANDARDS.md.
 
 ## WHO WE ARE
@@ -32,7 +32,18 @@ Mission: "Connecting Generations" — never misspell, never alter.
 Landing: legacy-loop.com | App: app.legacy-loop.com
 Company: Legacy-Loop Tech LLC
 Founder: Ryan Hallee — sole decision-maker and final QA authority.
-Standard: Awwwards.com submission-ready. Non-negotiable.
+Standard: "Elon Musk / $1B product standard. Awwwards-level." Non-negotiable.
+Reference benchmarks: Linear, Stripe, Perplexity, Tesla, SpaceX, Superhuman, StockX.
+
+## TEAM ROLES — WHO DOES WHAT (V17.1 §1)
+
+Ryan (Boss): Vision, final QA, fires commands to IT, all decisions.
+Mission Control (Strategy): Writes V17.1 commands, logs to Slack, tracks flags. No code.
+Sylvia (Cowork): Deep dives, command drafts, docs, brand, CLAUDE.md, investor ops.
+Claude Code (IT): Reads command, builds, returns V17.1 report. tsc=0 + build PASS before every commit.
+Jarvis: Business ops, marketing, investor support, n8n.
+
+Rule: All agents post every step to #all-legacyloop. Slack is source of truth.
 
 ---
 
@@ -47,7 +58,7 @@ Standard: Awwwards.com submission-ready. Non-negotiable.
 
 3. **npm run build must PASS before any commit.**
 
-4. **V15 REPORT at end of EVERY command.** Even if not asked.
+4. **V17.1 REPORT at end of EVERY command.** Even if not asked. Use §12 format.
 
 5. **PRESERVE what works.** Never rewrite working animations.
    This landing page is 5,936 lines of hand-tuned animation code.
@@ -96,18 +107,19 @@ tsc --noEmit    # Type check
 ## SECTION 3: DESIGN SYSTEM — LOCKED
 ## ═══════════════════════════════════════════
 
-### Colors (globals.css custom properties)
+### Colors (globals.css — see WORLD_CLASS_STANDARDS.md §3 for full token reference)
 ```
 --bg-primary:     #0D1117
---bg-secondary:   #161B22
+--bg-secondary:   #1A1F2E
 --accent:         #00BCD4
 --accent-bright:  #22D3EE
---accent-deep:    #0097A7
+--accent-deep:    #009688
 --estate-warm:    #D4AF37
 --megabot:        #8B5CF6
---success:        #22C55E
---warning:        #F59E0B
---error:          #EF4444
+--success:        #22C55E  (NOT #4caf50)
+--warning:        #F59E0B  (NOT #ff9800)
+--error:          #EF4444  (NOT #f44336)
+--antique:        #D4AF37
 --text-primary:   #F0F6FC
 --text-secondary: #8B949E
 --text-muted:     #484F58
@@ -115,9 +127,9 @@ tsc --noEmit    # Type check
 
 ### Typography (loaded in layout.tsx via next/font/google)
 ```
---font-heading: Exo 2          (400, 500, 600, 700, 800)
---font-body:    Plus Jakarta Sans  (400, 500, 600, 700)
---font-data:    Barlow Condensed   (300, 400, 500, 600, 700, 800)
+--font-heading: Exo 2              (400, 500, 600, 700, 800) — letterSpacing: "-0.02em" on H1–H3
+--font-body:    Plus Jakarta Sans  (400, 500, 600, 700) — lineHeight: 1.6
+--font-data:    Barlow Condensed   (300, 400, 500, 600, 700, 800) — on EVERY number
 ```
 
 ### Styling Rules — CRITICAL
@@ -329,7 +341,7 @@ LegacyLoop's primary audience includes seniors. Accessibility is mandatory.
 ---
 
 ## ═══════════════════════════════════════════
-## SECTION 11: GIT & V15 REPORT
+## SECTION 11: GIT & V17.1 COMMAND/REPORT FORMAT
 ## ═══════════════════════════════════════════
 
 ### Commit Format
@@ -337,28 +349,93 @@ LegacyLoop's primary audience includes seniors. Accessibility is mandatory.
 CMD-[NAME]: [what changed]
 ```
 
-### V15 Report (required on every command)
+All commands use V17.1 format. No exceptions.
+
+### §10 COMMAND BLOCK (fill per command)
+```
+CMD-[NAME]
+LegacyLoop | [Date] | V17.1
+
+OBJECTIVE:
+[1-3 sentences. What problem is solved. Why now.]
+
+SURGICAL UNLOCKS:
+[Exact file paths this command may touch]
+
+DIAGNOSTIC (required for bug fixes — skip for new features):
+[What to read first. Root cause. Why previous attempts failed.]
+
+FIX 1 — [NAME] (P0/P1/P2):
+File: [exact path:line range]
+[Precise instructions. Find/replace. Expected result.]
+
+SCOPE — EXACTLY THESE FILES:
+[List only files IT may touch]
+DO NOT TOUCH: [anything that must stay untouched]
+```
+
+### §11 ACCEPTANCE TEST
+```
+□ tsc --noEmit = 0 errors
+□ npm run build = PASS
+□ All files read before editing
+□ Locked files untouched
+□ inline style={{}} throughout — zero className for styling
+□ Light mode: PASS | Dark mode: PASS
+□ Mobile 375px: no scroll, no clipping
+□ Desktop: layout unchanged
+
+8-Point World Class Check:
+1. Investor: Would Dr. Clark be impressed?
+2. Senior: Readable for a 70-year-old?
+3. Awwwards: Looks like a $1B product?
+4. Stripe: Data-dense without clutter?
+5. Apple: All touch targets ≥44px?
+6. A11y: Color values have text labels?
+7. Mobile: Zero clipping at 375px?
+8. Theme: Correct in both light and dark?
+```
+
+### §12 V17.1 REPORT FORMAT (every command returns this)
 ```
 ┌──────────────────────────────────────────────────┐
-│  [CMD-NAME] V15 REPORT                           │
-│  [Date] | V15                                    │
+│  CMD-[NAME] §12 REPORT                          │
+│  [DATE] | V17.1                                 │
 ├──────────────────────────────────────────────────┤
 │  CHECKPOINT BEFORE: tsc=0, build=PASS            │
 │  CHECKPOINT AFTER:  tsc=0, build=PASS            │
 ├──────────────────────────────────────────────────┤
-│  DIAGNOSTIC: [what was read]                     │
-│  CHANGES: [file | what changed | why]            │
-│  LOCKED FILES: UNTOUCHED                         │
+│  PART A — READ CONFIRMATION                      │
+│  [Each file read + line range confirmed]         │
+├──────────────────────────────────────────────────┤
+│  DIAGNOSTIC (bug fixes only):                    │
+│  Root cause: [exact cause]                       │
+│  Why previous fixes failed: [specific reason]   │
+├──────────────────────────────────────────────────┤
+│  FIX 1 — [NAME]: DONE/SKIPPED                   │
+│    [What changed | line numbers | why]           │
+├──────────────────────────────────────────────────┤
+│  THEME: Light PASS/FAIL | Dark PASS/FAIL        │
+├──────────────────────────────────────────────────┤
+│  FILES MODIFIED: [file | +N/-N]                 │
+│  LOCKED FILES: UNTOUCHED                        │
 ├──────────────────────────────────────────────────┤
 │  FLAGS                                           │
-│  Gaps / Risks / Suggestions                      │
+│  Gaps: [incomplete items]                        │
+│  Risks: [potential issues]                       │
+│  Carry-forward: [banked commands]               │
 ├──────────────────────────────────────────────────┤
-│  tsc: 0 | build: PASS | Commit: [hash]          │
+│  tsc: 0 errors                                  │
+│  build: PASS                                    │
+│  Commit: [hash] on main                         │
 └──────────────────────────────────────────────────┘
+
+CRITICAL: IF POST-CHECKPOINT FAILS → REVERT IMMEDIATELY.
 ```
 
 ---
 
 # ════════════════════════════════════════════════════════════════
-# END OF CLAUDE.md — LEGACY-LOOP LANDING SKILL PACK
+# END OF CLAUDE.md — LEGACY-LOOP LANDING SKILL PACK | V17.1
+# All commands use V17.1 format. No exceptions.
 # ════════════════════════════════════════════════════════════════
