@@ -1349,114 +1349,187 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
     )
   }
 
-  // ── DESKTOP: side dots ──
+  // ── DESKTOP: full-viewport-height vertical rail ──
+  // Spans 96px from top (under StickyNav) down to 72px from bottom,
+  // so it covers ~85% of the visible viewport. Section markers are
+  // evenly distributed via flex space-between so the spacing breathes
+  // naturally at any viewport height. The continuous progress line on
+  // the right is driven by scrollYProgress for smooth sub-frame tracking.
+  // Labels always visible (brighten on hover/active); each row is a 44px
+  // min tap/click target (Apple HIG compliant).
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
         position: 'fixed',
-        right: 24,
-        top: '50%',
-        transform: 'translateY(-50%)',
+        right: 28,
+        top: 96,
+        bottom: 72,
+        width: 172,
         zIndex: 900,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: 0,
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? 'auto' : 'none',
         transition: 'opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
       }}
     >
-      {/* Scroll progress line */}
+      {/* Background rail — vertical hairline with soft top/bottom fades */}
       <div
+        aria-hidden
         style={{
           position: 'absolute',
-          right: 7,
+          right: 6,
           top: 0,
           bottom: 0,
           width: 2,
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: 1,
-          overflow: 'hidden',
-          zIndex: 0,
+          background:
+            'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.08) 8%, rgba(255,255,255,0.08) 92%, transparent 100%)',
+          borderRadius: 2,
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Progress fill — scrollYProgress-driven, gradient + subtle teal glow */}
+      <motion.div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          right: 6,
+          top: 0,
+          width: 2,
+          height: progressHeight,
+          background:
+            'linear-gradient(180deg, #00BCD4 0%, #22D3EE 45%, #009688 100%)',
+          borderRadius: 2,
+          boxShadow:
+            '0 0 8px rgba(0,188,212,0.55), 0 0 2px rgba(0,188,212,0.9)',
+          transformOrigin: 'top center',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Evenly distributed section rows (flex space-between) */}
+      <div
+        style={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+          position: 'relative',
         }}
       >
-        <motion.div
-          style={{
-            width: '100%',
-            height: progressHeight,
-            background: 'linear-gradient(180deg, #00BCD4, #009688)',
-            borderRadius: 1,
-          }}
-        />
-      </div>
-
-      {sections.map((section, i) => {
-        const isActive = activeSection === section.id
-        return (
-          <div
-            key={section.id}
-            onClick={() => {
-              document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' })
-            }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              cursor: 'pointer',
-              padding: '8px 0',
-              position: 'relative',
-              zIndex: 1,
-            }}
-          >
-            {/* Label — reveals on hover */}
-            <div
+        {sections.map((section) => {
+          const isActive = activeSection === section.id
+          return (
+            <button
+              type="button"
+              key={section.id}
+              onClick={() => {
+                document
+                  .getElementById(section.id)
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              aria-label={`Jump to ${section.label}`}
+              aria-current={isActive ? 'true' : undefined}
               style={{
-                overflow: 'hidden',
-                maxWidth: isHovered ? 140 : 0,
-                opacity: isHovered ? 1 : 0,
-                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-                whiteSpace: 'nowrap',
+                appearance: 'none',
+                background: 'transparent',
+                border: 'none',
+                padding: '6px 0',
+                minHeight: 44,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: 14,
+                cursor: 'pointer',
+                position: 'relative',
+                color: 'inherit',
+                fontFamily: 'inherit',
               }}
             >
+              {/* Hairline tick that extends from the rail toward the label
+                  when active or hovered — Olivier Larose / Lusion vocabulary */}
+              <span
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  right: 14,
+                  top: '50%',
+                  height: 1,
+                  width: isActive ? 22 : isHovered ? 12 : 0,
+                  background: isActive
+                    ? '#00BCD4'
+                    : 'rgba(255,255,255,0.35)',
+                  transform: 'translateY(-50%)',
+                  transition: 'width 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
+                  pointerEvents: 'none',
+                  opacity: isActive ? 1 : isHovered ? 0.8 : 0,
+                }}
+              />
+
+              {/* Label — always visible; active/hovered brighten + bold */}
               <span
                 style={{
                   fontFamily: 'var(--font-data)',
-                  fontWeight: isActive ? 600 : 400,
-                  fontSize: 11,
-                  letterSpacing: '0.08em',
+                  fontWeight: isActive ? 700 : 500,
+                  fontSize: isActive ? 11 : 10,
+                  letterSpacing: '0.18em',
                   textTransform: 'uppercase' as const,
-                  color: isActive ? '#00BCD4' : '#6B7280',
-                  transition: 'color 0.3s ease',
-                  paddingRight: 6,
+                  color: isActive
+                    ? '#00BCD4'
+                    : isHovered
+                    ? '#CBD5E1'
+                    : '#6B7280',
+                  transition:
+                    'all 0.35s cubic-bezier(0.23, 1, 0.32, 1)',
+                  whiteSpace: 'nowrap',
+                  textShadow: isActive
+                    ? '0 0 10px rgba(0,188,212,0.45)'
+                    : 'none',
+                  userSelect: 'none',
                 }}
               >
                 {section.label}
               </span>
-            </div>
 
-            {/* Dot */}
-            <div
-              style={{
-                width: isActive ? 16 : 8,
-                height: isActive ? 16 : 8,
-                borderRadius: '50%',
-                background: isActive
-                  ? 'linear-gradient(135deg, #00BCD4, #009688)'
-                  : 'rgba(255,255,255,0.15)',
-                border: isActive ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                boxShadow: isActive
-                  ? '0 0 12px rgba(0,188,212,0.4), 0 0 4px rgba(0,188,212,0.2)'
-                  : 'none',
-                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-                flexShrink: 0,
-              }}
-            />
-          </div>
-        )
-      })}
+              {/* Dot — fixed 14px wrapper so the rail alignment never
+                  shifts when the inner dot scales on active state */}
+              <span
+                aria-hidden
+                style={{
+                  width: 14,
+                  height: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <span
+                  style={{
+                    width: isActive ? 12 : 6,
+                    height: isActive ? 12 : 6,
+                    borderRadius: '50%',
+                    background: isActive
+                      ? 'radial-gradient(circle at 30% 30%, #22D3EE 0%, #00BCD4 55%, #009688 100%)'
+                      : 'rgba(255,255,255,0.28)',
+                    boxShadow: isActive
+                      ? '0 0 14px rgba(0,188,212,0.75), 0 0 28px rgba(0,188,212,0.35), inset 0 1px 0 rgba(255,255,255,0.35)'
+                      : 'none',
+                    border: isActive
+                      ? 'none'
+                      : '1px solid rgba(255,255,255,0.08)',
+                    transition:
+                      'all 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
+                    display: 'inline-block',
+                  }}
+                />
+              </span>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
