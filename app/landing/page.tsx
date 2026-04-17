@@ -1456,6 +1456,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
     <section
       ref={heroSectionRef}
       id="hero"
+      data-fullvh
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -5965,6 +5966,7 @@ function VideoShowcaseSection() {
       {/* PART 1 — Cinematic video hero with headline overlay */}
       <section
         id="showcase"
+        data-fullvh
         style={{
           position: 'relative',
           zIndex: 5,

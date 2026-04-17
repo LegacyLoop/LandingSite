@@ -210,6 +210,18 @@ a {
   }
 }
 
+/* --- Full-viewport sections: upgrade to 100dvh where supported ---
+   Inline styles ship `minHeight: '100vh'` as the safe fallback. On iOS
+   Safari 15.4+ (which includes every iPad sold 2018+) we upgrade to the
+   dynamic viewport unit so the hero doesn't extend past the visible area
+   when the address bar is expanded. Zero React work, pure progressive
+   enhancement — older browsers silently ignore this block. */
+@supports (min-height: 100dvh) {
+  section[data-fullvh] {
+    min-height: 100dvh;
+  }
+}
+
 /* --- Accessibility: Reduced Motion --- */
 @media (prefers-reduced-motion: reduce) {
   *,
