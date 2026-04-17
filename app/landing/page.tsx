@@ -133,8 +133,14 @@ function CustomCursor() {
 
   useEffect(() => {
     const mq = window.matchMedia('(pointer: fine)')
-    setIsDesktop(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    // iPad + Magic Keyboard reports pointer:fine AND maxTouchPoints>0.
+    // Only render the custom cursor on true non-touch desktop so it
+    // doesn't paint a stray white dot on touch tablets.
+    const hasTouch =
+      'ontouchstart' in window || navigator.maxTouchPoints > 0
+    setIsDesktop(mq.matches && !hasTouch)
+    const handler = (e: MediaQueryListEvent) =>
+      setIsDesktop(e.matches && !hasTouch)
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
   }, [])

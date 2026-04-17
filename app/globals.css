@@ -55,8 +55,16 @@
 }
 
 html {
+  /* Use dvh (dynamic viewport height) on iOS so the value doesn't jump
+     when the Safari address bar collapses/expands mid-scroll. Fallback
+     to 100% for browsers without dvh support. */
   height: 100%;
-  scroll-behavior: auto; /* Lenis handles smooth scroll */
+  height: 100dvh;
+  scroll-behavior: auto; /* Lenis handles smooth scroll on desktop */
+  /* Prevent iPad pull-to-refresh + rubber-band from interfering with
+     fixed nav / section navigator. overscroll-behavior: none stops
+     the parent chain from chaining scroll to the viewport. */
+  overscroll-behavior-y: none;
 }
 
 html,
@@ -66,15 +74,26 @@ body {
 }
 
 body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
+  /* CRITICAL iPad fix: display:flex + flex-direction:column + min-height:100%
+     on <body> is the #1 cause of broken scroll/layout on iOS Safari in this
+     pattern. Children with explicit heights (e.g. minHeight: 100vh on hero)
+     don't flex correctly inside a flex-column body, causing the hero to
+     consume the entire viewport and subsequent sections to be unreachable
+     on some iPadOS versions. Using block with min-height: 100dvh lets every
+     section lay out naturally and the whole page scrolls normally. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: block;
   color: var(--text-primary);
   background: var(--bg-primary);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Remove the blue tap flash that iOS Safari paints on every touch
+     over a:hover / button / role="button" / [onclick]. Visually jarring
+     on a branded dark surface. We render our own hover/focus affordances. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
