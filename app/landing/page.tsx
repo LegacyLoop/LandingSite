@@ -7102,6 +7102,38 @@ function FinalCTASection() {
         }}
       />
 
+      {/* Corner crosshair markers — final studio-grade frame */}
+      {[
+        { top: 20, left: 20 },
+        { top: 20, right: 20 },
+        { bottom: 20, left: 20 },
+        { bottom: 20, right: 20 },
+      ].map((pos, i) => (
+        <motion.svg
+          key={i}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          whileInView={{ opacity: 0.55, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            delay: 0.2 + i * 0.08,
+            duration: 0.7,
+            ease: [0.23, 1, 0.32, 1],
+          }}
+          style={{
+            position: 'absolute',
+            ...pos,
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        >
+          <path d="M6 0v12M0 6h12" stroke="#00BCD4" strokeWidth="1" />
+        </motion.svg>
+      ))}
+
       <div
         style={{
           maxWidth: 640,
@@ -7110,26 +7142,98 @@ function FinalCTASection() {
           zIndex: 2,
         }}
       >
-        <SectionHeading
+        {/* Ghost oversized "JOIN" word — imperative, short, behind CTA */}
+        <span
+          aria-hidden
           style={{
-            fontSize: 'clamp(28px, 4vw, 42px)',
+            position: 'absolute',
+            left: '50%',
+            top: width < 768 ? -20 : -40,
+            transform: 'translateX(-50%)',
+            fontFamily: 'var(--font-data)',
+            fontSize: width < 768 ? '30vw' : 'clamp(200px, 26vw, 420px)',
+            fontWeight: 800,
+            letterSpacing: '-0.04em',
+            color: 'rgba(0,188,212,0.05)',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            zIndex: 0,
+            lineHeight: 0.85,
+            whiteSpace: 'nowrap',
           }}
         >
-          Your Items Have Value.{' '}
-          <GradientText>We Help You Prove It.</GradientText>
-        </SectionHeading>
-        <p
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
-            fontSize: 17,
-            color: '#CBD5E1',
-            lineHeight: 1.65,
-            marginBottom: 40,
-          }}
-        >
-          Start for free. No credit card required.
-        </p>
+          JOIN
+        </span>
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {/* Founding pricing HUD pill */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: 14,
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 10px',
+                borderRadius: 9999,
+                background: 'rgba(212,175,55,0.12)',
+                border: '1px solid rgba(212,175,55,0.4)',
+                fontFamily: 'var(--font-data)',
+                fontWeight: 700,
+                fontSize: 10,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase' as const,
+                color: '#D4AF37',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: '#D4AF37',
+                  boxShadow: '0 0 8px rgba(212,175,55,0.7)',
+                  animation: 'pulse 1.4s ease-in-out infinite',
+                }}
+              />
+              Founding pricing · Limited
+            </span>
+          </div>
+
+          <h2
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 'clamp(28px, 4vw, 42px)',
+              lineHeight: 1.2,
+              letterSpacing: '-0.5px',
+              color: '#F1F5F9',
+              textAlign: 'center',
+              margin: '0 0 24px',
+            }}
+          >
+            Your Items Have Value.{' '}
+            <GlitchWord text="We Help You Prove It." />
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 17,
+              color: '#CBD5E1',
+              lineHeight: 1.65,
+              marginBottom: 40,
+            }}
+          >
+            Start for free. No credit card required.
+          </p>
+        </div>
 
         <MagneticButton href="https://app.legacy-loop.com/auth/signup">
           Join Early Access
