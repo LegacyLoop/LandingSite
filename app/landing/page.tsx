@@ -1711,6 +1711,57 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   )
 }
 
+// ---------- STAGGERED WORDS (per-word entrance on scroll-into-view) ----------
+// Awwwards standard: each word slides up from an overflow-hidden slot with
+// a 40ms stagger. Used on section headlines that don't already carry a
+// glitch/gradient effect. Respects prefers-reduced-motion.
+function StaggeredWords({
+  text,
+  stagger = 0.04,
+  delay = 0,
+}: {
+  text: string
+  stagger?: number
+  delay?: number
+}) {
+  const reduced = useReducedMotion()
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.3 })
+  const words = text.split(' ')
+
+  if (reduced) return <>{text}</>
+
+  return (
+    <span ref={ref} style={{ display: 'inline' }}>
+      {words.map((word, i) => (
+        <span
+          key={i}
+          style={{
+            display: 'inline-block',
+            overflow: 'hidden',
+            verticalAlign: 'bottom',
+            marginRight: i < words.length - 1 ? '0.25em' : 0,
+            lineHeight: 1,
+          }}
+        >
+          <motion.span
+            initial={{ opacity: 0, y: '100%' }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{
+              duration: 0.7,
+              delay: delay + i * stagger,
+              ease: [0.23, 1, 0.32, 1],
+            }}
+            style={{ display: 'inline-block' }}
+          >
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </span>
+  )
+}
+
 // ---------- GLITCH WORD (Resn-style RGB split reveal) ----------
 // Fires once when the word scrolls into view (threshold 0.6). Two offset
 // color clones jitter in, then fade out leaving the clean gradient word.
@@ -3241,7 +3292,9 @@ function HowItWorksSection() {
     >
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <SectionEyebrow text="THE PROCESS" />
-        <SectionHeading>From Photo to Sold in Four Steps</SectionHeading>
+        <SectionHeading>
+          <StaggeredWords text="From Photo to Sold in Four Steps" />
+        </SectionHeading>
 
         <div
           style={{
@@ -3367,7 +3420,7 @@ function ShippingCenterSection() {
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <SectionEyebrow text="BUILT-IN LOGISTICS" />
         <SectionHeading>
-          AI Shipping Center.{' '}
+          <StaggeredWords text="AI Shipping Center." />{' '}
           <GradientText>Every Carrier. One Click.</GradientText>
         </SectionHeading>
         <p
@@ -3515,7 +3568,9 @@ function ProductPreviewSection() {
     >
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <SectionEyebrow text="THE PRODUCT" />
-        <SectionHeading>See It In Action</SectionHeading>
+        <SectionHeading>
+          <StaggeredWords text="See It In Action" />
+        </SectionHeading>
         <p
           style={{
             fontFamily: 'var(--font-body)',
@@ -5462,7 +5517,9 @@ function TechSection() {
         }}
       >
         <SectionEyebrow text="THE INFRASTRUCTURE" />
-        <SectionHeading>Enterprise-Grade. Built to Scale.</SectionHeading>
+        <SectionHeading>
+          <StaggeredWords text="Enterprise-Grade. Built to Scale." />
+        </SectionHeading>
 
         <div
           style={{
@@ -5598,7 +5655,8 @@ function VideoShowcaseSection() {
         >
           <SectionEyebrow text="OUR STORY" />
           <SectionHeading>
-            Built with Purpose. <GradientText>Powered by AI.</GradientText>
+            <StaggeredWords text="Built with Purpose." />{' '}
+            <GradientText>Powered by AI.</GradientText>
           </SectionHeading>
           <p
             style={{
