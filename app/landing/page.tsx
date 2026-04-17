@@ -2930,11 +2930,45 @@ function GradientText({
   )
 }
 
-// ---------- MARKET OPPORTUNITY ----------
+// ---------- WHAT YOU GET — PLATFORM ADVANTAGE (was MarketOpportunity) ----------
+// Flipped from investor/market-size stats to user-facing platform
+// capability stats per Ryan's April 17 note: this is visible to the
+// general public on the landing, so it must sell what LegacyLoop
+// gives YOU — not what the resale market is worth.
 function MarketOpportunitySection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
-  const cols = width < 768 ? '1fr' : 'repeat(3, 1fr)'
+  const reduced = useReducedMotion()
+  const isMobile = width < 768
+  const isSmall = width < 600
+  const cols = isSmall ? '1fr' : isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)'
+
+  const stats = [
+    {
+      target: 4,
+      heroLabel: 'AI Engines',
+      line: 'OpenAI · Claude · Gemini · Grok',
+      sub: 'One fair price, voted by 4-way consensus',
+    },
+    {
+      target: 12,
+      heroLabel: 'Specialized Bots',
+      line: 'Pricing · Listing · Shipping · Intel',
+      sub: 'Your personal AI team on every sell',
+    },
+    {
+      target: 13,
+      heroLabel: 'Marketplaces',
+      line: 'eBay · Mercari · FB · Poshmark · Etsy',
+      sub: 'One click. Cross-listed everywhere.',
+    },
+    {
+      target: 3,
+      heroLabel: 'Prices Per Item',
+      line: 'List · Accept · Floor',
+      sub: 'Sell at whatever level works today',
+    },
+  ]
 
   return (
     <section
@@ -2942,84 +2976,221 @@ function MarketOpportunitySection() {
         ...sp,
         position: 'relative',
         zIndex: 5,
+        overflow: 'hidden',
       }}
     >
-      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <SectionEyebrow text="THE OPPORTUNITY" />
+      {/* Corner crosshair markers — studio framing consistent with Path A */}
+      {[
+        { top: 20, left: 20 },
+        { top: 20, right: 20 },
+        { bottom: 20, left: 20 },
+        { bottom: 20, right: 20 },
+      ].map((pos, i) => (
+        <motion.svg
+          key={i}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          whileInView={{ opacity: 0.55, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            delay: 0.2 + i * 0.08,
+            duration: 0.7,
+            ease: [0.23, 1, 0.32, 1],
+          }}
+          style={{
+            position: 'absolute',
+            ...pos,
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        >
+          <path d="M6 0v12M0 6h12" stroke="#00BCD4" strokeWidth="1" />
+        </motion.svg>
+      ))}
+
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* Ghost oversized "ADVANTAGE" word — depth vocabulary */}
+        <span
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: isMobile ? -10 : -30,
+            transform: 'translateX(-50%)',
+            fontFamily: 'var(--font-data)',
+            fontSize: isMobile ? '18vw' : 'clamp(150px, 18vw, 300px)',
+            fontWeight: 800,
+            letterSpacing: '-0.04em',
+            color: 'rgba(0,188,212,0.04)',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            zIndex: 0,
+            lineHeight: 0.85,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          ADVANTAGE
+        </span>
+
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <SectionEyebrow text="WHAT YOU GET" />
+          <h2
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 'clamp(34px, 5vw, 48px)',
+              lineHeight: 1.15,
+              letterSpacing: '-0.5px',
+              color: '#F1F5F9',
+              textAlign: 'center',
+              margin: '0 auto 20px',
+              maxWidth: 760,
+            }}
+          >
+            Built to{' '}
+            <GlitchWord text="sell for you." />
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: isSmall ? 16 : 18,
+              lineHeight: 1.65,
+              color: '#CBD5E1',
+              maxWidth: 640,
+              margin: '0 auto 48px',
+            }}
+          >
+            No other platform stacks this much AI precision with this little
+            friction. Every number below is working for you, on every sell.
+          </p>
+        </div>
+
+        {/* 4-up stat cards — each represents a platform advantage */}
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: cols,
-            gap: 20,
-            marginTop: 48,
+            gap: isMobile ? 14 : 18,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
-          {[
-            {
-              target: 10000,
-              suffix: '+',
-              label: 'Americans turn 65 every day',
-            },
-            {
-              prefix: '$',
-              target: 48,
-              suffix: 'B',
-              label: 'Estate and resale market',
-            },
-            {
-              target: 76,
-              suffix: '%',
-              label: 'Of sellers say pricing is their biggest frustration',
-            },
-          ].map((stat, i) => (
-            <GlowCard key={i} delay={i * 80}>
-              <div style={{ textAlign: 'center' }}>
+          {stats.map((stat, i) => (
+            <GlowCard key={stat.heroLabel} delay={i * 90}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: 10,
+                  textAlign: 'left',
+                }}
+              >
+                {/* Hero number — huge, gradient, count-up */}
                 <AnimatedStat
                   target={stat.target}
-                  prefix={stat.prefix || ''}
-                  suffix={stat.suffix}
+                  duration={1800}
                   style={{
                     fontFamily: 'var(--font-data)',
-                    fontWeight: 700,
-                    fontSize: 'clamp(36px, 5vw, 48px)',
-                    lineHeight: 1.1,
-                    background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+                    fontWeight: 800,
+                    fontSize: 'clamp(56px, 7vw, 80px)',
+                    lineHeight: 1,
+                    letterSpacing: '-0.03em',
+                    background: 'linear-gradient(135deg, #00BCD4 0%, #FFFFFF 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                     display: 'block',
                   }}
                 />
+                {/* Hero label */}
+                <div
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 700,
+                    fontSize: 17,
+                    color: '#F1F5F9',
+                    letterSpacing: '-0.01em',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {stat.heroLabel}
+                </div>
+                {/* Primary line — what they are */}
+                <div
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 600,
+                    fontSize: 11,
+                    color: '#00BCD4',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase' as const,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {stat.line}
+                </div>
+                {/* Sub-line — why it matters */}
                 <p
                   style={{
                     fontFamily: 'var(--font-body)',
                     fontWeight: 400,
-                    fontSize: 15,
-                    color: '#CBD5E1',
-                    marginTop: 8,
+                    fontSize: 13,
+                    color: '#94A3B8',
                     lineHeight: 1.5,
+                    marginTop: 4,
                   }}
                 >
-                  {stat.label}
+                  {stat.sub}
                 </p>
               </div>
             </GlowCard>
           ))}
         </div>
 
-        <ScrollRevealText
-          text="Managing an estate should not require becoming an eBay expert. LegacyLoop was built for this moment."
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 600,
-            fontSize: 'clamp(20px, 3vw, 28px)',
-            lineHeight: 1.4,
-            color: '#F1F5F9',
-            textAlign: 'center',
-            maxWidth: 800,
-            margin: '64px auto 0',
-          }}
-        />
+        {/* Closing punch line — scroll-reveal word-by-word */}
+        {reduced ? (
+          <p
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: 'clamp(20px, 3vw, 28px)',
+              lineHeight: 1.4,
+              color: '#F1F5F9',
+              textAlign: 'center',
+              maxWidth: 800,
+              margin: '64px auto 0',
+            }}
+          >
+            Every price is a consensus. Every listing is one click. You keep
+            the wheel.
+          </p>
+        ) : (
+          <ScrollRevealText
+            text="Every price is a consensus. Every listing is one click. You keep the wheel."
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: 'clamp(20px, 3vw, 28px)',
+              lineHeight: 1.4,
+              color: '#F1F5F9',
+              textAlign: 'center',
+              maxWidth: 800,
+              margin: '64px auto 0',
+            }}
+          />
+        )}
       </div>
     </section>
   )
