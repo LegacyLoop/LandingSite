@@ -978,11 +978,18 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
     { label: 'How It Works', target: 'how-it-works' },
     { label: 'AI Agents', target: 'bots' },
     { label: 'Pricing', target: 'pricing' },
+    { label: 'Download', target: 'download' },
+    { label: 'Help', target: '__help' },
     { label: 'Join Waitlist', target: 'waitlist' },
   ]
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    if (id === '__help') {
+      // Special sentinel — open the Help Center modal via custom event
+      window.dispatchEvent(new CustomEvent('legacyloop:open-help'))
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    }
     setMenuOpen(false)
   }
 
@@ -1217,6 +1224,8 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
     { id: 'bots', label: 'AI Bots', icon: '◆' },
     { id: 'pricing', label: 'Pricing', icon: '◆' },
     { id: 'estate', label: 'Estates', icon: '◆' },
+    { id: 'download', label: 'Download', icon: '◆' },
+    { id: 'mission', label: 'Mission', icon: '◆' },
     { id: 'waitlist', label: 'Join', icon: '◆' },
   ]
 
@@ -6392,10 +6401,12 @@ function VideoShowcaseSection() {
 
           {/* Mission Statement — the heart of LegacyLoop */}
           <div
+            id="mission"
             style={{
               maxWidth: 800,
               margin: '0 auto',
               textAlign: 'center',
+              scrollMarginTop: 96, // clears the sticky nav on scrollIntoView
             }}
           >
             <SectionEyebrow text="OUR MISSION" color="#D4A017" />
@@ -8191,6 +8202,416 @@ function Footer() {
 /* CharReveal now uses CSS transitions, no @keyframes needed */
 
 /* ==============================================
+   HELP CENTER — floating button + modal
+   Senior-first: large tap target, clear label, simple actions.
+   Links out to the full help experience at app.legacy-loop.com/help
+   so we don't duplicate infrastructure — the app already has an AI
+   chat widget, articles, and a contact form.
+   ============================================== */
+function HelpCenter() {
+  const width = useWindowWidth()
+  const reduced = useReducedMotion()
+  const [open, setOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const isMobile = width < 1024
+
+  // Listen for "open from nav" events dispatched by the StickyNav's Help link
+  useEffect(() => {
+    const handler = () => setOpen(true)
+    window.addEventListener('legacyloop:open-help', handler)
+    return () => window.removeEventListener('legacyloop:open-help', handler)
+  }, [])
+
+  // ESC to close
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    // Lock background scroll while modal is open
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [open])
+
+  const actions = [
+    {
+      icon: '💬',
+      title: 'Chat with our AI',
+      desc: 'Get instant answers, any time of day',
+      href: 'https://app.legacy-loop.com/help?chat=1',
+      accent: '#00BCD4',
+    },
+    {
+      icon: '📖',
+      title: 'Browse Help Center',
+      desc: 'Guides, tutorials, and FAQs',
+      href: 'https://app.legacy-loop.com/help',
+      accent: '#22D3EE',
+    },
+    {
+      icon: '✉️',
+      title: 'Email our team',
+      desc: 'We reply within 4 hours',
+      href: 'mailto:support@legacy-loop.com',
+      accent: '#D4AF37',
+    },
+  ]
+
+  return (
+    <>
+      {/* Floating Help Button — bottom-left, clears the mobile bottom nav */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        aria-label="Open help center"
+        style={{
+          position: 'fixed',
+          left: isMobile ? 16 : 28,
+          bottom: isMobile ? 72 : 28,
+          zIndex: 950,
+          appearance: 'none',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0,
+          height: 56,
+          borderRadius: 9999,
+          background:
+            'linear-gradient(135deg, #00BCD4 0%, #009688 100%)',
+          boxShadow: hovered
+            ? '0 0 40px rgba(0,188,212,0.6), 0 8px 24px rgba(0,188,212,0.3)'
+            : '0 0 24px rgba(0,188,212,0.35), 0 4px 16px rgba(0,188,212,0.2)',
+          transition:
+            'box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+          transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+          overflow: 'hidden',
+          WebkitTapHighlightColor: 'transparent',
+          animation: reduced
+            ? 'none'
+            : 'pulseGlow 3.2s ease-in-out infinite',
+        }}
+      >
+        {/* Icon slot — always visible circular area */}
+        <span
+          aria-hidden
+          style={{
+            width: 56,
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            color: '#0D1117',
+          }}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </span>
+        {/* Label — always visible on mobile (seniors!), hover-reveals on desktop */}
+        <span
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 700,
+            fontSize: 15,
+            color: '#0D1117',
+            letterSpacing: '-0.01em',
+            whiteSpace: 'nowrap',
+            maxWidth: isMobile ? 140 : hovered ? 140 : 0,
+            opacity: isMobile || hovered ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'max-width 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease',
+            paddingRight: isMobile || hovered ? 20 : 0,
+          }}
+        >
+          Need help?
+        </span>
+      </button>
+
+      {/* Modal overlay */}
+      {open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="helpcenter-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setOpen(false)
+          }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: isMobile ? 20 : 40,
+            background: 'rgba(13,17,23,0.78)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            animation: reduced
+              ? 'none'
+              : 'fadeScaleIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) both',
+            overflow: 'auto',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 560,
+              background: 'rgba(22,27,34,0.98)',
+              border: '1px solid rgba(0,188,212,0.25)',
+              borderRadius: 24,
+              padding: isMobile ? 24 : 36,
+              boxShadow:
+                '0 0 60px rgba(0,188,212,0.15), 0 24px 64px rgba(0,0,0,0.6)',
+              position: 'relative',
+              animation: reduced
+                ? 'none'
+                : 'fadeScaleIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) both',
+            }}
+          >
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close help center"
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                width: 44,
+                height: 44,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 9999,
+                color: '#CBD5E1',
+                cursor: 'pointer',
+                fontSize: 18,
+                transition: 'all 0.3s ease',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                ;(e.currentTarget as HTMLButtonElement).style.background =
+                  'rgba(255,255,255,0.1)'
+                ;(e.currentTarget as HTMLButtonElement).style.color =
+                  '#F1F5F9'
+              }}
+              onMouseLeave={(e) => {
+                ;(e.currentTarget as HTMLButtonElement).style.background =
+                  'rgba(255,255,255,0.05)'
+                ;(e.currentTarget as HTMLButtonElement).style.color =
+                  '#CBD5E1'
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            {/* Eyebrow */}
+            <div
+              style={{
+                fontFamily: 'var(--font-data)',
+                fontWeight: 700,
+                fontSize: 11,
+                color: '#00BCD4',
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase' as const,
+                marginBottom: 12,
+              }}
+            >
+              LegacyLoop Help Center
+            </div>
+
+            {/* Title */}
+            <h2
+              id="helpcenter-title"
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 700,
+                fontSize: isMobile ? 26 : 32,
+                lineHeight: 1.15,
+                color: '#F1F5F9',
+                margin: '0 0 8px',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              How can we help?
+            </h2>
+
+            {/* Subtitle */}
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 400,
+                fontSize: 15,
+                color: '#94A3B8',
+                lineHeight: 1.6,
+                margin: '0 0 28px',
+              }}
+            >
+              We&apos;re here for you. No question is too small, and every
+              answer comes from a real human or our trained AI — whichever
+              is faster.
+            </p>
+
+            {/* Action cards */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}
+            >
+              {actions.map((action) => (
+                <a
+                  key={action.title}
+                  href={action.href}
+                  target={action.href.startsWith('mailto:') ? undefined : '_blank'}
+                  rel={action.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                  onClick={() => setOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16,
+                    padding: 18,
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 14,
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    minHeight: 72,
+                    transition:
+                      'background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLAnchorElement
+                    el.style.background = `${action.accent}12`
+                    el.style.borderColor = `${action.accent}55`
+                    el.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLAnchorElement
+                    el.style.background = 'rgba(255,255,255,0.03)'
+                    el.style.borderColor = 'rgba(255,255,255,0.08)'
+                    el.style.transform = 'translateY(0)'
+                  }}
+                >
+                  {/* Icon circle */}
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 12,
+                      background: `${action.accent}14`,
+                      border: `1px solid ${action.accent}33`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 22,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {action.icon}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-heading)',
+                        fontWeight: 600,
+                        fontSize: 16,
+                        color: '#F1F5F9',
+                        marginBottom: 2,
+                      }}
+                    >
+                      {action.title}
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: 13,
+                        color: '#94A3B8',
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {action.desc}
+                    </div>
+                  </div>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={action.accent}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ flexShrink: 0 }}
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </a>
+              ))}
+            </div>
+
+            {/* Senior-friendly footer note */}
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 400,
+                fontSize: 13,
+                color: '#6B7280',
+                textAlign: 'center',
+                margin: '24px 0 0',
+                lineHeight: 1.55,
+              }}
+            >
+              Prefer the phone? Leave a message at our help line and we&apos;ll
+              call you back the same business day.
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+/* ==============================================
    PAGE COMPONENT — DEFAULT EXPORT
    ============================================== */
 export default function LandingPage() {
@@ -8261,6 +8682,7 @@ export default function LandingPage() {
       <NoiseOverlay />
       <StickyNav isLoaded={isLoaded} />
       <SectionNavigator isLoaded={isLoaded} />
+      <HelpCenter />
       <main style={{ position: 'relative', zIndex: 5, background: 'transparent' }}>
         <HeroSection isLoaded={isLoaded} />
         <GarageSaleSection isLoaded={isLoaded} />
