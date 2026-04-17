@@ -3291,10 +3291,18 @@ function HowItWorksSection() {
       }}
     >
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
-        <SectionEyebrow text="THE PROCESS" />
-        <SectionHeading>
-          <StaggeredWords text="From Photo to Sold in Four Steps" />
-        </SectionHeading>
+        {/* Entry variant: SCALE-FROM-0.92 — breaks uniform fade-up rhythm */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+        >
+          <SectionEyebrow text="THE PROCESS" />
+          <SectionHeading>
+            <StaggeredWords text="From Photo to Sold in Four Steps" />
+          </SectionHeading>
+        </motion.div>
 
         <div
           style={{
@@ -3830,26 +3838,34 @@ function AIAgentsSection() {
       }}
     >
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <SectionEyebrow text="YOUR AI TEAM" />
-        <SectionHeading>
-          Ten Specialized AI Bots.{' '}
-          <GradientText>All Working For You.</GradientText>
-        </SectionHeading>
-        <p
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
-            fontSize: 15,
-            color: '#94A3B8',
-            textAlign: 'center',
-            maxWidth: 640,
-            margin: '0 auto 48px',
-            lineHeight: 1.65,
-          }}
+        {/* Entry variant: SLIDE-FROM-LEFT — cinematic horizontal sweep */}
+        <motion.div
+          initial={{ opacity: 0, x: -60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
         >
-          MegaBot powers them all — our 4-engine consensus system that ensures
-          every valuation is fair.
-        </p>
+          <SectionEyebrow text="YOUR AI TEAM" />
+          <SectionHeading>
+            Ten Specialized AI Bots.{' '}
+            <GradientText>All Working For You.</GradientText>
+          </SectionHeading>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 15,
+              color: '#94A3B8',
+              textAlign: 'center',
+              maxWidth: 640,
+              margin: '0 auto 48px',
+              lineHeight: 1.65,
+            }}
+          >
+            MegaBot powers them all — our 4-engine consensus system that
+            ensures every valuation is fair.
+          </p>
+        </motion.div>
 
         <div
           style={{
@@ -5516,10 +5532,27 @@ function TechSection() {
           zIndex: 2,
         }}
       >
-        <SectionEyebrow text="THE INFRASTRUCTURE" />
-        <SectionHeading>
-          <StaggeredWords text="Enterprise-Grade. Built to Scale." />
-        </SectionHeading>
+        {/* Entry variant: CLIP-PATH WIPE — top-down reveal, Active Theory pattern */}
+        <motion.div
+          initial={{
+            clipPath: 'inset(0 0 100% 0)',
+            opacity: 0,
+          }}
+          whileInView={{
+            clipPath: 'inset(0 0 0% 0)',
+            opacity: 1,
+          }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            duration: 0.95,
+            ease: [0.23, 1, 0.32, 1],
+          }}
+        >
+          <SectionEyebrow text="THE INFRASTRUCTURE" />
+          <SectionHeading>
+            <StaggeredWords text="Enterprise-Grade. Built to Scale." />
+          </SectionHeading>
+        </motion.div>
 
         <div
           style={{
