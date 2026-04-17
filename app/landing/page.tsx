@@ -8,6 +8,7 @@ import {
   useTransform,
   useMotionValue,
   useSpring,
+  useInView,
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 
@@ -1710,21 +1711,61 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   )
 }
 
-// ---------- GLITCH WORD (Resn-style RGB split reveal for GS headline) ----------
-// Fires once on mount-delay. Two offset color clones jitter in, then fade out
-// leaving the clean gradient word. Safe fallback when reduced-motion is on.
-function GlitchWord({ text, isLoaded }: { text: string; isLoaded: boolean }) {
+// ---------- GLITCH WORD (Resn-style RGB split reveal) ----------
+// Fires once when the word scrolls into view (threshold 0.6). Two offset
+// color clones jitter in, then fade out leaving the clean gradient word.
+// Safe fallback when reduced-motion is on. Optional isLoaded prop gates
+// the scroll trigger (useful for hero sections sharing isLoaded state).
+function GlitchWord({
+  text,
+  isLoaded = true,
+  tintA = '#00BCD4',
+  tintB = '#D4AF37',
+}: {
+  text: string
+  isLoaded?: boolean
+  tintA?: string
+  tintB?: string
+}) {
   const reduced = useReducedMotion()
   const [fired, setFired] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    if (!isLoaded) return
-    const t = setTimeout(() => setFired(true), 450)
-    return () => clearTimeout(t)
-  }, [isLoaded])
+    if (!isLoaded || fired) return
+    const el = ref.current
+    if (!el) return
+
+    // Touch devices: fire immediately — mirrors GlowCard's iPad-safety
+    // pattern. IntersectionObserver + Lenis can miss on mobile Safari.
+    const isTouch =
+      'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) {
+      const t = setTimeout(() => setFired(true), 150)
+      return () => clearTimeout(t)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => setFired(true), 150)
+          observer.unobserve(el)
+        }
+      },
+      { rootMargin: '0px', threshold: 0.1 }
+    )
+    observer.observe(el)
+    // Fallback: if observer doesn't fire within 3s, fire anyway so the
+    // text is never permanently invisible.
+    const fallback = setTimeout(() => setFired(true), 3000)
+    return () => {
+      observer.disconnect()
+      clearTimeout(fallback)
+    }
+  }, [isLoaded, fired])
 
   const gradientStyle: React.CSSProperties = {
-    background: 'linear-gradient(135deg, #00BCD4 0%, #D4AF37 100%)',
+    background: `linear-gradient(135deg, ${tintA} 0%, ${tintB} 100%)`,
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
@@ -1732,13 +1773,18 @@ function GlitchWord({ text, isLoaded }: { text: string; isLoaded: boolean }) {
 
   if (reduced) {
     return (
-      <span style={{ ...gradientStyle, display: 'inline-block' }}>{text}</span>
+      <span
+        ref={ref}
+        style={{ ...gradientStyle, display: 'inline-block' }}
+      >
+        {text}
+      </span>
     )
   }
 
   return (
-    <span style={{ position: 'relative', display: 'inline-block' }}>
-      {/* Teal RGB channel — offsets left, fades out */}
+    <span ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Channel A — offsets left, fades out */}
       <motion.span
         aria-hidden
         initial={{ x: 0, opacity: 0 }}
@@ -1751,7 +1797,7 @@ function GlitchWord({ text, isLoaded }: { text: string; isLoaded: boolean }) {
         style={{
           position: 'absolute',
           inset: 0,
-          color: '#00BCD4',
+          color: tintA,
           mixBlendMode: 'screen',
           pointerEvents: 'none',
           willChange: 'transform, opacity',
@@ -1759,7 +1805,7 @@ function GlitchWord({ text, isLoaded }: { text: string; isLoaded: boolean }) {
       >
         {text}
       </motion.span>
-      {/* Gold RGB channel — offsets right, fades out */}
+      {/* Channel B — offsets right, fades out */}
       <motion.span
         aria-hidden
         initial={{ x: 0, opacity: 0 }}
@@ -1772,7 +1818,7 @@ function GlitchWord({ text, isLoaded }: { text: string; isLoaded: boolean }) {
         style={{
           position: 'absolute',
           inset: 0,
-          color: '#D4AF37',
+          color: tintB,
           mixBlendMode: 'screen',
           pointerEvents: 'none',
           willChange: 'transform, opacity',
@@ -2898,27 +2944,137 @@ function MegaBotSection() {
           pointerEvents: 'none',
         }}
       />
-      <div style={{ maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <SectionEyebrow text="THE CROWN JEWEL" color="#8B5CF6" />
-        <SectionHeading>
-          Four AI Engines. <GradientText>One Fair Price.</GradientText>
-        </SectionHeading>
-        <p
+
+      {/* Corner crosshair markers — Lusion studio framing (purple tint) */}
+      {[
+        { top: 20, left: 20 },
+        { top: 20, right: 20 },
+        { bottom: 20, left: 20 },
+        { bottom: 20, right: 20 },
+      ].map((pos, i) => (
+        <motion.svg
+          key={i}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          whileInView={{ opacity: 0.55, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            delay: 0.2 + i * 0.08,
+            duration: 0.7,
+            ease: [0.23, 1, 0.32, 1],
+          }}
           style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
-            fontSize: 17,
-            color: '#CBD5E1',
-            maxWidth: 640,
-            margin: '0 auto 48px',
-            textAlign: 'center',
-            lineHeight: 1.65,
+            position: 'absolute',
+            ...pos,
+            pointerEvents: 'none',
+            zIndex: 2,
           }}
         >
-          Our proprietary MegaBot runs OpenAI, Claude, Gemini, and Grok
-          simultaneously. When 4 AIs agree on your item&apos;s value, you can trust
-          the number.
-        </p>
+          <path d="M6 0v12M0 6h12" stroke="#8B5CF6" strokeWidth="1" />
+        </motion.svg>
+      ))}
+
+      <div style={{ maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        {/* Ghost oversized "MEGABOT" word — depth vocabulary */}
+        <span
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: width < 768 ? -10 : -30,
+            transform: 'translateX(-50%)',
+            fontFamily: 'var(--font-data)',
+            fontSize: width < 768 ? '22vw' : 'clamp(160px, 20vw, 340px)',
+            fontWeight: 800,
+            letterSpacing: '-0.04em',
+            color: 'rgba(139,92,246,0.05)',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            zIndex: 0,
+            lineHeight: 0.85,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          MEGABOT
+        </span>
+
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          {/* Live consensus HUD pill — signals the 4-AI engine is active */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: 14,
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 10px',
+                borderRadius: 9999,
+                background: 'rgba(139,92,246,0.12)',
+                border: '1px solid rgba(139,92,246,0.35)',
+                fontFamily: 'var(--font-data)',
+                fontWeight: 700,
+                fontSize: 10,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase' as const,
+                color: '#C4B5FD',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: '#8B5CF6',
+                  boxShadow: '0 0 8px rgba(139,92,246,0.7)',
+                  animation: 'pulse 1.4s ease-in-out infinite',
+                }}
+              />
+              4 AIs · Consensus active
+            </span>
+          </div>
+
+          <SectionEyebrow text="THE CROWN JEWEL" color="#8B5CF6" />
+          <h2
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 'clamp(32px, 5vw, 48px)',
+              lineHeight: 1.2,
+              letterSpacing: '-0.5px',
+              color: '#F1F5F9',
+              textAlign: 'center',
+              margin: '0 0 24px',
+            }}
+          >
+            Four AI Engines.{' '}
+            <GlitchWord text="One Fair Price." tintA="#8B5CF6" tintB="#00BCD4" />
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 17,
+              color: '#CBD5E1',
+              maxWidth: 640,
+              margin: '0 auto 48px',
+              textAlign: 'center',
+              lineHeight: 1.65,
+            }}
+          >
+            Our proprietary MegaBot runs OpenAI, Claude, Gemini, and Grok
+            simultaneously. When 4 AIs agree on your item&apos;s value, you can
+            trust the number.
+          </p>
+        </div>
 
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <img
