@@ -4566,6 +4566,39 @@ function EstateSection() {
         }}
       />
 
+      {/* Corner crosshair markers — estate-gold, restrained opacity
+          (0.35 vs default 0.55) to honor the dignified register */}
+      {[
+        { top: 20, left: 20 },
+        { top: 20, right: 20 },
+        { bottom: 20, left: 20 },
+        { bottom: 20, right: 20 },
+      ].map((pos, i) => (
+        <motion.svg
+          key={i}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          whileInView={{ opacity: 0.35, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            delay: 0.2 + i * 0.1,
+            duration: 0.9,
+            ease: [0.23, 1, 0.32, 1],
+          }}
+          style={{
+            position: 'absolute',
+            ...pos,
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        >
+          <path d="M6 0v12M0 6h12" stroke="#D4A017" strokeWidth="1" />
+        </motion.svg>
+      ))}
+
       <div
         style={{
           maxWidth: 1080,
@@ -4574,8 +4607,34 @@ function EstateSection() {
           zIndex: 2,
         }}
       >
-        <SectionEyebrow text="FOR FAMILIES & COMMUNITIES" color="#D4A017" />
-        <SectionHeading>Selling Should Not Add to the Grief.</SectionHeading>
+        {/* Ghost oversized "LEGACY" word — dignified gold, very low opacity.
+            No glitch, no HUD pill for this section: the grief-aware register
+            calls for restraint (Law 2, Pillar 03). */}
+        <span
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: width < 768 ? -10 : -30,
+            transform: 'translateX(-50%)',
+            fontFamily: 'var(--font-data)',
+            fontSize: width < 768 ? '22vw' : 'clamp(160px, 20vw, 340px)',
+            fontWeight: 800,
+            letterSpacing: '-0.04em',
+            color: 'rgba(212,160,23,0.04)',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            zIndex: 0,
+            lineHeight: 0.85,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          LEGACY
+        </span>
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <SectionEyebrow text="FOR FAMILIES & COMMUNITIES" color="#D4A017" />
+          <SectionHeading>Selling Should Not Add to the Grief.</SectionHeading>
         <p
           style={{
             fontFamily: 'var(--font-body)',
@@ -4592,6 +4651,7 @@ function EstateSection() {
           of items, emotional weight, and no idea what anything is worth.
           LegacyLoop was built for this moment.
         </p>
+        </div>
 
         <div
           style={{
