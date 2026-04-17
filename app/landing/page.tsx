@@ -345,6 +345,21 @@ function useWindowWidth() {
   return w
 }
 
+/** Detect touch device on mount. Returns stable boolean after first render.
+ *  Critical for iPad Safari: framer-motion v12 WAAPI animations frequently
+ *  get stuck at their initial state on iPad, leaving elements invisible.
+ *  Any component that animates opacity from 0 to 1 outside data-hero-content
+ *  should use this to skip the animation entirely on touch devices. */
+function useIsTouch() {
+  const [isTouch, setIsTouch] = useState(false)
+  useEffect(() => {
+    setIsTouch(
+      'ontouchstart' in window || navigator.maxTouchPoints > 0
+    )
+  }, [])
+  return isTouch
+}
+
 /** Responsive section padding — scales for 320→1280+ */
 function useSectionPadding(width: number) {
   if (width < 480) return { padding: '64px 16px' }
@@ -873,7 +888,12 @@ function TiltCard({
 }
 
 // ---------- KINETIC HEADLINE (Word Swap) ----------
-// Source: Premium SaaS sites — cycling word animation
+// Source: Premium SaaS sites — cycling word animation.
+// On touch devices, AnimatePresence's enter/exit animations can stall
+// on iPad Safari (documented in April 16 passoff — same class of WAAPI
+// bug that forced the Preloader off AnimatePresence). Touch path uses
+// a simple CSS opacity transition with no enter/exit overlap, so words
+// cycle reliably without stacking or disappearing.
 function KineticHeadline({
   words,
   style: extraStyle,
@@ -882,6 +902,7 @@ function KineticHeadline({
   style?: React.CSSProperties
 }) {
   const [index, setIndex] = useState(0)
+  const isTouch = useIsTouch()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -890,8 +911,44 @@ function KineticHeadline({
     return () => clearInterval(interval)
   }, [words.length])
 
+  const wrapStyle: React.CSSProperties = {
+    display: 'inline-block',
+    position: 'relative',
+    overflow: 'hidden',
+    verticalAlign: 'top',
+    height: '1.5em',
+    lineHeight: 1.5,
+    ...extraStyle,
+  }
+  const textStyle: React.CSSProperties = {
+    display: 'inline-block',
+    background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  }
+
+  if (isTouch) {
+    // Touch-safe path: keyed span with a plain CSS opacity transition.
+    // React remounts the span on key change so the transition runs
+    // from mount — no AnimatePresence, no WAAPI exit.
+    return (
+      <span style={wrapStyle}>
+        <span
+          key={words[index]}
+          style={{
+            ...textStyle,
+            animation: 'fadeScaleIn 0.4s ease both',
+          }}
+        >
+          {words[index]}
+        </span>
+      </span>
+    )
+  }
+
   return (
-    <span style={{ display: 'inline-block', position: 'relative', overflow: 'hidden', verticalAlign: 'top', height: '1.5em', lineHeight: 1.5, ...extraStyle }}>
+    <span style={wrapStyle}>
       <AnimatePresence mode="wait">
         <motion.span
           key={words[index]}
@@ -899,13 +956,7 @@ function KineticHeadline({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -30, opacity: 0 }}
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          style={{
-            display: 'inline-block',
-            background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
+          style={textStyle}
         >
           {words[index]}
         </motion.span>
@@ -1414,6 +1465,7 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
 function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   const width = useWindowWidth()
   const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
   const heroContentRef = useRef<HTMLDivElement>(null)
   const heroSectionRef = useRef<HTMLElement>(null)
 
@@ -1469,19 +1521,25 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         textAlign: 'center',
       }}
     >
-      {/* Video Background — parallax + delayed cinematic fade-in.
-          The video reveals LAST in the load sequence (~2.2s after
-          preloader) so the text assembles first, then the film starts
-          playing. Hero-as-film pattern (Pillar 04). */}
+      {/* Video Background — parallax + delayed cinematic fade-in on
+          desktop. On touch devices (iPad/mobile) the cinematic fade
+          is SKIPPED: framer-motion v12 WAAPI animations get stuck on
+          iPad Safari for elements outside data-hero-content, and the
+          nuclear fix below doesn't walk this wrapper. Skipping the
+          animation entirely makes the video visible immediately on
+          touch — the "action logo in the background" issue Ryan
+          reported. Parallax transforms still run via style (not
+          animate) so they're unaffected by WAAPI stalls. */}
       <motion.div
         aria-hidden
-        initial={{ opacity: 0 }}
-        animate={isLoaded ? { opacity: 1 } : {}}
+        initial={isTouch ? false : { opacity: 0 }}
+        animate={isTouch ? undefined : isLoaded ? { opacity: 1 } : {}}
         transition={{ delay: 2.2, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
         style={{
           position: 'absolute',
           inset: 0,
           zIndex: 0,
+          opacity: isTouch ? 1 : undefined,
           y: reduced ? 0 : heroVideoY,
           scale: reduced ? 1 : heroVideoScale,
           willChange: 'transform',
@@ -1730,10 +1788,14 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         </motion.div>
       </div>
 
-      {/* Scroll Indicator — delayed fade-in closes the load sequence */}
+      {/* Scroll Indicator — delayed fade-in closes the load sequence on
+          desktop. On touch: skip the animation (same WAAPI-stuck risk
+          as the video wrapper). */}
       <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={isLoaded ? { opacity: 0.5, y: 0 } : {}}
+        initial={isTouch ? false : { opacity: 0, y: -8 }}
+        animate={
+          isTouch ? undefined : isLoaded ? { opacity: 0.5, y: 0 } : {}
+        }
         transition={{ delay: 2.6, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
         style={{
           position: 'absolute',
@@ -1741,6 +1803,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           left: '50%',
           animation: 'scrollBounce 2s ease-in-out infinite',
           zIndex: 5,
+          opacity: isTouch ? 0.5 : undefined,
         }}
       >
         <svg
@@ -1776,9 +1839,25 @@ function StaggeredWords({
   const reduced = useReducedMotion()
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.3 })
+  const [touchFired, setTouchFired] = useState(false)
   const words = text.split(' ')
 
+  // Touch-device fallback: useInView relies on IntersectionObserver which
+  // can misfire on iPad Safari (especially with Lenis disabled + dynamic
+  // viewport). Fire all words immediately after mount on touch so headlines
+  // never stay invisible.
+  useEffect(() => {
+    const isTouch =
+      typeof window !== 'undefined' &&
+      ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+    if (!isTouch) return
+    const t = setTimeout(() => setTouchFired(true), 100)
+    return () => clearTimeout(t)
+  }, [])
+
   if (reduced) return <>{text}</>
+
+  const revealed = inView || touchFired
 
   return (
     <span ref={ref} style={{ display: 'inline' }}>
@@ -1795,7 +1874,7 @@ function StaggeredWords({
         >
           <motion.span
             initial={{ opacity: 0, y: '100%' }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
+            animate={revealed ? { opacity: 1, y: 0 } : {}}
             transition={{
               duration: 0.7,
               delay: delay + i * stagger,
@@ -3570,6 +3649,7 @@ function MegaBotSection() {
 function HowItWorksSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const isTouch = useIsTouch()
   const steps = [
     {
       num: 1,
@@ -3607,9 +3687,12 @@ function HowItWorksSection() {
       }}
     >
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
-        {/* Entry variant: SCALE-FROM-0.92 — breaks uniform fade-up rhythm */}
+        {/* Entry variant: SCALE-FROM-0.92 — breaks uniform fade-up rhythm.
+            Touch-safe: initial state = final state on touch so if
+            whileInView doesn't fire on iPad, content is visible anyway.
+            Desktop still gets the scale entrance animation. */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
+          initial={isTouch ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
@@ -3998,6 +4081,7 @@ function ProductPreviewSection() {
 function AIAgentsSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const isTouch = useIsTouch()
   const cols =
     width >= 1200
       ? 'repeat(3, 1fr)'
@@ -4154,9 +4238,10 @@ function AIAgentsSection() {
       }}
     >
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        {/* Entry variant: SLIDE-FROM-LEFT — cinematic horizontal sweep */}
+        {/* Entry variant: SLIDE-FROM-LEFT — cinematic horizontal sweep.
+            Touch-safe: initial state = final state on touch. */}
         <motion.div
-          initial={{ opacity: 0, x: -60 }}
+          initial={isTouch ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
@@ -4481,8 +4566,18 @@ function PricingSection() {
             marginBottom: 48,
           }}
         >
-          <span
+          {/* Monthly label — tapping this forces isAnnual=false */}
+          <button
+            type="button"
+            onClick={() => setIsAnnual(false)}
+            aria-pressed={!isAnnual}
             style={{
+              appearance: 'none',
+              background: 'transparent',
+              border: 'none',
+              padding: '10px 4px',
+              minHeight: 44,
+              cursor: 'pointer',
               fontFamily: 'var(--font-body)',
               fontWeight: isAnnual ? 400 : 600,
               fontSize: 15,
@@ -4491,41 +4586,72 @@ function PricingSection() {
             }}
           >
             Monthly
-          </span>
-          <div
+          </button>
+          {/* The visual switch — 44px min tap target (Apple HIG) without
+              changing the 56×30 visual pill. Padding expands the hit
+              area. role="switch" + aria-checked makes it accessible. */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isAnnual}
+            aria-label="Toggle monthly or annual billing"
             onClick={() => setIsAnnual(!isAnnual)}
             style={{
-              width: 56,
-              height: 30,
-              borderRadius: 15,
-              background: isAnnual
-                ? 'linear-gradient(135deg, #00BCD4, #009688)'
-                : 'rgba(255,255,255,0.15)',
+              appearance: 'none',
+              padding: 7, // expands 56×30 pill to a 70×44 tap target
+              background: 'transparent',
+              border: 'none',
               cursor: 'pointer',
-              position: 'relative',
-              transition: 'background 0.3s ease',
-              border: isAnnual
-                ? '1px solid rgba(0,188,212,0.5)'
-                : '1px solid rgba(255,255,255,0.2)',
-              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <div
+            <span
               style={{
-                position: 'absolute',
-                top: 3,
-                left: isAnnual ? 28 : 3,
-                width: 22,
-                height: 22,
-                borderRadius: '50%',
-                background: '#FFFFFF',
-                transition: 'left 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                width: 56,
+                height: 30,
+                borderRadius: 15,
+                background: isAnnual
+                  ? 'linear-gradient(135deg, #00BCD4, #009688)'
+                  : 'rgba(255,255,255,0.15)',
+                position: 'relative',
+                transition: 'background 0.3s ease',
+                border: isAnnual
+                  ? '1px solid rgba(0,188,212,0.5)'
+                  : '1px solid rgba(255,255,255,0.2)',
+                flexShrink: 0,
+                display: 'inline-block',
               }}
-            />
-          </div>
-          <span
+            >
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 3,
+                  left: isAnnual ? 28 : 3,
+                  width: 22,
+                  height: 22,
+                  borderRadius: '50%',
+                  background: '#FFFFFF',
+                  transition: 'left 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  display: 'inline-block',
+                }}
+              />
+            </span>
+          </button>
+          {/* Annual label — tapping this forces isAnnual=true */}
+          <button
+            type="button"
+            onClick={() => setIsAnnual(true)}
+            aria-pressed={isAnnual}
             style={{
+              appearance: 'none',
+              background: 'transparent',
+              border: 'none',
+              padding: '10px 4px',
+              minHeight: 44,
+              cursor: 'pointer',
               fontFamily: 'var(--font-body)',
               fontWeight: isAnnual ? 600 : 400,
               fontSize: 15,
@@ -4534,7 +4660,7 @@ function PricingSection() {
             }}
           >
             Annual
-          </span>
+          </button>
           <span
             style={{
               fontFamily: 'var(--font-data)',
@@ -5815,6 +5941,7 @@ function SocialProofSection() {
 function TechSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const isTouch = useIsTouch()
   const cols = width < 640 ? '1fr' : 'repeat(2, 1fr)'
 
   const items = [
@@ -5877,12 +6004,15 @@ function TechSection() {
           zIndex: 2,
         }}
       >
-        {/* Entry variant: CLIP-PATH WIPE — top-down reveal, Active Theory pattern */}
+        {/* Entry variant: CLIP-PATH WIPE — top-down reveal (AT pattern).
+            Touch-safe: skip the clip-path reveal since it could stall on
+            iPad leaving the whole intro invisible. Desktop still gets it. */}
         <motion.div
-          initial={{
-            clipPath: 'inset(0 0 100% 0)',
-            opacity: 0,
-          }}
+          initial={
+            isTouch
+              ? { clipPath: 'inset(0 0 0% 0)', opacity: 1 }
+              : { clipPath: 'inset(0 0 100% 0)', opacity: 0 }
+          }
           whileInView={{
             clipPath: 'inset(0 0 0% 0)',
             opacity: 1,
