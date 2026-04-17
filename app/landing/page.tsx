@@ -5578,9 +5578,12 @@ function VideoShowcaseSection() {
 function AppDownloadSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
   const isMobile = width < 768
+  const isSmall = width < 600
 
   const [detectedPlatform, setDetectedPlatform] = useState<string>('WebApp')
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const ua = navigator.userAgent
@@ -5593,276 +5596,609 @@ function AppDownloadSection() {
     } else {
       setDetectedPlatform('WebApp')
     }
+    setIsLoaded(true)
   }, [])
 
   const installCards = [
     {
       platform: 'iOS',
-      icon: '🍎',
+      emoji: '🍎',
       title: 'iPhone & iPad',
-      steps: ['Open legacy-loop.com in Safari', 'Tap the Share button', 'Select "Add to Home Screen"'],
+      subtitle: 'iOS Safari',
+      steps: ['Open in Safari', 'Tap Share ⬆', 'Add to Home Screen', 'Tap "Add"'],
     },
     {
       platform: 'Android',
-      icon: '🤖',
+      emoji: '🤖',
       title: 'Android',
-      steps: ['Open legacy-loop.com in Chrome', 'Tap the menu (⋮)', 'Select "Install App" or "Add to Home Screen"'],
+      subtitle: 'Chrome Browser',
+      steps: ['Open in Chrome', 'Tap menu ⋮', 'Add to Home Screen', 'Tap "Install"'],
+      featured: true,
     },
     {
       platform: 'Desktop',
-      icon: '💻',
-      title: 'Mac & PC',
-      steps: ['Open legacy-loop.com in Chrome', 'Click the install icon in the address bar', 'Click "Install"'],
+      emoji: '💻',
+      title: 'Mac & Windows',
+      subtitle: 'Chrome or Edge',
+      steps: ['Open in Chrome/Edge', 'Click ⊕ in address bar', 'Click "Install"', 'App opens standalone'],
+    },
+    {
+      platform: 'WebApp',
+      emoji: '🌐',
+      title: 'Any Browser',
+      subtitle: 'Zero install',
+      steps: ['Open any browser', 'Visit app.legacy-loop.com', 'Log in — start selling', 'Works offline once loaded'],
     },
   ]
 
-  const isHighlighted = (platform: string) => platform === detectedPlatform
-
   return (
     <section
+      id="download"
       style={{
         ...sp,
         position: 'relative',
         zIndex: 5,
+        overflow: 'hidden',
       }}
     >
-      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <SectionEyebrow text="GET THE APP" />
-        <SectionHeading>
-          Install LegacyLoop.{' '}
-          <GradientText>No App Store Needed.</GradientText>
-        </SectionHeading>
-        <p
+      {/* Corner crosshair markers — Lusion studio framing */}
+      {[
+        { top: 20, left: 20 },
+        { top: 20, right: 20 },
+        { bottom: 20, left: 20 },
+        { bottom: 20, right: 20 },
+      ].map((pos, i) => (
+        <motion.svg
+          key={i}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          whileInView={{ opacity: 0.55, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            delay: 0.2 + i * 0.08,
+            duration: 0.7,
+            ease: [0.23, 1, 0.32, 1],
+          }}
           style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
-            fontSize: 17,
-            color: '#CBD5E1',
-            textAlign: 'center',
-            maxWidth: 520,
-            margin: '0 auto 48px',
-            lineHeight: 1.65,
+            position: 'absolute',
+            ...pos,
+            pointerEvents: 'none',
+            zIndex: 2,
           }}
         >
-          LegacyLoop is a Progressive Web App — install it directly from your browser for a native app experience. No download required.
-        </p>
+          <path d="M6 0v12M0 6h12" stroke="#00BCD4" strokeWidth="1" />
+        </motion.svg>
+      ))}
 
+      {/* Ambient glow — centered teal dome */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(ellipse 55% 40% at 50% 20%, rgba(0,188,212,0.06), transparent 70%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* HEADLINE BLOCK — with ghost POCKET typography */}
+        <div
+          style={{
+            textAlign: 'center',
+            marginBottom: isMobile ? 40 : 56,
+            position: 'relative',
+          }}
+        >
+          {/* Ghost oversized "POCKET" word — Resn / AT depth vocabulary */}
+          <span
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: isMobile ? 10 : 18,
+              transform: 'translateX(-50%)',
+              fontFamily: 'var(--font-data)',
+              fontSize: isMobile ? '20vw' : 'clamp(160px, 20vw, 320px)',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              color: 'rgba(0,188,212,0.05)',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              zIndex: 0,
+              lineHeight: 0.85,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            POCKET
+          </span>
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <SectionEyebrow text="AVAILABLE ON ALL DEVICES" />
+            <h2
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 700,
+                fontSize: 'clamp(34px, 5.2vw, 56px)',
+                lineHeight: 1.1,
+                letterSpacing: '-0.5px',
+                color: '#F1F5F9',
+                textAlign: 'center',
+                margin: '0 auto 20px',
+                maxWidth: 860,
+              }}
+            >
+              {reduced ? (
+                <>
+                  LegacyLoop lives on your <GradientText>phone</GradientText>.
+                </>
+              ) : (
+                <>
+                  <motion.span
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.4 }}
+                    transition={{
+                      duration: 0.7,
+                      delay: 0.1,
+                      ease: [0.23, 1, 0.32, 1],
+                    }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    LegacyLoop lives on your&nbsp;
+                  </motion.span>
+                  <GlitchWord text="phone" isLoaded={isLoaded} />
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.9 }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    .
+                  </motion.span>
+                </>
+              )}
+            </h2>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 400,
+                fontSize: isSmall ? 16 : 18,
+                lineHeight: 1.65,
+                color: '#CBD5E1',
+                maxWidth: 640,
+                margin: '0 auto',
+              }}
+            >
+              No App Store. No approval wait. Install in{' '}
+              <span style={{ color: '#F1F5F9', fontWeight: 600 }}>
+                3 seconds
+              </span>{' '}
+              — iPhone, Android, desktop, or any browser.
+            </p>
+          </div>
+        </div>
+
+        {/* 4-UP INSTALL CARD GRID — Android FEATURED with LIVE pill */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: 20,
-            marginBottom: 20,
+            gridTemplateColumns: isSmall
+              ? '1fr'
+              : isMobile
+              ? 'repeat(2, 1fr)'
+              : 'repeat(4, 1fr)',
+            gap: isMobile ? 14 : 18,
+            marginBottom: isMobile ? 48 : 64,
           }}
         >
-          {installCards.map((card, i) => (
-            <GlowCard
-              key={card.platform}
-              delay={i * 100}
-              style={isHighlighted(card.platform) ? {
-                border: '1px solid rgba(0,188,212,0.4)',
-                background: 'rgba(0,188,212,0.06)',
-              } : undefined}
-            >
-              {isHighlighted(card.platform) && (
-                <span
-                  style={{
-                    fontFamily: 'var(--font-data)',
-                    fontWeight: 600,
-                    fontSize: 10,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase' as const,
-                    color: '#00BCD4',
-                    background: 'rgba(0,188,212,0.15)',
-                    padding: '3px 10px',
-                    borderRadius: 10,
-                    marginBottom: 8,
-                    display: 'inline-block',
-                  }}
-                >
-                  Detected: Your Platform
-                </span>
-              )}
-              <div style={{ fontSize: 32, marginBottom: 12 }}>{card.icon}</div>
-              <div
+          {installCards.map((card, i) => {
+            const isDetected = card.platform === detectedPlatform
+            const accent = card.featured ? '#22C55E' : '#00BCD4'
+            const accentRgba = card.featured
+              ? 'rgba(34,197,94,'
+              : 'rgba(0,188,212,'
+            return (
+              <GlowCard
+                key={card.platform}
+                delay={i * 100}
+                hoverBorderColor={`${accentRgba}0.55)`}
+                defaultBorderColor={
+                  card.featured
+                    ? 'rgba(34,197,94,0.3)'
+                    : isDetected
+                    ? 'rgba(0,188,212,0.4)'
+                    : 'rgba(0,188,212,0.15)'
+                }
                 style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 600,
-                  fontSize: 18,
-                  color: '#F1F5F9',
-                  marginBottom: 16,
+                  padding: isSmall ? 18 : 20,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  background: card.featured
+                    ? 'rgba(34,197,94,0.04)'
+                    : isDetected
+                    ? 'rgba(0,188,212,0.05)'
+                    : 'rgba(255,255,255,0.03)',
                 }}
               >
-                {card.title}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {card.steps.map((step, j) => (
+                {/* Top row — icon chip + pill indicator */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    gap: 8,
+                  }}
+                >
                   <div
-                    key={j}
                     style={{
+                      width: 46,
+                      height: 46,
+                      borderRadius: 12,
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.07)',
                       display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 10,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 24,
+                      flexShrink: 0,
                     }}
                   >
+                    {card.emoji}
+                  </div>
+
+                  {card.featured ? (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        padding: '3px 8px',
+                        borderRadius: 9999,
+                        background: 'rgba(34,197,94,0.14)',
+                        border: '1px solid rgba(34,197,94,0.4)',
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 700,
+                        fontSize: 9,
+                        letterSpacing: '0.15em',
+                        textTransform: 'uppercase' as const,
+                        color: '#22C55E',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 5,
+                          height: 5,
+                          borderRadius: '50%',
+                          background: '#22C55E',
+                          boxShadow: '0 0 6px rgba(34,197,94,0.7)',
+                          animation: reduced
+                            ? 'none'
+                            : 'pulse 1.4s ease-in-out infinite',
+                        }}
+                      />
+                      Recommended
+                    </span>
+                  ) : isDetected ? (
                     <span
                       style={{
                         fontFamily: 'var(--font-data)',
                         fontWeight: 700,
-                        fontSize: 12,
-                        color: '#0D1117',
-                        background: '#00BCD4',
-                        borderRadius: '50%',
-                        width: 22,
-                        height: 22,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        marginTop: 1,
+                        fontSize: 9,
+                        letterSpacing: '0.14em',
+                        textTransform: 'uppercase' as const,
+                        color: '#00BCD4',
+                        background: 'rgba(0,188,212,0.14)',
+                        border: '1px solid rgba(0,188,212,0.4)',
+                        padding: '3px 8px',
+                        borderRadius: 9999,
+                        whiteSpace: 'nowrap',
                       }}
                     >
-                      {j + 1}
+                      Your device
                     </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-body)',
-                        fontSize: 14,
-                        color: '#CBD5E1',
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {step}
-                    </span>
+                  ) : null}
+                </div>
+
+                {/* Title + subtitle */}
+                <div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 700,
+                      fontSize: 17,
+                      color: '#F1F5F9',
+                      marginBottom: 2,
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {card.title}
                   </div>
-                ))}
-              </div>
-            </GlowCard>
-          ))}
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 12,
+                      color: '#8B949E',
+                    }}
+                  >
+                    {card.subtitle}
+                  </div>
+                </div>
+
+                {/* Steps */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 8,
+                    flex: 1,
+                  }}
+                >
+                  {card.steps.map((step, j) => (
+                    <div
+                      key={j}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 10,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-data)',
+                          fontWeight: 700,
+                          fontSize: 10,
+                          color: accent,
+                          background: `${accentRgba}0.12)`,
+                          border: `1px solid ${accentRgba}0.3)`,
+                          borderRadius: '50%',
+                          width: 20,
+                          height: 20,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          marginTop: 1,
+                        }}
+                      >
+                        {j + 1}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: 13,
+                          color: '#CBD5E1',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {step}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </GlowCard>
+            )
+          })}
         </div>
 
-        {/* GAP A — Web App card (full width) */}
-        <GlowCard
-          delay={300}
-          style={isHighlighted('WebApp') ? {
-            border: '1px solid rgba(0,188,212,0.4)',
-            background: 'rgba(0,188,212,0.06)',
-            marginBottom: 48,
-          } : { marginBottom: 48 }}
-        >
-          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: 24 }}>
-            <div style={{ flex: 1 }}>
-              {isHighlighted('WebApp') && (
-                <span
+        {/* QR CODE + PHONE MOCKUP ROW — desktop only (mobile users already have their phone) */}
+        {!isMobile && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 48,
+              alignItems: 'center',
+              maxWidth: 860,
+              margin: '0 auto 64px',
+              padding: '48px 0',
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            {/* LEFT — QR code with soft teal frame */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 16,
+              }}
+            >
+              <div
+                style={{
+                  padding: 18,
+                  borderRadius: 20,
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(0,188,212,0.2)',
+                  boxShadow: '0 0 48px rgba(0,188,212,0.08)',
+                }}
+              >
+                <QRCodeSVG
+                  value="https://app.legacy-loop.com"
+                  size={180}
+                  bgColor="#0D1117"
+                  fgColor="#00BCD4"
+                  level="H"
+                />
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 14,
+                    color: '#CBD5E1',
+                    marginBottom: 4,
+                  }}
+                >
+                  Scan to open on your phone
+                </div>
+                <div
                   style={{
                     fontFamily: 'var(--font-data)',
                     fontWeight: 600,
-                    fontSize: 10,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase' as const,
+                    fontSize: 12,
                     color: '#00BCD4',
-                    background: 'rgba(0,188,212,0.15)',
-                    padding: '3px 10px',
-                    borderRadius: 10,
-                    marginBottom: 8,
-                    display: 'inline-block',
+                    letterSpacing: '0.1em',
                   }}
                 >
-                  Detected: Your Platform
-                </span>
-              )}
-              <div style={{ fontSize: 32, marginBottom: 8 }}>🌐</div>
+                  app.legacy-loop.com
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT — Phone mockup with live V8 preview (floating bob) */}
+            <motion.div
+              animate={reduced ? {} : { y: [0, -6, 0] }}
+              transition={
+                reduced
+                  ? {}
+                  : { duration: 3, repeat: Infinity, ease: 'easeInOut' }
+              }
+              style={{
+                position: 'relative',
+                width: 220,
+                aspectRatio: '9 / 16',
+                margin: '0 auto',
+                borderRadius: 28,
+                overflow: 'hidden',
+                border: '8px solid #0D1117',
+                outline: '1px solid rgba(0,188,212,0.3)',
+                boxShadow:
+                  '0 0 40px rgba(0,188,212,0.12), 0 24px 56px rgba(0,0,0,0.5)',
+                background:
+                  'linear-gradient(180deg, #0D1117 0%, #1A1F2E 100%)',
+                padding: '32px 18px 18px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}
+            >
+              {/* iOS-style notch */}
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 72,
+                  height: 6,
+                  background: 'rgba(0,0,0,0.7)',
+                  borderRadius: 3,
+                  zIndex: 3,
+                }}
+              />
+
+              {/* App header — wordmark + live dot */}
               <div
                 style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 600,
-                  fontSize: 18,
-                  color: '#F1F5F9',
-                  marginBottom: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
-                Web App — Open in Your Browser
+                <span
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 800,
+                    fontSize: 12,
+                    color: '#00BCD4',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  LegacyLoop
+                </span>
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: '#22C55E',
+                    boxShadow: '0 0 6px rgba(34,197,94,0.6)',
+                    animation: reduced
+                      ? 'none'
+                      : 'pulse 1.4s ease-in-out infinite',
+                  }}
+                />
               </div>
-              <p
+
+              {/* V8 mini pills — same vocab as the live app */}
+              {[
+                { label: 'LIST', value: '$380', color: '#00BCD4' },
+                { label: 'ACCEPT', value: '$280', color: '#22C55E' },
+                { label: 'FLOOR', value: '$220', color: '#F59E0B' },
+              ].map((p) => (
+                <div
+                  key={p.label}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 10px',
+                    background: 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${p.color}40`,
+                    borderRadius: 8,
+                    borderLeft: `3px solid ${p.color}`,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      fontSize: 9,
+                      letterSpacing: '0.14em',
+                      color: p.color,
+                    }}
+                  >
+                    {p.label}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      fontSize: 14,
+                      color: '#F1F5F9',
+                    }}
+                  >
+                    {p.value}
+                  </span>
+                </div>
+              ))}
+
+              {/* Item context line */}
+              <div
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: 14,
-                  color: '#CBD5E1',
-                  lineHeight: 1.55,
-                  marginBottom: 16,
+                  fontSize: 10,
+                  color: '#8B949E',
+                  textAlign: 'center',
+                  marginTop: 4,
+                  lineHeight: 1.4,
                 }}
               >
-                No install required. Works on any device.
-              </p>
-              <a
-                href="https://app.legacy-loop.com"
-                style={{
-                  display: 'inline-block',
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  padding: '12px 24px',
-                  borderRadius: 10,
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #00bcd4, #009688)',
-                  color: '#fff',
-                  textDecoration: 'none',
-                  boxShadow: '0 0 24px rgba(0,188,212,0.3)',
-                }}
-              >
-                Open Web App →
-              </a>
-            </div>
+                Nintendo 64 · Good
+                <br />
+                Garage sale w/ online backup
+              </div>
+            </motion.div>
           </div>
-        </GlowCard>
-
-        {/* GAP B — QR Code */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 16,
-            marginBottom: 48,
-          }}
-        >
-          <div
-            style={{
-              padding: 20,
-              borderRadius: 16,
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(0,188,212,0.15)',
-            }}
-          >
-            <QRCodeSVG
-              value="https://app.legacy-loop.com"
-              size={200}
-              bgColor="#0D1117"
-              fgColor="#00BCD4"
-              level="H"
-            />
-          </div>
-          <span
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 14,
-              color: '#CBD5E1',
-            }}
-          >
-            Scan to open on your phone
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-data)',
-              fontWeight: 600,
-              fontSize: 13,
-              color: '#00BCD4',
-              letterSpacing: '0.05em',
-            }}
-          >
-            app.legacy-loop.com
-          </span>
-        </div>
+        )}
 
         {/* Senior-friendly help text */}
         <p
@@ -5871,46 +6207,73 @@ function AppDownloadSection() {
             fontSize: 14,
             color: '#94A3B8',
             textAlign: 'center',
-            maxWidth: 480,
-            margin: '0 auto 48px',
+            maxWidth: 520,
+            margin: '0 auto 36px',
             lineHeight: 1.65,
           }}
         >
-          Not sure how to install? It&apos;s simple — tap the button for your phone type and follow the steps. Need help? Email us at{' '}
-          <a href="mailto:support@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>
+          Not sure how to install? It&apos;s simple — tap the button for your
+          phone type and follow the steps. Need help? Email{' '}
+          <a
+            href="mailto:support@legacy-loop.com"
+            style={{ color: '#00BCD4', textDecoration: 'none' }}
+          >
             support@legacy-loop.com
           </a>
         </p>
 
-        {/* PWA features callout */}
+        {/* PWA feature chips */}
         <div
           style={{
             display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            gap: isMobile ? 12 : 24,
+            gap: isMobile ? 8 : 12,
+            marginBottom: 32,
           }}
         >
-          {['Offline Access', 'Push Notifications', 'Home Screen Icon', 'Instant Updates'].map((feature) => (
+          {[
+            'PWA Installable',
+            'Works Offline',
+            'No App Store Wait',
+            'Free to Install',
+          ].map((feature) => (
             <span
               key={feature}
               style={{
                 fontFamily: 'var(--font-data)',
-                fontWeight: 600,
-                fontSize: 11,
-                letterSpacing: '0.1em',
+                fontWeight: 700,
+                fontSize: 10,
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase' as const,
                 color: '#00BCD4',
                 background: 'rgba(0,188,212,0.08)',
-                border: '1px solid rgba(0,188,212,0.2)',
-                padding: '8px 16px',
-                borderRadius: 20,
+                border: '1px solid rgba(0,188,212,0.25)',
+                padding: '8px 14px',
+                borderRadius: 9999,
               }}
             >
               {feature}
             </span>
           ))}
         </div>
+
+        {/* Trust line */}
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 13,
+            color: '#8B949E',
+            textAlign: 'center',
+            margin: 0,
+            lineHeight: 1.6,
+          }}
+        >
+          Trusted by sellers across Maine.{' '}
+          <span style={{ color: '#F1F5F9', fontWeight: 500 }}>
+            Free to install. Always.
+          </span>
+        </p>
       </div>
     </section>
   )
