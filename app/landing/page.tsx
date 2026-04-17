@@ -3949,27 +3949,142 @@ function PricingSection() {
         ...sp,
         position: 'relative',
         zIndex: 5,
+        overflow: 'hidden',
       }}
     >
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <SectionEyebrow text="SIMPLE HONEST PRICING" />
-        <SectionHeading>Simple, Honest Pricing</SectionHeading>
-        <p
+      {/* Corner crosshair markers — Lusion studio framing */}
+      {[
+        { top: 20, left: 20 },
+        { top: 20, right: 20 },
+        { bottom: 20, left: 20 },
+        { bottom: 20, right: 20 },
+      ].map((pos, i) => (
+        <motion.svg
+          key={i}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          whileInView={{ opacity: 0.55, scale: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{
+            delay: 0.2 + i * 0.08,
+            duration: 0.7,
+            ease: [0.23, 1, 0.32, 1],
+          }}
           style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
-            fontSize: 17,
-            color: '#CBD5E1',
-            textAlign: 'center',
-            maxWidth: 520,
-            margin: '0 auto 48px',
-            lineHeight: 1.65,
+            position: 'absolute',
+            ...pos,
+            pointerEvents: 'none',
+            zIndex: 2,
           }}
         >
-          1.75% buyer + 1.75% seller = 3.5% total on sales. Subscriptions = 0% processing. Always transparent.
-        </p>
+          <path d="M6 0v12M0 6h12" stroke="#00BCD4" strokeWidth="1" />
+        </motion.svg>
+      ))}
 
-        {/* Monthly / Annual Toggle */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+        {/* Ghost oversized "VALUE" word — Resn/AT depth vocabulary */}
+        <span
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: width < 768 ? -10 : -30,
+            transform: 'translateX(-50%)',
+            fontFamily: 'var(--font-data)',
+            fontSize: width < 768 ? '22vw' : 'clamp(160px, 20vw, 340px)',
+            fontWeight: 800,
+            letterSpacing: '-0.04em',
+            color: 'rgba(0,188,212,0.04)',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            zIndex: 0,
+            lineHeight: 0.85,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          VALUE
+        </span>
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {/* Live trust HUD — "3.5% total · no hidden fees" pulse pill */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: 14,
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 10px',
+                borderRadius: 9999,
+                background: 'rgba(34,197,94,0.12)',
+                border: '1px solid rgba(34,197,94,0.35)',
+                fontFamily: 'var(--font-data)',
+                fontWeight: 700,
+                fontSize: 10,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase' as const,
+                color: '#22C55E',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: '#22C55E',
+                  boxShadow: '0 0 8px rgba(34,197,94,0.7)',
+                  animation: 'pulse 1.4s ease-in-out infinite',
+                }}
+              />
+              3.5% total · No hidden fees
+            </span>
+          </div>
+
+          <SectionEyebrow text="SIMPLE HONEST PRICING" />
+          <h2
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 'clamp(36px, 5vw, 48px)',
+              lineHeight: 1.2,
+              letterSpacing: '-0.5px',
+              color: '#F1F5F9',
+              textAlign: 'center',
+              margin: '0 0 24px',
+            }}
+          >
+            Simple, Honest <GlitchWord text="Pricing." />
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 17,
+              color: '#CBD5E1',
+              textAlign: 'center',
+              maxWidth: 520,
+              margin: '0 auto 48px',
+              lineHeight: 1.65,
+            }}
+          >
+            1.75% buyer + 1.75% seller ={' '}
+            <span style={{ color: '#F1F5F9', fontWeight: 600 }}>
+              3.5% total
+            </span>{' '}
+            on sales. Subscriptions = 0% processing. Always transparent.
+          </p>
+        </div>
+
+        {/* Monthly / Annual Toggle — outside the ghost-VALUE z-layer */}
         <div
           style={{
             display: 'flex',
