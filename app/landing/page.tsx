@@ -2941,7 +2941,15 @@ function MarketOpportunitySection() {
   const reduced = useReducedMotion()
   const isMobile = width < 768
   const isSmall = width < 600
-  const cols = isSmall ? '1fr' : isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)'
+  // Responsive grid — 1 col <600 · 2 cols 600-1023 · 4 cols 1024+
+  // Previous 4-cols-at-768 crammed each card to ~170px and wrapped
+  // "Prices Per Item" / "Specialized Bots" across 2 lines.
+  const cols =
+    width < 600
+      ? '1fr'
+      : width < 1024
+      ? 'repeat(2, 1fr)'
+      : 'repeat(4, 1fr)'
 
   const stats = [
     {
@@ -4147,7 +4155,7 @@ function AIAgentsSection() {
         >
           <SectionEyebrow text="YOUR AI TEAM" />
           <SectionHeading>
-            Ten Specialized AI Bots.{' '}
+            Twelve Specialized AI Bots.{' '}
             <GradientText>All Working For You.</GradientText>
           </SectionHeading>
           <p
@@ -6527,15 +6535,19 @@ function AppDownloadSection() {
           </div>
         </div>
 
-        {/* 4-UP INSTALL CARD GRID — Android FEATURED with LIVE pill */}
+        {/* 4-UP INSTALL CARD GRID — Android FEATURED with LIVE pill.
+            Responsive: 1 col <600 · 2 cols 600-1023 · 4 cols 1024+.
+            Previous 4-cols-at-768 layout crammed each card to ~170px
+            and broke step text across 3 lines. 2-col tablet breathes. */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: isSmall
-              ? '1fr'
-              : isMobile
-              ? 'repeat(2, 1fr)'
-              : 'repeat(4, 1fr)',
+            gridTemplateColumns:
+              width < 600
+                ? '1fr'
+                : width < 1024
+                ? 'repeat(2, 1fr)'
+                : 'repeat(4, 1fr)',
             gap: isMobile ? 14 : 18,
             marginBottom: isMobile ? 48 : 64,
           }}
@@ -6549,7 +6561,7 @@ function AppDownloadSection() {
             return (
               <GlowCard
                 key={card.platform}
-                delay={i * 100}
+                delay={i * 90}
                 hoverBorderColor={`${accentRgba}0.55)`}
                 defaultBorderColor={
                   card.featured
