@@ -1396,6 +1396,15 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   const width = useWindowWidth()
   const reduced = useReducedMotion()
   const heroContentRef = useRef<HTMLDivElement>(null)
+  const heroSectionRef = useRef<HTMLElement>(null)
+
+  // Parallax — video drifts slower than scroll for cinematic depth
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroSectionRef,
+    offset: ['start start', 'end start'],
+  })
+  const heroVideoY = useTransform(heroScroll, [0, 1], ['0%', '18%'])
+  const heroVideoScale = useTransform(heroScroll, [0, 1], [1, 1.06])
 
   // Nuclear iPad fix: framer-motion v12 uses Web Animations API (WAAPI).
   // WAAPI animations sit ABOVE CSS !important in the cascade, so even our
@@ -1426,6 +1435,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
 
   return (
     <section
+      ref={heroSectionRef}
       id="hero"
       style={{
         minHeight: '100vh',
@@ -1439,22 +1449,33 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         textAlign: 'center',
       }}
     >
-      {/* Video Background */}
-      <AutoPlayVideo
+      {/* Video Background — parallax wrapper drifts slower than page scroll */}
+      <motion.div
+        aria-hidden
         style={{
           position: 'absolute',
           inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          opacity: 0.12,
           zIndex: 0,
+          y: reduced ? 0 : heroVideoY,
+          scale: reduced ? 1 : heroVideoScale,
+          willChange: 'transform',
         }}
-        sources={[
-          { src: '/hero-loop.webm', type: 'video/webm' },
-          { src: '/hero-loop.mp4', type: 'video/mp4' },
-        ]}
-      />
+      >
+        <AutoPlayVideo
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.12,
+          }}
+          sources={[
+            { src: '/hero-loop.webm', type: 'video/webm' },
+            { src: '/hero-loop.mp4', type: 'video/mp4' },
+          ]}
+        />
+      </motion.div>
 
       {/* Fallback bg image — always layered underneath */}
       <div
@@ -2915,9 +2936,19 @@ function MarketOpportunitySection() {
 function MegaBotSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
   const cols = width < 768 ? '1fr' : 'repeat(2, 1fr)'
   const [fillActive, setFillActive] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
+
+  // Parallax — purple ambient glow drifts against scroll for atmospheric depth
+  const megabotSectionRef = useRef<HTMLElement>(null)
+  const { scrollYProgress: mbScroll } = useScroll({
+    target: megabotSectionRef,
+    offset: ['start end', 'end start'],
+  })
+  const mbGlowY = useTransform(mbScroll, [0, 1], ['-20%', '20%'])
+  const mbGlowX = useTransform(mbScroll, [0, 1], ['0%', '8%'])
 
   useEffect(() => {
     const el = barRef.current
@@ -2973,6 +3004,7 @@ function MegaBotSection() {
 
   return (
     <section
+      ref={megabotSectionRef}
       id="megabot"
       style={{
         ...sp,
@@ -2981,8 +3013,9 @@ function MegaBotSection() {
         overflow: 'hidden',
       }}
     >
-      {/* Subtle purple ambient glow for MegaBot section */}
-      <div
+      {/* Subtle purple ambient glow — parallax drift for atmospheric depth */}
+      <motion.div
+        aria-hidden
         style={{
           position: 'absolute',
           top: '20%',
@@ -2993,6 +3026,9 @@ function MegaBotSection() {
           background:
             'radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 65%)',
           pointerEvents: 'none',
+          y: reduced ? 0 : mbGlowY,
+          x: reduced ? 0 : mbGlowX,
+          willChange: 'transform',
         }}
       />
 
@@ -4550,9 +4586,18 @@ function PricingSection() {
 function EstateSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
   const isMobile = width < 768
   const isTablet = width >= 768 && width < 1024
   const [activeTab, setActiveTab] = useState<'whiteglove' | 'estatecare' | 'neighborhood'>('whiteglove')
+
+  // Parallax — generations-hands background drifts gently for senior-safe depth
+  const estateSectionRef = useRef<HTMLElement>(null)
+  const { scrollYProgress: estateScroll } = useScroll({
+    target: estateSectionRef,
+    offset: ['start end', 'end start'],
+  })
+  const estateBgY = useTransform(estateScroll, [0, 1], ['-8%', '8%'])
 
   const features = [
     { emoji: '🏺', text: 'Antique detection that prevents underselling heirlooms' },
@@ -4614,9 +4659,11 @@ function EstateSection() {
         overflow: 'hidden',
       }}
       id="estate"
+      ref={estateSectionRef}
     >
-      {/* Warm background image */}
-      <div
+      {/* Warm background image — gentle parallax drift for senior-safe depth */}
+      <motion.div
+        aria-hidden
         style={{
           position: 'absolute',
           inset: 0,
@@ -4625,6 +4672,8 @@ function EstateSection() {
           backgroundPosition: 'center',
           opacity: 0.06,
           zIndex: 0,
+          y: reduced ? 0 : estateBgY,
+          willChange: 'transform',
         }}
       />
       <div
