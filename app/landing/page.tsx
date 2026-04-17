@@ -6798,9 +6798,11 @@ function WaitlistSection() {
           Lock in pre-launch pricing forever. Get priority access before public launch. Be part of LegacyLoop from day one.
         </p>
 
-        {/* Founding spots counter — BIG number */}
+        {/* Founding spots counter — BIG number, AnimatedStat count-up on viewport */}
         <div style={{ marginBottom: 12 }}>
-          <span
+          <AnimatedStat
+            target={153}
+            duration={2200}
             style={{
               fontFamily: 'var(--font-data)',
               fontWeight: 800,
@@ -6810,10 +6812,9 @@ function WaitlistSection() {
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
               lineHeight: 1,
+              display: 'inline-block',
             }}
-          >
-            153
-          </span>
+          />
         </div>
         <p
           style={{
@@ -7306,7 +7307,7 @@ function FinalCTASection() {
             marginTop: 20,
           }}
         >
-          153 founding spots remaining — join before they&apos;re gone
+          <AnimatedStat target={153} duration={2200} style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#00BCD4' }} /> founding spots remaining — join before they&apos;re gone
         </p>
       </div>
     </section>
