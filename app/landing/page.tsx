@@ -2313,6 +2313,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                   objectFit: 'cover',
                 }}
                 sources={[
+                  { src: '/LegacyLoop_Landing_GS_Hero.webm', type: 'video/webm' },
                   { src: '/LegacyLoop_Landing_GS_Hero.mp4', type: 'video/mp4' },
                 ]}
               />
@@ -2959,10 +2960,10 @@ function MarketOpportunitySection() {
       sub: 'One fair price, voted by 4-way consensus',
     },
     {
-      target: 12,
+      target: 10,
       heroLabel: 'Specialized Bots',
       line: 'Pricing · Listing · Shipping · Intel',
-      sub: 'Your personal AI team on every sell',
+      sub: 'Plus MegaBot consensus powering them all',
     },
     {
       target: 13,
@@ -3573,7 +3574,7 @@ function HowItWorksSection() {
       num: 2,
       emoji: '🧠',
       title: 'AI Analysis & Pricing',
-      desc: '12 AI bots analyze your item. MegaBot confirms the price.',
+      desc: '10 AI bots analyze your item. MegaBot confirms the price.',
     },
     {
       num: 3,
@@ -4155,7 +4156,7 @@ function AIAgentsSection() {
         >
           <SectionEyebrow text="YOUR AI TEAM" />
           <SectionHeading>
-            Twelve Specialized AI Bots.{' '}
+            Ten Specialized AI Bots + MegaBot.{' '}
             <GradientText>All Working For You.</GradientText>
           </SectionHeading>
           <p
@@ -5084,25 +5085,33 @@ function EstateSection() {
             ))}
           </div>
 
-          {!isMobile && !isTablet && (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <img
-                src="/images/estate/senior-tablet.png"
-                alt="Senior woman using LegacyLoop on a tablet to manage estate items"
-                loading="lazy"
-                style={{
-                  maxWidth: 420,
-                  width: '100%',
-                  borderRadius: 16,
-                  boxShadow:
-                    '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
-                }}
-                onError={(e) => {
-                  ;(e.target as HTMLImageElement).style.display = 'none'
-                }}
-              />
-            </div>
-          )}
+          {/* Senior-using-tablet photo — now visible on every viewport.
+              Mobile/tablet: stacks below the 4 feature cards (image is
+              capped at 420px and scales down with width:100%).
+              Desktop: sits in the right column next to the 4-card grid. */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: isMobile || isTablet ? 8 : 0,
+            }}
+          >
+            <img
+              src="/images/estate/senior-tablet.png"
+              alt="Senior woman using LegacyLoop on a tablet to manage estate items"
+              loading="lazy"
+              style={{
+                maxWidth: 420,
+                width: '100%',
+                borderRadius: 16,
+                boxShadow:
+                  '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
+              }}
+              onError={(e) => {
+                ;(e.target as HTMLImageElement).style.display = 'none'
+              }}
+            />
+          </div>
         </div>
 
         {/* Services Tab Toggle */}
@@ -5612,38 +5621,46 @@ function EstateSection() {
                 </a>
               </GlowCard>
 
-              {/* Garage sale image */}
-              {!isMobile && !isTablet && (
-                <div style={{ position: 'sticky', top: 100 }}>
-                  <img
-                    src="/images/garage/garage-sale.png"
-                    alt="Organized neighborhood garage sale with electronics, vintage finds, and clothing"
-                    loading="lazy"
-                    style={{
-                      width: '100%',
-                      borderRadius: 16,
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
-                    }}
-                    onError={(e) => {
-                      ;(e.target as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
-                  <img
-                    src="/images/garage/family-garage.png"
-                    alt="Family using LegacyLoop to manage their garage sale"
-                    loading="lazy"
-                    style={{
-                      width: '100%',
-                      borderRadius: 16,
-                      marginTop: 16,
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
-                    }}
-                    onError={(e) => {
-                      ;(e.target as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
-                </div>
-              )}
+              {/* Neighborhood garage-sale photo pair — visible on every
+                  viewport. Sticky scroll behavior preserved on desktop;
+                  on mobile/tablet the images stack below the content block. */}
+              <div
+                style={
+                  isMobile || isTablet
+                    ? { marginTop: 8 }
+                    : { position: 'sticky', top: 100 }
+                }
+              >
+                <img
+                  src="/images/garage/garage-sale.png"
+                  alt="Organized neighborhood garage sale with electronics, vintage finds, and clothing"
+                  loading="lazy"
+                  style={{
+                    width: '100%',
+                    borderRadius: 16,
+                    boxShadow:
+                      '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
+                  }}
+                  onError={(e) => {
+                    ;(e.target as HTMLImageElement).style.display = 'none'
+                  }}
+                />
+                <img
+                  src="/images/garage/family-garage.png"
+                  alt="Family using LegacyLoop to manage their garage sale"
+                  loading="lazy"
+                  style={{
+                    width: '100%',
+                    borderRadius: 16,
+                    marginTop: 16,
+                    boxShadow:
+                      '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
+                  }}
+                  onError={(e) => {
+                    ;(e.target as HTMLImageElement).style.display = 'none'
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -5914,7 +5931,7 @@ function TechSection() {
         </div>
 
         <ScrollRevealText
-          text="12 AI bots. 4 consensus engines. One AI Shipping Center. Every tool you need — in one platform."
+          text="10 AI bots + MegaBot. 4 consensus engines. One AI Shipping Center. Every tool you need — in one platform."
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 600,
