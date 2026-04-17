@@ -3573,7 +3573,7 @@ function HowItWorksSection() {
       num: 2,
       emoji: '🧠',
       title: 'AI Analysis & Pricing',
-      desc: '10 AI bots analyze your item. MegaBot confirms the price.',
+      desc: '12 AI bots analyze your item. MegaBot confirms the price.',
     },
     {
       num: 3,
@@ -5802,7 +5802,7 @@ function TechSection() {
     {
       emoji: '🔷',
       title: 'TypeScript',
-      desc: '85+ routes. Zero type errors. Type-safe end to end.',
+      desc: '200+ routes. Zero type errors. Type-safe end to end.',
     },
     {
       emoji: '🤖',
@@ -5914,7 +5914,7 @@ function TechSection() {
         </div>
 
         <ScrollRevealText
-          text="10 AI bots. 4 consensus engines. One AI Shipping Center. Every tool you need — in one platform."
+          text="12 AI bots. 4 consensus engines. One AI Shipping Center. Every tool you need — in one platform."
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 600,
