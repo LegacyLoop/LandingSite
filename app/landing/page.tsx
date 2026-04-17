@@ -1220,6 +1220,46 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
     { id: 'waitlist', label: 'Join', icon: '◆' },
   ]
 
+  // Measure each section's "mid-active" scroll position as a percentage of
+  // total page scroll. This is the exact scroll position where the section's
+  // vertical midpoint crosses the viewport midpoint — i.e. when the section
+  // is most actively in view. Using this as the dot's rail position keeps
+  // the progress fill and the active dot in lockstep: the progress line
+  // arrives at a dot exactly when the IntersectionObserver flags that
+  // section as active. Without this, evenly-spaced dots drift out of sync
+  // because sections have very different heights on the page.
+  const [dotPercents, setDotPercents] = useState<Record<string, number>>({})
+  useEffect(() => {
+    const measure = () => {
+      const doc = document.documentElement
+      const totalScroll = doc.scrollHeight - window.innerHeight
+      if (totalScroll <= 0) return
+      const next: Record<string, number> = {}
+      sections.forEach((s) => {
+        const el = document.getElementById(s.id)
+        if (!el) return
+        const midScroll =
+          el.offsetTop + el.offsetHeight / 2 - window.innerHeight / 2
+        next[s.id] = Math.max(0, Math.min(1, midScroll / totalScroll))
+      })
+      setDotPercents(next)
+    }
+    // Mount + after-paint + delayed measure to catch late-loading content
+    // (images, fonts, video metadata) that shifts section offsets.
+    measure()
+    const t1 = setTimeout(measure, 400)
+    const t2 = setTimeout(measure, 1500)
+    window.addEventListener('resize', measure)
+    window.addEventListener('load', measure)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('load', measure)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     const handleScroll = () => {
       setVisible(window.scrollY > 400)
@@ -1408,19 +1448,24 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
         }}
       />
 
-      {/* Evenly distributed section rows (flex space-between) */}
+      {/* Section rows positioned absolutely at their section's actual
+          proportional scroll position. This is what keeps the progress
+          fill and the active dot in lockstep: the fill arrives at each
+          dot exactly when that section becomes active. First-paint
+          fallback: until dotPercents is measured, rows use even spacing
+          via a short-lived index fallback. */}
       <div
         style={{
           height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          alignItems: 'stretch',
           position: 'relative',
         }}
       >
-        {sections.map((section) => {
+        {sections.map((section, i) => {
           const isActive = activeSection === section.id
+          const measured = dotPercents[section.id]
+          const fallback = i / (sections.length - 1)
+          const topPercent =
+            (measured !== undefined ? measured : fallback) * 100
           return (
             <button
               type="button"
@@ -1443,9 +1488,14 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
                 justifyContent: 'flex-end',
                 gap: 14,
                 cursor: 'pointer',
-                position: 'relative',
+                position: 'absolute',
+                right: 0,
+                top: `${topPercent}%`,
+                transform: 'translateY(-50%)',
+                width: '100%',
                 color: 'inherit',
                 fontFamily: 'inherit',
+                transition: 'top 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
               }}
             >
               {/* Hairline tick that extends from the rail toward the label
