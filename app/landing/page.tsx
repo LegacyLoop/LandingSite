@@ -734,17 +734,24 @@ function AnimatedStat({
   prefix = '',
   suffix = '',
   duration = 2200,
+  onComplete,
   style: extraStyle,
 }: {
   target: number
   prefix?: string
   suffix?: string
   duration?: number
+  onComplete?: () => void
   style?: React.CSSProperties
 }) {
   const [count, setCount] = useState(0)
   const [started, setStarted] = useState(false)
   const ref = useRef<HTMLSpanElement>(null)
+  const onCompleteRef = useRef(onComplete)
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
 
   useEffect(() => {
     const el = ref.current
@@ -771,12 +778,18 @@ function AnimatedStat({
   useEffect(() => {
     if (!started) return
     const start = Date.now()
+    let fired = false
     const tick = () => {
       const elapsed = Date.now() - start
       const progress = Math.min(elapsed / duration, 1)
       const eased = 1 - Math.pow(1 - progress, 4)
       setCount(Math.round(eased * target))
-      if (progress < 1) requestAnimationFrame(tick)
+      if (progress < 1) {
+        requestAnimationFrame(tick)
+      } else if (!fired) {
+        fired = true
+        onCompleteRef.current?.()
+      }
     }
     requestAnimationFrame(tick)
   }, [started, target, duration])
@@ -1973,12 +1986,14 @@ function V8Pill({
   tint,
   note,
   highlight,
+  onComplete,
 }: {
   label: string
   target: number
   tint: string
   note: string
   highlight?: boolean
+  onComplete?: () => void
 }) {
   return (
     <div
@@ -2062,7 +2077,7 @@ function V8Pill({
         }}
       >
         <span style={{ fontSize: '0.6em', color: '#8B949E' }}>$</span>
-        <AnimatedStat target={target} />
+        <AnimatedStat target={target} onComplete={onComplete} />
       </div>
     </div>
   )
@@ -2089,6 +2104,10 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
   })
   const videoY = useTransform(videoScroll, [0, 1], ['-5%', '5%'])
   const videoScale = useTransform(videoScroll, [0, 0.5, 1], [1.04, 1, 1.04])
+
+  // Signature moment — gold "ignition" pulse fires when ACCEPT counter
+  // hits its final value ($280). The screenshot-bait beat.
+  const [ignited, setIgnited] = useState(false)
 
   return (
     <section
@@ -2312,13 +2331,77 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
             />
           </div>
 
-          {/* RIGHT — Animated V8 Price Card */}
+          {/* RIGHT — Animated V8 Price Card wrapped in IGNITE layer.
+              When ACCEPT counter hits $280, a gold radial pulse fires
+              behind the card + the card's shadow briefly glows gold.
+              The screenshot-bait beat. */}
+          <div style={{ position: 'relative' }}>
+            {/* Gold ignition pulse — fires once when `ignited` flips true */}
+            <motion.div
+              aria-hidden
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={
+                ignited && !reduced
+                  ? {
+                      opacity: [0, 0.55, 0],
+                      scale: [0.6, 1.15, 1.25],
+                    }
+                  : {}
+              }
+              transition={{
+                duration: 1.4,
+                times: [0, 0.4, 1],
+                ease: [0.23, 1, 0.32, 1],
+              }}
+              style={{
+                position: 'absolute',
+                inset: -80,
+                background:
+                  'radial-gradient(circle, rgba(212,175,55,0.32) 0%, rgba(212,175,55,0.12) 30%, transparent 65%)',
+                filter: 'blur(32px)',
+                pointerEvents: 'none',
+                zIndex: 0,
+                borderRadius: '50%',
+              }}
+            />
+            {/* Conic border shimmer ring — subtle gold sweep on ignite */}
+            <motion.div
+              aria-hidden
+              initial={{ opacity: 0 }}
+              animate={ignited && !reduced ? { opacity: [0, 0.65, 0] } : {}}
+              transition={{
+                duration: 1.4,
+                times: [0, 0.35, 1],
+                ease: 'easeOut',
+              }}
+              style={{
+                position: 'absolute',
+                inset: -2,
+                borderRadius: 18,
+                padding: 2,
+                background:
+                  'conic-gradient(from 220deg, transparent 0deg, rgba(212,175,55,0.8) 40deg, transparent 120deg, transparent 360deg)',
+                pointerEvents: 'none',
+                zIndex: 1,
+                WebkitMask:
+                  'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+            />
           <GlowCard
             style={{
               padding: isSmall ? 18 : 24,
               display: 'flex',
               flexDirection: 'column',
               gap: 12,
+              position: 'relative',
+              zIndex: 2,
+              boxShadow:
+                ignited && !reduced
+                  ? '0 0 60px rgba(212,175,55,0.25), 0 20px 40px rgba(0,0,0,0.35)'
+                  : undefined,
+              transition: 'box-shadow 0.9s ease',
             }}
           >
             {/* Eyebrow row — LIVE HUD pill + V8 brand tag + hero item */}
@@ -2380,6 +2463,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
               tint="#22C55E"
               note="Garage sale sticker — the sweet spot"
               highlight
+              onComplete={() => setIgnited(true)}
             />
             <V8Pill
               label="FLOOR"
@@ -2438,6 +2522,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
               </div>
             </div>
           </GlowCard>
+          </div>
         </div>
 
         {/* PROOF POINTS — 3-up */}
