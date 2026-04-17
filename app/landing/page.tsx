@@ -1139,6 +1139,7 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
 
   const sections = [
     { id: 'hero', label: 'Home', icon: '◆' },
+    { id: 'garage-sale', label: 'Weekend', icon: '◆' },
     { id: 'megabot', label: 'MegaBot', icon: '◆' },
     { id: 'how-it-works', label: 'How It Works', icon: '◆' },
     { id: 'shipping', label: 'Shipping', icon: '◆' },
@@ -1704,6 +1705,861 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         >
           <path d="M6 9l6 6 6-6" />
         </svg>
+      </div>
+    </section>
+  )
+}
+
+// ---------- GLITCH WORD (Resn-style RGB split reveal for GS headline) ----------
+// Fires once on mount-delay. Two offset color clones jitter in, then fade out
+// leaving the clean gradient word. Safe fallback when reduced-motion is on.
+function GlitchWord({ text, isLoaded }: { text: string; isLoaded: boolean }) {
+  const reduced = useReducedMotion()
+  const [fired, setFired] = useState(false)
+
+  useEffect(() => {
+    if (!isLoaded) return
+    const t = setTimeout(() => setFired(true), 450)
+    return () => clearTimeout(t)
+  }, [isLoaded])
+
+  const gradientStyle: React.CSSProperties = {
+    background: 'linear-gradient(135deg, #00BCD4 0%, #D4AF37 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  }
+
+  if (reduced) {
+    return (
+      <span style={{ ...gradientStyle, display: 'inline-block' }}>{text}</span>
+    )
+  }
+
+  return (
+    <span style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Teal RGB channel — offsets left, fades out */}
+      <motion.span
+        aria-hidden
+        initial={{ x: 0, opacity: 0 }}
+        animate={
+          fired
+            ? { x: [0, -4, 3, -1, 0], opacity: [0, 0.75, 0.5, 0.25, 0] }
+            : {}
+        }
+        transition={{ duration: 0.6, times: [0, 0.25, 0.55, 0.8, 1] }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          color: '#00BCD4',
+          mixBlendMode: 'screen',
+          pointerEvents: 'none',
+          willChange: 'transform, opacity',
+        }}
+      >
+        {text}
+      </motion.span>
+      {/* Gold RGB channel — offsets right, fades out */}
+      <motion.span
+        aria-hidden
+        initial={{ x: 0, opacity: 0 }}
+        animate={
+          fired
+            ? { x: [0, 4, -3, 1, 0], opacity: [0, 0.75, 0.5, 0.25, 0] }
+            : {}
+        }
+        transition={{ duration: 0.6, times: [0, 0.25, 0.55, 0.8, 1] }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          color: '#D4AF37',
+          mixBlendMode: 'screen',
+          pointerEvents: 'none',
+          willChange: 'transform, opacity',
+        }}
+      >
+        {text}
+      </motion.span>
+      {/* Base gradient — fades in with the glitch, stays */}
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={fired ? { opacity: 1 } : {}}
+        transition={{ delay: 0.1, duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+        style={{ ...gradientStyle, position: 'relative', display: 'inline-block' }}
+      >
+        {text}
+      </motion.span>
+    </span>
+  )
+}
+
+// ---------- LIVE PULSE PILL (Bloomberg-terminal HUD for V8 card) ----------
+// Ticking timecode pill with pulsing dot. Signals the pricing is "live."
+function LivePulsePill() {
+  const [secs, setSecs] = useState(12)
+  const reduced = useReducedMotion()
+
+  useEffect(() => {
+    if (reduced) return
+    const id = setInterval(() => setSecs((s) => (s + 1) % 60), 1000)
+    return () => clearInterval(id)
+  }, [reduced])
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '3px 9px',
+        borderRadius: 9999,
+        background: 'rgba(34,197,94,0.12)',
+        border: '1px solid rgba(34,197,94,0.35)',
+        fontFamily: 'var(--font-data)',
+        fontWeight: 700,
+        fontSize: 10,
+        letterSpacing: '0.14em',
+        textTransform: 'uppercase' as const,
+        color: '#22C55E',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <span
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: '#22C55E',
+          boxShadow: '0 0 8px rgba(34,197,94,0.7)',
+          animation: reduced ? 'none' : 'pulse 1.4s ease-in-out infinite',
+          display: 'inline-block',
+        }}
+      />
+      LIVE · 00:{String(secs).padStart(2, '0')}
+    </span>
+  )
+}
+
+// ---------- V8 PRICE PILL (sub-component for Garage Sale section) ----------
+function V8Pill({
+  label,
+  target,
+  tint,
+  note,
+  highlight,
+}: {
+  label: string
+  target: number
+  tint: string
+  note: string
+  highlight?: boolean
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '14px 16px 14px 20px',
+        background: highlight ? `${tint}14` : 'rgba(255,255,255,0.02)',
+        border: `1px solid ${highlight ? `${tint}66` : 'rgba(255,255,255,0.06)'}`,
+        borderRadius: 12,
+        gap: 12,
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'border-color 0.3s ease, background 0.3s ease',
+      }}
+    >
+      {/* Left color accent bar */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 3,
+          background: tint,
+          opacity: highlight ? 1 : 0.6,
+        }}
+      />
+
+      {/* Label + note column */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          flex: 1,
+          minWidth: 0,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: 'var(--font-data)',
+            fontWeight: 700,
+            fontSize: 11,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase' as const,
+            color: tint,
+          }}
+        >
+          {label}
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 11,
+            color: '#8B949E',
+            lineHeight: 1.35,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {note}
+        </div>
+      </div>
+
+      {/* Price value */}
+      <div
+        style={{
+          fontFamily: 'var(--font-data)',
+          fontWeight: 700,
+          fontSize: 'clamp(22px, 3vw, 28px)',
+          color: '#F1F5F9',
+          lineHeight: 1,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 2,
+        }}
+      >
+        <span style={{ fontSize: '0.6em', color: '#8B949E' }}>$</span>
+        <AnimatedStat target={target} />
+      </div>
+    </div>
+  )
+}
+
+// ---------- GARAGE SALE — THE WEEKEND GOLDMINE (Young-Seller Hook) ----------
+// Sits between HeroSection (brand intro) and MarketplaceTicker.
+// Awwwards-level integration:
+//   • Cinematic 16:9 hero video (left) + animated V8 price card (right)
+//   • 3 proof chips + dual CTAs
+//   • UGC 9:16 portrait video row below with ScrollRevealText quote
+// Design refs: Apple hero-as-film + Linear product cards + Stripe data pills
+function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
+  const width = useWindowWidth()
+  const reduced = useReducedMotion()
+  const isMobile = width < 900
+  const isSmall = width < 600
+
+  // Edge-bleed parallax on the 16:9 hero video (Active Theory pattern)
+  const videoContainerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress: videoScroll } = useScroll({
+    target: videoContainerRef,
+    offset: ['start end', 'end start'],
+  })
+  const videoY = useTransform(videoScroll, [0, 1], ['-5%', '5%'])
+  const videoScale = useTransform(videoScroll, [0, 0.5, 1], [1.04, 1, 1.04])
+
+  return (
+    <section
+      id="garage-sale"
+      style={{
+        position: 'relative',
+        padding: isSmall ? '80px 16px' : isMobile ? '100px 20px' : '120px 32px',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Section-specific ambient glow — warm gold + teal to signal "goldmine" */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(ellipse 60% 50% at 28% 18%, rgba(212,160,23,0.05), transparent 70%), radial-gradient(ellipse 60% 50% at 72% 82%, rgba(0,188,212,0.06), transparent 70%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Corner crosshair markers — Lusion-grade studio framing */}
+      {[
+        { top: 20, left: 20 },
+        { top: 20, right: 20 },
+        { bottom: 20, left: 20 },
+        { bottom: 20, right: 20 },
+      ].map((pos, i) => (
+        <motion.svg
+          key={i}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={isLoaded ? { opacity: 0.55, scale: 1 } : {}}
+          transition={{
+            delay: 0.3 + i * 0.08,
+            duration: 0.7,
+            ease: [0.23, 1, 0.32, 1],
+          }}
+          style={{
+            position: 'absolute',
+            ...pos,
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        >
+          <path d="M6 0v12M0 6h12" stroke="#D4AF37" strokeWidth="1" />
+        </motion.svg>
+      ))}
+
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          maxWidth: 1240,
+          margin: '0 auto',
+        }}
+      >
+        {/* HEADLINE BLOCK — with ghost GOLDMINE type behind + glitch reveal */}
+        <div
+          style={{
+            textAlign: 'center',
+            marginBottom: isMobile ? 44 : 60,
+            position: 'relative',
+          }}
+        >
+          {/* Ghost oversized "GOLDMINE" word — Resn depth vocabulary */}
+          <span
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: isMobile ? 20 : 30,
+              transform: 'translateX(-50%)',
+              fontFamily: 'var(--font-data)',
+              fontSize: isMobile ? '20vw' : 'clamp(180px, 22vw, 360px)',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              color: 'rgba(212,175,55,0.045)',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              zIndex: 0,
+              lineHeight: 0.85,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            GOLDMINE
+          </span>
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <SectionEyebrow text="THE WEEKEND GOLDMINE" />
+            <h2
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 700,
+                fontSize: 'clamp(34px, 5.2vw, 56px)',
+                lineHeight: 1.1,
+                letterSpacing: '-0.5px',
+                color: '#F1F5F9',
+                textAlign: 'center',
+                margin: '0 auto 20px',
+                maxWidth: 860,
+              }}
+            >
+              {reduced ? (
+                <>
+                  Turn your garage into a <GradientText>goldmine</GradientText>.
+                </>
+              ) : (
+                <>
+                  <motion.span
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+                    transition={{
+                      duration: 0.7,
+                      delay: 0.15,
+                      ease: [0.23, 1, 0.32, 1],
+                    }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    Turn your garage into a&nbsp;
+                  </motion.span>
+                  <GlitchWord text="goldmine" isLoaded={isLoaded} />
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={isLoaded ? { opacity: 1 } : {}}
+                    transition={{ duration: 0.4, delay: 0.9 }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    .
+                  </motion.span>
+                </>
+              )}
+            </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: isSmall ? 16 : 18,
+              lineHeight: 1.65,
+              color: '#CBD5E1',
+              maxWidth: 640,
+              margin: '0 auto',
+            }}
+          >
+            Snap a photo. Know the price.{' '}
+            <span style={{ color: '#F1F5F9', fontWeight: 600 }}>
+              Cash by Saturday.
+            </span>
+          </p>
+          </div>
+        </div>
+
+        {/* VIDEO + PRICE CARD SPLIT */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1.35fr 1fr',
+            gap: isMobile ? 20 : 32,
+            alignItems: 'center',
+            marginBottom: isMobile ? 40 : 56,
+          }}
+        >
+          {/* LEFT — 16:9 cinematic hero video with edge-bleed parallax */}
+          <div
+            ref={videoContainerRef}
+            style={{
+              position: 'relative',
+              aspectRatio: '16 / 9',
+              borderRadius: 20,
+              overflow: 'hidden',
+              border: '1px solid rgba(0,188,212,0.2)',
+              boxShadow:
+                '0 0 48px rgba(0,188,212,0.08), 0 24px 56px rgba(0,0,0,0.45)',
+              background: '#0D1117',
+            }}
+          >
+            {/* Inner parallax wrapper — translates + breathes with scroll.
+                Slightly oversized (110% height, -5% marginTop) so the y
+                translation never exposes container background. */}
+            <motion.div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                height: '110%',
+                marginTop: '-5%',
+                y: reduced ? 0 : videoY,
+                scale: reduced ? 1 : videoScale,
+                willChange: 'transform',
+              }}
+            >
+              <AutoPlayVideo
+                preload="metadata"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+                sources={[
+                  { src: '/LegacyLoop_Landing_GS_Hero.mp4', type: 'video/mp4' },
+                ]}
+              />
+            </motion.div>
+            {/* Subtle vignette for depth + keeps focus on center.
+                Sibling to motion wrapper so it stays perfectly still. */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background:
+                  'radial-gradient(ellipse at center, transparent 55%, rgba(13,17,23,0.4) 100%)',
+                pointerEvents: 'none',
+              }}
+            />
+          </div>
+
+          {/* RIGHT — Animated V8 Price Card */}
+          <GlowCard
+            style={{
+              padding: isSmall ? 18 : 24,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}
+          >
+            {/* Eyebrow row — LIVE HUD pill + V8 brand tag + hero item */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 4,
+                gap: 8,
+                flexWrap: 'wrap',
+              }}
+            >
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  minWidth: 0,
+                }}
+              >
+                <LivePulsePill />
+                <span
+                  style={{
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 700,
+                    fontSize: 10,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase' as const,
+                    color: '#00BCD4',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  V8 PRICING
+                </span>
+              </div>
+              <span
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 500,
+                  fontSize: 11,
+                  color: '#8B949E',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Nintendo 64 · Good
+              </span>
+            </div>
+
+            <V8Pill
+              label="LIST"
+              target={380}
+              tint="#00BCD4"
+              note="Online ceiling — eBay / FB Marketplace"
+            />
+            <V8Pill
+              label="ACCEPT"
+              target={280}
+              tint="#22C55E"
+              note="Garage sale sticker — the sweet spot"
+              highlight
+            />
+            <V8Pill
+              label="FLOOR"
+              target={220}
+              tint="#F59E0B"
+              note="Walk-away minimum — fast cash"
+            />
+
+            {/* Channel + location footer */}
+            <div
+              style={{
+                marginTop: 6,
+                paddingTop: 12,
+                borderTop: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 12,
+                  color: '#CBD5E1',
+                }}
+              >
+                <span style={{ color: '#00BCD4', fontSize: 10 }}>◆</span>
+                <span>Channel: Garage sale w/ online backup</span>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 12,
+                  color: '#CBD5E1',
+                }}
+              >
+                <span style={{ color: '#22C55E', fontSize: 11 }}>↑</span>
+                <span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      color: '#22C55E',
+                    }}
+                  >
+                    +21%
+                  </span>{' '}
+                  for your ZIP
+                </span>
+              </div>
+            </div>
+          </GlowCard>
+        </div>
+
+        {/* PROOF POINTS — 3-up */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? 10 : 14,
+            marginBottom: isMobile ? 32 : 40,
+          }}
+        >
+          {[
+            { label: 'AI pricing in under 30 seconds', icon: '⚡' },
+            { label: '3 prices per item — list, sale, floor', icon: '◆' },
+            { label: 'Local ZIP market — not NYC', icon: '◉' },
+          ].map((p) => (
+            <div
+              key={p.label}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '12px 16px',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: 12,
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
+                color: '#CBD5E1',
+                minHeight: 44,
+              }}
+            >
+              <span
+                style={{
+                  color: '#00BCD4',
+                  fontFamily: 'var(--font-data)',
+                  fontWeight: 700,
+                  fontSize: 15,
+                  flexShrink: 0,
+                }}
+              >
+                {p.icon}
+              </span>
+              {p.label}
+            </div>
+          ))}
+        </div>
+
+        {/* CTA ROW */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 16,
+            marginBottom: isMobile ? 56 : 88,
+          }}
+        >
+          <MagneticButton href="https://app.legacy-loop.com/auth/signup?tier=free">
+            Start Selling Free
+          </MagneticButton>
+          <a
+            href="#ugc-proof"
+            onClick={(e) => {
+              e.preventDefault()
+              document
+                .getElementById('ugc-proof')
+                ?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 14,
+              color: '#00BCD4',
+              textDecoration: 'none',
+              padding: '12px 22px',
+              borderRadius: 10,
+              border: '1px solid rgba(0,188,212,0.35)',
+              minHeight: 44,
+              transition: 'all 0.3s ease',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              ;(e.currentTarget as HTMLAnchorElement).style.borderColor =
+                'rgba(0,188,212,0.7)'
+              ;(e.currentTarget as HTMLAnchorElement).style.background =
+                'rgba(0,188,212,0.05)'
+            }}
+            onMouseLeave={(e) => {
+              ;(e.currentTarget as HTMLAnchorElement).style.borderColor =
+                'rgba(0,188,212,0.35)'
+              ;(e.currentTarget as HTMLAnchorElement).style.background =
+                'transparent'
+            }}
+          >
+            Watch her find it ↓
+          </a>
+        </div>
+
+        {/* Hairline divider between hero and UGC row */}
+        <div
+          aria-hidden
+          style={{
+            maxWidth: 260,
+            margin: isMobile ? '0 auto 48px' : '0 auto 72px',
+            height: 1,
+            background:
+              'linear-gradient(90deg, transparent, rgba(0,188,212,0.28), transparent)',
+          }}
+        />
+
+        {/* UGC PROOF ROW — real-people social layer */}
+        <div
+          id="ugc-proof"
+          style={{ textAlign: 'center', marginBottom: isMobile ? 28 : 40 }}
+        >
+          <SectionEyebrow text="REAL PEOPLE · REAL GARAGES" />
+        </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '260px 1fr',
+            gap: isMobile ? 28 : 56,
+            alignItems: 'center',
+            maxWidth: 920,
+            margin: '0 auto',
+          }}
+        >
+          {/* LEFT — Portrait 9:16 UGC video in phone-frame mockup */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 260,
+              margin: isMobile ? '0 auto' : undefined,
+              aspectRatio: '9 / 16',
+              borderRadius: 28,
+              overflow: 'hidden',
+              border: '8px solid #0D1117',
+              outline: '1px solid rgba(0,188,212,0.25)',
+              boxShadow:
+                '0 0 40px rgba(0,188,212,0.1), 0 24px 56px rgba(0,0,0,0.55)',
+              background: '#000',
+            }}
+          >
+            <AutoPlayVideo
+              preload="metadata"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+              sources={[
+                {
+                  src: '/Legacyloop_Gs_Subsection_Girl_Web.mp4',
+                  type: 'video/mp4',
+                },
+              ]}
+            />
+            {/* iOS-style top notch bar */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                top: 10,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 72,
+                height: 6,
+                background: 'rgba(0,0,0,0.7)',
+                borderRadius: 3,
+                zIndex: 2,
+              }}
+            />
+          </div>
+
+          {/* RIGHT — ScrollRevealText quote + mini CTA */}
+          <div style={{ maxWidth: 520 }}>
+            {reduced ? (
+              <p
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 500,
+                  fontSize: isSmall ? 20 : 'clamp(22px, 2.8vw, 28px)',
+                  lineHeight: 1.4,
+                  color: '#F1F5F9',
+                  margin: 0,
+                }}
+              >
+                She found a{' '}
+                <span
+                  style={{
+                    color: '#22C55E',
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 700,
+                  }}
+                >
+                  $280 Polaroid
+                </span>{' '}
+                buried in a box of old stuff. Then she priced her whole garage in an afternoon.
+              </p>
+            ) : (
+              <ScrollRevealText
+                text="She found a $280 Polaroid buried in a box of old stuff. Then she priced her whole garage in an afternoon."
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 500,
+                  fontSize: isSmall ? 20 : 'clamp(22px, 2.8vw, 28px)',
+                  lineHeight: 1.4,
+                  color: '#F1F5F9',
+                }}
+              />
+            )}
+
+            <a
+              href="https://app.legacy-loop.com/auth/signup?tier=free"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 24,
+                fontFamily: 'var(--font-body)',
+                fontWeight: 500,
+                fontSize: 15,
+                color: '#00BCD4',
+                textDecoration: 'none',
+                minHeight: 44,
+                transition: 'opacity 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                ;(e.currentTarget as HTMLAnchorElement).style.textDecoration =
+                  'underline'
+              }}
+              onMouseLeave={(e) => {
+                ;(e.currentTarget as HTMLAnchorElement).style.textDecoration =
+                  'none'
+              }}
+            >
+              See your goldmine →
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   )
@@ -5914,6 +6770,7 @@ export default function LandingPage() {
       <SectionNavigator isLoaded={isLoaded} />
       <main style={{ position: 'relative', zIndex: 5, background: 'transparent' }}>
         <HeroSection isLoaded={isLoaded} />
+        <GarageSaleSection isLoaded={isLoaded} />
         <MarketplaceTicker />
         <MarketOpportunitySection />
         <MegaBotSection />
