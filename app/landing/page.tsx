@@ -1449,9 +1449,15 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         textAlign: 'center',
       }}
     >
-      {/* Video Background — parallax wrapper drifts slower than page scroll */}
+      {/* Video Background — parallax + delayed cinematic fade-in.
+          The video reveals LAST in the load sequence (~2.2s after
+          preloader) so the text assembles first, then the film starts
+          playing. Hero-as-film pattern (Pillar 04). */}
       <motion.div
         aria-hidden
+        initial={{ opacity: 0 }}
+        animate={isLoaded ? { opacity: 1 } : {}}
+        transition={{ delay: 2.2, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
         style={{
           position: 'absolute',
           inset: 0,
@@ -1704,14 +1710,16 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div
+      {/* Scroll Indicator — delayed fade-in closes the load sequence */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={isLoaded ? { opacity: 0.5, y: 0 } : {}}
+        transition={{ delay: 2.6, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
         style={{
           position: 'absolute',
           bottom: 32,
           left: '50%',
           animation: 'scrollBounce 2s ease-in-out infinite',
-          opacity: 0.5,
           zIndex: 5,
         }}
       >
@@ -1727,7 +1735,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         >
           <path d="M6 9l6 6 6-6" />
         </svg>
-      </div>
+      </motion.div>
     </section>
   )
 }
