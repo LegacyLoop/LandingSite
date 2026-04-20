@@ -1701,15 +1701,14 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            // Touch-only perceptual parity. Source video luma ≈ 36/255
-            // (deliberately dark orbital content). At 0.55 opacity over
-            // #0D1117 the video reads as Δ ~11 luma units above bg —
-            // visible on a phone in ambient daylight without overpowering
-            // the logo orb. Filter pairs a brightness lift with a small
-            // saturation boost so the teal reads as teal, not gray-green.
-            // Desktop path: 0.12 + no filter, byte-for-byte unchanged.
-            opacity: isTouch ? 0.55 : 0.12,
-            filter: isTouch ? 'brightness(1.3) saturate(1.15)' : undefined,
+            // Touch-only: video is now the logo (static PNG hidden
+            // above). Full opacity + no filter — render the source as
+            // designed, same approach as OUR STORY which Ryan verified
+            // visible on iPhone 19:35. Desktop path: 0.12 + no filter,
+            // byte-for-byte unchanged (video stays decorative behind
+            // the static PNG which renders normally on desktop).
+            opacity: isTouch ? 1 : 0.12,
+            filter: undefined,
           }}
           sources={[
             { src: '/hero-loop.webm', type: 'video/webm' },
@@ -1771,14 +1770,15 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             maxWidth: width < 480 ? 220 : 300,
             objectFit: 'contain',
             marginBottom: 24,
-            // Touch-only: drop static logo to 75% so the hero-loop.mp4
-            // (same crescent shape glowing in teal behind it) reads
-            // through. Using filter:opacity() instead of opacity so the
-            // value survives the WAAPI nuclear fix at :1702-1723 — that
-            // loop force-sets style.opacity='1' on every heroContentRef
-            // descendant on touch (CMD-TABLET-DEBUG-V3 protection) but
-            // does not touch style.filter. Desktop unchanged.
-            filter: isTouch ? 'opacity(0.75)' : undefined,
+            // Touch-only: hide the static PNG entirely. hero-loop.mp4
+            // is the same crescent shape, animated in teal — it BECOMES
+            // the logo on mobile (matches the OUR STORY pattern that
+            // renders brightly on iPhone per Ryan's 19:35 screenshot).
+            // Brand identity preserved by the StickyNav wordmark up top.
+            // display survives the WAAPI nuclear fix at :1702-1723
+            // (that loop only writes style.opacity + style.transform).
+            // Desktop renders the PNG byte-for-byte unchanged.
+            display: isTouch ? 'none' : undefined,
           }}
         />
 
