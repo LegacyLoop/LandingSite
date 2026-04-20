@@ -1603,82 +1603,6 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
   )
 }
 
-// ---------- DEBUG HUD (TEMPORARY) ----------
-// CMD-BRAND-HERO-DEBUG-OVERLAY — instrumentation only. Renders a fixed
-// black box on touch devices that polls the hero <video> element every
-// 500ms and reports DOM truth. Ryan reads this on his iPhone and
-// reports back. Will be removed in CMD-BRAND-HERO-DEBUG-OVERLAY-REMOVAL.
-function DebugHUD() {
-  const [state, setState] = useState({
-    videoExists: false,
-    width: 0,
-    height: 0,
-    readyState: 0,
-    paused: true,
-    currentTime: 0,
-    opacity: '-',
-    display: '-',
-    isTouch: false,
-  })
-
-  useEffect(() => {
-    const tick = () => {
-      const v = document.querySelector(
-        'video[data-hero]'
-      ) as HTMLVideoElement | null
-      if (!v) {
-        setState((s) => ({ ...s, videoExists: false }))
-        return
-      }
-      const r = v.getBoundingClientRect()
-      const cs = getComputedStyle(v)
-      setState({
-        videoExists: true,
-        width: Math.round(r.width),
-        height: Math.round(r.height),
-        readyState: v.readyState,
-        paused: v.paused,
-        currentTime: v.currentTime,
-        opacity: cs.opacity,
-        display: cs.display,
-        isTouch:
-          'ontouchstart' in window || navigator.maxTouchPoints > 0,
-      })
-    }
-    tick()
-    const id = setInterval(tick, 500)
-    return () => clearInterval(id)
-  }, [])
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 120,
-        right: 12,
-        zIndex: 2000,
-        background: '#000',
-        border: '2px solid #00BCD4',
-        color: '#FFFFFF',
-        font: '14px monospace',
-        padding: 8,
-        maxWidth: 280,
-        lineHeight: 1.4,
-        pointerEvents: 'none',
-        whiteSpace: 'pre',
-      }}
-    >
-      <div>VIDEO: {state.videoExists ? 'yes' : 'no'}</div>
-      <div>SIZE: {state.width} × {state.height}</div>
-      <div>STATE: ready={state.readyState} paused={String(state.paused)}</div>
-      <div>TIME: {state.currentTime.toFixed(1)}s</div>
-      <div>OPACITY: {state.opacity}</div>
-      <div>DISPLAY: {state.display}</div>
-      <div>isTouch: {String(state.isTouch)}</div>
-    </div>
-  )
-}
-
 // ---------- HERO SECTION ----------
 function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   const width = useWindowWidth()
@@ -1750,7 +1674,6 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           animate) so they're unaffected by WAAPI stalls. */}
       <motion.div
         aria-hidden
-        data-hero-wrapper
         initial={isTouch ? false : { opacity: 0 }}
         animate={isTouch ? undefined : isLoaded ? { opacity: 1 } : {}}
         transition={{ delay: 2.2, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
@@ -1759,39 +1682,34 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           inset: 0,
           zIndex: 0,
           opacity: isTouch ? 1 : undefined,
-          y: reduced ? 0 : heroVideoY,
-          scale: reduced ? 1 : heroVideoScale,
-          willChange: 'transform',
-          // CMD-BRAND-HERO-DEBUG-OVERLAY — TEMPORARY diagnostic markers.
-          // Touch-only: hot-pink fill + outline so we can see whether the
-          // wrapper itself is rendering on mobile. If Ryan sees PINK and
-          // no video → wrapper renders, video element is the failure.
-          // If Ryan sees NO PINK → wrapper itself is hidden / zero-sized.
-          // Will be removed in CMD-BRAND-HERO-DEBUG-OVERLAY-REMOVAL.
-          ...(isTouch
-            ? {
-                outline: '4px solid #FF00FF',
-                outlineOffset: '-4px',
-                backgroundColor: '#FF00FF',
-              }
-            : {}),
+          // Parallax transforms gated to non-touch only. iOS Safari treats
+          // a transformed parent as a separate compositor layer and the
+          // child <video>'s hardware overlay can mis-composite against it
+          // (verified via the c9f6871 pink-bg diagnostic — wrapper bg never
+          // painted behind the GPU-overlaid video). Mobile parallax is
+          // perceptually zero anyway. Desktop path: heroVideoY +
+          // heroVideoScale unchanged.
+          y: reduced || isTouch ? 0 : heroVideoY,
+          scale: reduced || isTouch ? 1 : heroVideoScale,
+          willChange: isTouch ? undefined : 'transform',
         }}
       >
         <AutoPlayVideo
-          {...({ 'data-hero': '' } as Record<string, string>)}
           style={{
             position: 'absolute',
             inset: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            // Touch-only perceptual parity: 0.12 reads as cinematic
-            // orbital depth on desktop glass but as flat black on phone /
-            // tablet under ambient daylight. Lift to 0.28 on touch hardware
-            // only — logo orb still reads as the hero focal point. Desktop
-            // path is byte-for-byte unchanged (isTouch=false during SSR +
-            // hydration, upgrades on mount for real touch devices).
-            opacity: isTouch ? 0.28 : 0.12,
+            // Touch-only perceptual parity. Source video luma ≈ 36/255
+            // (deliberately dark orbital content). At 0.55 opacity over
+            // #0D1117 the video reads as Δ ~11 luma units above bg —
+            // visible on a phone in ambient daylight without overpowering
+            // the logo orb. Filter pairs a brightness lift with a small
+            // saturation boost so the teal reads as teal, not gray-green.
+            // Desktop path: 0.12 + no filter, byte-for-byte unchanged.
+            opacity: isTouch ? 0.55 : 0.12,
+            filter: isTouch ? 'brightness(1.3) saturate(1.15)' : undefined,
           }}
           sources={[
             { src: '/hero-loop.webm', type: 'video/webm' },
@@ -2058,9 +1976,6 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           <path d="M6 9l6 6 6-6" />
         </svg>
       </motion.div>
-
-      {/* CMD-BRAND-HERO-DEBUG-OVERLAY — temporary touch-only HUD. */}
-      {isTouch && <DebugHUD />}
     </section>
   )
 }
