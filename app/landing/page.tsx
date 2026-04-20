@@ -407,9 +407,19 @@ function AutoPlayVideo({ style, sources, ...props }: { style: React.CSSPropertie
       muted
       loop
       playsInline
+      preload="auto"
       style={style}
       onError={(e) => {
-        ;(e.target as HTMLVideoElement).style.display = 'none'
+        // Silent no-op: iOS Safari fires transient media errors during
+        // autoplay ramp-up (Low Power Mode, decode buffer stalls, cellular
+        // range-request mismatch). The prior `display: none` kill-switch
+        // permanently hid the video for the rest of the session. Poster
+        // covers the fail window; the element stays in the DOM so playback
+        // recovers on the next decode cycle.
+        if (process.env.NODE_ENV === 'development') {
+          // eslint-disable-next-line no-console
+          console.debug('[AutoPlayVideo] transient media error', e)
+        }
       }}
       {...props}
     >
@@ -6222,6 +6232,14 @@ function VideoShowcaseSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const isMobile = width < 768
+  // Touch-only visibility upgrade for the Connecting Generations render.
+  // 0.18 opacity reads as cinematic orbital depth on desktop glass but as
+  // flat black on phone/tablet under sunlight. Lift to 0.35 on touch and
+  // soften the top gradient 0.6 → 0.45. Desktop path is byte-for-byte
+  // unchanged — isTouch is false during SSR + hydration, upgrades on mount.
+  const isTouch = useIsTouch()
+  const videoOpacity = isTouch ? 0.35 : 0.18
+  const overlayTopAlpha = isTouch ? 0.45 : 0.6
 
   return (
     <>
@@ -6241,18 +6259,24 @@ function VideoShowcaseSection() {
           ...sp,
         }}
       >
-        {/* Full-bleed video background */}
+        {/* Full-bleed video background. Poster covers the iOS autoplay
+            ramp-up window and any transient decode error (see the silent
+            onError in AutoPlayVideo). webm first for Chrome / Firefox /
+            Android — smaller payload + better iOS fallback semantics.
+            mp4 second for Safari. */}
         <AutoPlayVideo
+          poster="/images/hero/story-hero-poster.jpg"
           style={{
             position: 'absolute',
             inset: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.18,
+            opacity: videoOpacity,
             zIndex: 0,
           }}
           sources={[
+            { src: '/Legacy_Loop_Hero_Video_Connecting_Generations.webm', type: 'video/webm' },
             { src: '/Legacy_Loop_Hero_Video_Connecting_Generations.mp4', type: 'video/mp4' },
           ]}
         />
@@ -6262,8 +6286,7 @@ function VideoShowcaseSection() {
           style={{
             position: 'absolute',
             inset: 0,
-            background:
-              'linear-gradient(180deg, rgba(13,17,23,0.6) 0%, rgba(13,17,23,0.3) 35%, rgba(13,17,23,0.3) 65%, rgba(13,17,23,0.7) 100%)',
+            background: `linear-gradient(180deg, rgba(13,17,23,${overlayTopAlpha}) 0%, rgba(13,17,23,0.3) 35%, rgba(13,17,23,0.3) 65%, rgba(13,17,23,0.7) 100%)`,
             zIndex: 1,
           }}
         />
