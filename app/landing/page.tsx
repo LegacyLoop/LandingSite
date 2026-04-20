@@ -1771,6 +1771,14 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             maxWidth: width < 480 ? 220 : 300,
             objectFit: 'contain',
             marginBottom: 24,
+            // Touch-only: drop static logo to 75% so the hero-loop.mp4
+            // (same crescent shape glowing in teal behind it) reads
+            // through. Using filter:opacity() instead of opacity so the
+            // value survives the WAAPI nuclear fix at :1702-1723 — that
+            // loop force-sets style.opacity='1' on every heroContentRef
+            // descendant on touch (CMD-TABLET-DEBUG-V3 protection) but
+            // does not touch style.filter. Desktop unchanged.
+            filter: isTouch ? 'opacity(0.75)' : undefined,
           }}
         />
 
