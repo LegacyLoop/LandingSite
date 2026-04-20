@@ -1694,7 +1694,13 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.12,
+            // Touch-only perceptual parity: 0.12 reads as cinematic
+            // orbital depth on desktop glass but as flat black on phone /
+            // tablet under ambient daylight. Lift to 0.28 on touch hardware
+            // only — logo orb still reads as the hero focal point. Desktop
+            // path is byte-for-byte unchanged (isTouch=false during SSR +
+            // hydration, upgrades on mount for real touch devices).
+            opacity: isTouch ? 0.28 : 0.12,
           }}
           sources={[
             { src: '/hero-loop.webm', type: 'video/webm' },
