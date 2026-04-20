@@ -1700,7 +1700,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             // only — logo orb still reads as the hero focal point. Desktop
             // path is byte-for-byte unchanged (isTouch=false during SSR +
             // hydration, upgrades on mount for real touch devices).
-            opacity: isTouch ? 0.28 : 0.12,
+            opacity: isTouch ? 0.95 : 0.12,
           }}
           sources={[
             { src: '/hero-loop.webm', type: 'video/webm' },
