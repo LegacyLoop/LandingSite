@@ -8303,7 +8303,11 @@ function HelpCenter() {
 
   return (
     <>
-      {/* Floating Help Button — bottom-left, clears the mobile bottom nav */}
+      {/* Floating Help Button — bottom-left. Mobile compaction (44px tap
+          target = WCAG floor) + bottom 20px clears the hero CTA stack
+          (was overlapping at bottom 72). Desktop unchanged at 56px with
+          hover-reveal label. Tesla-standard restraint: no pulse halo,
+          softened idle shadow, hover lift preserved. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -8313,7 +8317,7 @@ function HelpCenter() {
         style={{
           position: 'fixed',
           left: isMobile ? 16 : 28,
-          bottom: isMobile ? 72 : 28,
+          bottom: isMobile ? 20 : 28,
           zIndex: 950,
           appearance: 'none',
           border: 'none',
@@ -8322,29 +8326,26 @@ function HelpCenter() {
           display: 'flex',
           alignItems: 'center',
           gap: 0,
-          height: 56,
+          height: isMobile ? 44 : 56,
           borderRadius: 9999,
           background:
             'linear-gradient(135deg, #00BCD4 0%, #009688 100%)',
           boxShadow: hovered
             ? '0 0 40px rgba(0,188,212,0.6), 0 8px 24px rgba(0,188,212,0.3)'
-            : '0 0 24px rgba(0,188,212,0.35), 0 4px 16px rgba(0,188,212,0.2)',
+            : '0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,188,212,0.2)',
           transition:
             'box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
           transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
           overflow: 'hidden',
           WebkitTapHighlightColor: 'transparent',
-          animation: reduced
-            ? 'none'
-            : 'pulseGlow 3.2s ease-in-out infinite',
         }}
       >
         {/* Icon slot — always visible circular area */}
         <span
           aria-hidden
           style={{
-            width: 56,
-            height: 56,
+            width: isMobile ? 44 : 56,
+            height: isMobile ? 44 : 56,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -8353,8 +8354,8 @@ function HelpCenter() {
           }}
         >
           <svg
-            width="24"
-            height="24"
+            width={isMobile ? 20 : 24}
+            height={isMobile ? 20 : 24}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -8372,7 +8373,7 @@ function HelpCenter() {
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 700,
-            fontSize: 15,
+            fontSize: isMobile ? 13 : 15,
             color: '#0D1117',
             letterSpacing: '-0.01em',
             whiteSpace: 'nowrap',
@@ -8380,7 +8381,7 @@ function HelpCenter() {
             opacity: isMobile || hovered ? 1 : 0,
             overflow: 'hidden',
             transition: 'max-width 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease',
-            paddingRight: isMobile || hovered ? 20 : 0,
+            paddingRight: isMobile ? 14 : hovered ? 20 : 0,
           }}
         >
           Need help?
