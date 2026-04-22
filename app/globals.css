@@ -186,6 +186,17 @@ a {
   to { transform: rotate(360deg); }
 }
 
+/* Brand hero video reveal — replaces framer-motion initial/animate on
+   the hero-loop wrapper. Native CSS composites identically on iOS
+   Safari (framer-motion presence tracking caused the video to fail to
+   render on mobile; the other 4 video sites on the landing page all
+   work because they avoid those props). Pair with inline animation:
+   'heroVideoReveal 1.2s cubic-bezier(0.23, 1, 0.32, 1) 2.2s both'. */
+@keyframes heroVideoReveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* GlowCard CSS fallback — forces card visible even if JS state never triggers.
    CSS animation fill-mode 'forwards' overrides inline opacity: 0 from React.
    Only defined for touch devices so it doesn't interfere with desktop scroll-reveal.

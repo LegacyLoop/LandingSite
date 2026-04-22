@@ -1672,44 +1672,37 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           touch — the "action logo in the background" issue Ryan
           reported. Parallax transforms still run via style (not
           animate) so they're unaffected by WAAPI stalls. */}
+      {/* Style-only motion.div matches GS hero's proven-working pattern.
+          No framer-motion initial/animate/transition — those presence-
+          tracking props cause iOS Safari to mis-composite child <video>
+          elements (verified empirically: brand hero was the only video
+          site with these props and the only one broken on iPhone).
+          2.2s-delayed cinematic reveal preserved via native CSS
+          @keyframes heroVideoReveal in globals.css — identical delay,
+          duration, easing, fill-mode to the prior framer-motion path. */}
       <motion.div
         aria-hidden
-        initial={isTouch ? false : { opacity: 0 }}
-        animate={isTouch ? undefined : isLoaded ? { opacity: 1 } : {}}
-        transition={{ delay: 2.2, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
         style={{
           position: 'absolute',
           inset: 0,
           zIndex: 0,
-          opacity: isTouch ? 1 : undefined,
-          // Parallax transforms gated to non-touch only. iOS Safari treats
-          // a transformed parent as a separate compositor layer and the
-          // child <video>'s hardware overlay can mis-composite against it
-          // (verified via the c9f6871 pink-bg diagnostic — wrapper bg never
-          // painted behind the GPU-overlaid video). Mobile parallax is
-          // perceptually zero anyway. Desktop path: heroVideoY +
-          // heroVideoScale unchanged.
-          y: reduced || isTouch ? 0 : heroVideoY,
-          scale: reduced || isTouch ? 1 : heroVideoScale,
-          willChange: isTouch ? undefined : 'transform',
+          y: reduced ? 0 : heroVideoY,
+          scale: reduced ? 1 : heroVideoScale,
+          willChange: 'transform',
+          animation: reduced
+            ? 'none'
+            : 'heroVideoReveal 1.2s cubic-bezier(0.23, 1, 0.32, 1) 2.2s both',
         }}
       >
         <AutoPlayVideo
+          preload="metadata"
           style={{
             position: 'absolute',
             inset: 0,
             width: '100%',
             height: '100%',
-            objectFit: isTouch ? 'contain' : 'cover',
-            // Touch-only perceptual parity. Source video luma ≈ 36/255
-            // (deliberately dark orbital content). At 0.55 opacity over
-            // #0D1117 the video reads as Δ ~11 luma units above bg —
-            // visible on a phone in ambient daylight without overpowering
-            // the logo orb. Filter pairs a brightness lift with a small
-            // saturation boost so the teal reads as teal, not gray-green.
-            // Desktop path: 0.12 + no filter, byte-for-byte unchanged.
-            opacity: isTouch ? 0.55 : 0.12,
-            filter: isTouch ? 'brightness(1.3) saturate(1.15)' : undefined,
+            objectFit: 'cover',
+            opacity: 0.12,
           }}
           sources={[
             { src: '/hero-loop.webm', type: 'video/webm' },
