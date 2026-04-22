@@ -8303,11 +8303,13 @@ function HelpCenter() {
 
   return (
     <>
-      {/* Floating Help Button — bottom-left. Mobile compaction (44px tap
-          target = WCAG floor) + bottom 20px clears the hero CTA stack
-          (was overlapping at bottom 72). Desktop unchanged at 56px with
-          hover-reveal label. Tesla-standard restraint: no pulse halo,
-          softened idle shadow, hover lift preserved. */}
+      {/* Floating Help Button — bottom-left.
+          MOBILE: 44×44 perfect circle ball. Icon only. No label.
+            Tesla / Apple / Intercom standard. The "?" glyph + brand teal
+            + fixed position carry the affordance. aria-label preserved
+            for screen readers. Modal opens with full text on tap.
+          DESKTOP: 56px pill with hover-reveal "Need help?" label.
+            Unchanged from original. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -8326,6 +8328,7 @@ function HelpCenter() {
           display: 'flex',
           alignItems: 'center',
           gap: 0,
+          width: isMobile ? 44 : undefined,
           height: isMobile ? 44 : 56,
           borderRadius: 9999,
           background:
@@ -8340,7 +8343,8 @@ function HelpCenter() {
           WebkitTapHighlightColor: 'transparent',
         }}
       >
-        {/* Icon slot — always visible circular area */}
+        {/* Icon slot — perfect circle on mobile (44×44), full pill height
+            on desktop (56×56). */}
         <span
           aria-hidden
           style={{
@@ -8354,8 +8358,8 @@ function HelpCenter() {
           }}
         >
           <svg
-            width={isMobile ? 20 : 24}
-            height={isMobile ? 20 : 24}
+            width={isMobile ? 22 : 24}
+            height={isMobile ? 22 : 24}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -8368,24 +8372,27 @@ function HelpCenter() {
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
         </span>
-        {/* Label — always visible on mobile (seniors!), hover-reveals on desktop */}
-        <span
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 700,
-            fontSize: isMobile ? 13 : 15,
-            color: '#0D1117',
-            letterSpacing: '-0.01em',
-            whiteSpace: 'nowrap',
-            maxWidth: isMobile ? 140 : hovered ? 140 : 0,
-            opacity: isMobile || hovered ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'max-width 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease',
-            paddingRight: isMobile ? 14 : hovered ? 20 : 0,
-          }}
-        >
-          Need help?
-        </span>
+        {/* Label — desktop only (mobile is icon-only ball). Hover-reveal
+            on desktop preserves the original interaction. */}
+        {!isMobile && (
+          <span
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 15,
+              color: '#0D1117',
+              letterSpacing: '-0.01em',
+              whiteSpace: 'nowrap',
+              maxWidth: hovered ? 140 : 0,
+              opacity: hovered ? 1 : 0,
+              overflow: 'hidden',
+              transition: 'max-width 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease',
+              paddingRight: hovered ? 20 : 0,
+            }}
+          >
+            Need help?
+          </span>
+        )}
       </button>
 
       {/* Modal overlay */}
