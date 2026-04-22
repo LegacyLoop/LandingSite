@@ -1700,7 +1700,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             inset: 0,
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
+            objectFit: isTouch ? 'contain' : 'cover',
             // Touch-only perceptual parity. Source video luma ≈ 36/255
             // (deliberately dark orbital content). At 0.55 opacity over
             // #0D1117 the video reads as Δ ~11 luma units above bg —
