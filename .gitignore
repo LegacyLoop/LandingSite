@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# graphify knowledge-graph extraction artifacts (regenerable · ~205 files)
+graphify-out/

@@ -1265,8 +1265,8 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
     { id: 'bots', label: 'AI Bots', icon: '◆' },
     { id: 'pricing', label: 'Pricing', icon: '◆' },
     { id: 'estate', label: 'Estates', icon: '◆' },
-    { id: 'download', label: 'Download', icon: '◆' },
     { id: 'mission', label: 'Mission', icon: '◆' },
+    { id: 'download', label: 'Download', icon: '◆' },
     { id: 'waitlist', label: 'Join', icon: '◆' },
   ]
 
