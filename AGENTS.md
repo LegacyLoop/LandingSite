@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # ════════════════════════════════════════════════════════════════
 # LEGACYLOOP — SHARED ENGINEERING STANDARDS (AGENTS.md)
-# Applies to ALL LegacyLoop repositories.
+# Applies to ALL Legacy-Loop repositories.
 # Read by Claude Code automatically alongside CLAUDE.md.
 # ════════════════════════════════════════════════════════════════
 
@@ -182,7 +182,7 @@ Build for today. Architect for tomorrow.
 
 ## THE STANDARD
 
-> "LegacyLoop is not a side project. It is a company being built
+> "Legacy-Loop is not a side project. It is a company being built
 > to a billion-dollar standard by a founder who cares about every
 > detail. Treat every line of code, every commit, every V16 report
 > as if it will be reviewed by the best engineers in the world.

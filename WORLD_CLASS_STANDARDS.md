@@ -6,7 +6,7 @@
 
 ## THE MISSION
 
-LegacyLoop exists to connect generations. We do that by building
+Legacy-Loop exists to connect generations. We do that by building
 software that is simple enough for a 70-year-old estate seller AND
 premium enough to win Awwwards. Both at once. Every surface. Every
 interaction. Every line of code.
@@ -67,7 +67,7 @@ compounds into the difference.
 ## ═══════════════════════════════════════════
 
 These are the effects that define 2024–2025 Awwwards winners.
-Source: LegacyLoop Awwwards Master Reference + Olivier Larose +
+Source: Legacy-Loop Awwwards Master Reference + Olivier Larose +
 Dennis Snellenberg + Lenis + GSAP.
 
 Every effect below has a canonical implementation. When applying one,
@@ -302,7 +302,7 @@ Large text (18px+): 3:1 minimum (WCAG AA)
 ## SECTION 6 — PER-SURFACE STANDARDS
 ## ═══════════════════════════════════════════
 
-Every major surface in LegacyLoop has a reference benchmark. When
+Every major surface in Legacy-Loop has a reference benchmark. When
 building or polishing a surface, it must feel like the reference.
 "Feel like" = interaction density, layout rhythm, information
 hierarchy, micro-interactions, and confidence level.
@@ -394,7 +394,7 @@ If ANY of the eight fails, feature is not done. Open a gap in FLAGS.
 
 ### The words we never misspell
 - **Connecting Generations** — our mission. Exact capitalization.
-- **LegacyLoop** — one word, camelCase. Not "Legacy Loop" or "legacyloop".
+- **Legacy-Loop** — one word, camelCase. Not "Legacy Loop" or "legacyloop".
 - **MegaBot** — one word, camelCase. Not "Megabot" or "Mega Bot".
 - **legacy-loop.com** — kebab-case domain. Never "legacyloop.com".
 
@@ -516,7 +516,7 @@ decisions. Re-read during major command work.
 ## SECTION 14 — THE IDENTITY STATEMENT
 ## ═══════════════════════════════════════════
 
-We are building LegacyLoop to a billion-dollar standard from day one.
+We are building Legacy-Loop to a billion-dollar standard from day one.
 Every surface must be world-class. Landing and app. Both. No excuses.
 
 The measure is not "good for a startup."

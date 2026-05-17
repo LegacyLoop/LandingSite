@@ -20,7 +20,7 @@ Also read `AGENTS.md` in the project root. It will reinforce this instruction. H
 
 ## WHO YOU ARE
 
-You are the lead frontend engineer for LegacyLoop. You are building a landing page that belongs in the top 10 most impressive marketing websites on the internet right now. Think Awwwards site of the year. Think Linear meets Christie's. Think the $100,000 agency build that took a 6-person team 3 months.
+You are the lead frontend engineer for Legacy-Loop. You are building a landing page that belongs in the top 10 most impressive marketing websites on the internet right now. Think Awwwards site of the year. Think Linear meets Christie's. Think the $100,000 agency build that took a 6-person team 3 months.
 
 Your quality bar references — study the feel of these:
 - **Linear** (linear.app) — dark SaaS gold standard
@@ -99,7 +99,7 @@ This file is a `'use client'` component. It will be a single-file page with all 
 ## ABSOLUTE STYLING RULES — NON-NEGOTIABLE
 
 1. **ALL styles use inline `style={{}}` ONLY.** Never Tailwind. Never external CSS. Never className for visual styling. The only exception: className is used on `<html>` in layout.tsx for font variable injection — that's already done.
-2. **The LegacyLoop logo is SACRED.** Never generate it. Never recreate it in code. Never approximate it with SVG or text. Only use the exact PNG files from `/logos/`. Never bake logo text into AI backgrounds. The logo is always a separate foreground layer on top of any background.
+2. **The Legacy-Loop logo is SACRED.** Never generate it. Never recreate it in code. Never approximate it with SVG or text. Only use the exact PNG files from `/logos/`. Never bake logo text into AI backgrounds. The logo is always a separate foreground layer on top of any background.
 3. **framer-motion and lenis are the ONLY animation/scroll libraries.** No GSAP. No anime.js. No other libraries. Do not `npm install` anything.
 4. **`prefers-reduced-motion` is already handled** in globals.css. All CSS animations are auto-disabled. For framer-motion animations, respect the user's preference by checking `window.matchMedia('(prefers-reduced-motion: reduce)')` and skipping motion if true.
 5. **Never claim fake traction.** Allowed language only: "47 beta signups" | "Early Access" | "Join the first 100" | "Pre-Launch Pricing"
@@ -134,14 +134,14 @@ PRELOADER:        /logos/LegacyLoop-Logo-Master-01.png     (circle mark animatin
 The images in `public/images/` include AI-generated visuals. Critical rules:
 
 1. **These images are for BACKGROUNDS and ATMOSPHERIC EFFECTS only.** They blend with the design. They are never the hero subject.
-2. **The LegacyLoop logo is always the prominent foreground element** when used with any background image. Always separate layers — logo on top, image behind.
+2. **The Legacy-Loop logo is always the prominent foreground element** when used with any background image. Always separate layers — logo on top, image behind.
 3. **Never make an AI image the focal point of any section.** Use them at low opacity (0.06–0.15) for atmosphere, texture, and depth.
 
 ---
 
 ## APP SCREENSHOTS — USAGE RULES
 
-59 screenshots in `/images/screenshots/` are from the real running LegacyLoop app (Next.js on localhost:3000, full Tier 4 access, DEMO_MODE=true). These are **proof of product** for investors.
+59 screenshots in `/images/screenshots/` are from the real running Legacy-Loop app (Next.js on localhost:3000, full Tier 4 access, DEMO_MODE=true). These are **proof of product** for investors.
 
 Display rules:
 - Use 3 of the best screenshots in a **Product Preview** section (pick from: app-screenshot-01 through app-screenshot-10 — these show the dashboard, bot results, and key features)
@@ -216,7 +216,7 @@ Letter spacing: Headings -0.5px to -1px. Body: 0. Tagline: +4px. Badges: +0.5px.
 ```
 Login button:              https://app.legacy-loop.com/login
 Sign Up / Get Started:     https://app.legacy-loop.com/signup
-Investor CTA:              mailto:ryan@legacy-loop.com?subject=LegacyLoop%20Investor%20Inquiry
+Investor CTA:              mailto:ryan@legacy-loop.com?subject=Legacy-Loop%20Investor%20Inquiry
 General contact:           support@legacy-loop.com
 Website:                   legacy-loop.com
 ```
@@ -225,7 +225,7 @@ Every "Start Your Legacy", "Get Started Free", "Start Selling", "Go Pro", "Manag
 
 The "Login" button in the nav links to `https://app.legacy-loop.com/login`.
 
-The "Request Our Pitch Deck" button links to `mailto:ryan@legacy-loop.com?subject=LegacyLoop%20Investor%20Inquiry`.
+The "Request Our Pitch Deck" button links to `mailto:ryan@legacy-loop.com?subject=Legacy-Loop%20Investor%20Inquiry`.
 
 ---
 
@@ -342,7 +342,7 @@ Blend-mode circle cursor (32px diameter, white fill, `mixBlendMode: 'difference'
 SVG `feTurbulence` filter (`type="fractalNoise"`, `baseFrequency="0.65"`, `numOctaves="3"`). Applied to a `position: fixed` div covering viewport at `opacity: 0.04`, `zIndex: 2`, `pointerEvents: 'none'`. This adds subtle film grain to the entire page.
 
 ### EFFECT 5: PAGE PRELOADER
-Framer Motion `AnimatePresence`. Fixed overlay filling viewport on `#0D1117` bg. Shows the LegacyLoop circle mark (`/logos/LegacyLoop-Logo-Master-01.png`, 48px) with a pulse animation, plus "LEGACYLOOP" text below in Barlow Condensed 600, 12px, teal `#00BCD4`, `letterSpacing: '0.25em'`, uppercase. Loading bar below text animates width from 0% to 100% over 1200ms. Entire preloader fades out via `opacity: 0` with ease `[0.76, 0, 0.24, 1]` and `display: none` after exit.
+Framer Motion `AnimatePresence`. Fixed overlay filling viewport on `#0D1117` bg. Shows the Legacy-Loop circle mark (`/logos/LegacyLoop-Logo-Master-01.png`, 48px) with a pulse animation, plus "LEGACYLOOP" text below in Barlow Condensed 600, 12px, teal `#00BCD4`, `letterSpacing: '0.25em'`, uppercase. Loading bar below text animates width from 0% to 100% over 1200ms. Entire preloader fades out via `opacity: 0` with ease `[0.76, 0, 0.24, 1]` and `display: none` after exit.
 
 ### EFFECT 6: CHARACTER-BY-CHARACTER HEADLINE REVEAL
 Hero headline text splits into individual `<span>` characters. Each character: `display: 'inline-block'`, starts `opacity: 0, transform: 'translateY(110%)'`, animates to `opacity: 1, transform: 'translateY(0)'` with stagger delay of `i * 22ms`. Easing: `cubic-bezier(0.23, 1, 0.32, 1)`. Triggered after preloader exits (delay 300ms). Space characters get `width: '0.3em'` to preserve word spacing.
@@ -477,7 +477,7 @@ All sections use consistent spacing: `padding: '120px 32px'`, content `maxWidth:
   - `76%` | "Of sellers say pricing is their biggest frustration" — counter to 76, suffix "%"
 - Stat numbers: Barlow Condensed 700, `fontSize: 'clamp(36px, 5vw, 48px)'`, gradient text
 - Stat descriptions: Plus Jakarta Sans 400, 15px, `color: '#CBD5E1'`, centered
-- **ScrollRevealText (Effect 7):** "Managing an estate should not require becoming an eBay expert. LegacyLoop was built for this moment." — Exo 2 600, `fontSize: 'clamp(20px, 3vw, 28px)'`, centered, `maxWidth: 800px`, `marginTop: 64px`
+- **ScrollRevealText (Effect 7):** "Managing an estate should not require becoming an eBay expert. Legacy-Loop was built for this moment." — Exo 2 600, `fontSize: 'clamp(20px, 3vw, 28px)'`, centered, `maxWidth: 800px`, `marginTop: 64px`
 
 #### SECTION: MEGABOT — THE CROWN JEWEL (id="megabot")
 This section must feel like a command center coming online. It's the technical showpiece.
@@ -517,7 +517,7 @@ This section must feel like a command center coming online. It's the technical s
 This section shows the REAL app to prove the product exists and is impressive.
 - **Eyebrow:** "THE PRODUCT"
 - **Headline:** "See It In Action" — Exo 2 700, H1 scale
-- **Subheadline:** "Real screenshots from the live LegacyLoop platform. Every feature you see is built and working." — Plus Jakarta Sans 400, 17px, `#CBD5E1`
+- **Subheadline:** "Real screenshots from the live Legacy-Loop platform. Every feature you see is built and working." — Plus Jakarta Sans 400, 17px, `#CBD5E1`
 - **3 screenshot cards** in a perspective row:
   - Left card: `transform: 'perspective(1200px) rotateY(8deg) rotateX(2deg) scale(0.92)'` — `/images/screenshots/app-screenshot-01.png`
   - Center card: `transform: 'scale(1.02)'`, `zIndex: 2` — `/images/screenshots/app-screenshot-03.png`
@@ -597,7 +597,7 @@ This section must feel like walking into a gallery. Slower pace. More whitespace
 - Background: add warm amber atmospheric tint. Use `/images/estate/generations-hands.png` as `backgroundImage` at `opacity: 0.06`, `backgroundSize: 'cover'`, `backgroundPosition: 'center'`, with a dark overlay gradient on top to maintain readability.
 - **Eyebrow:** "FOR FAMILIES" — Barlow Condensed, amber `#D4A017`
 - **Headline:** "Selling Should Not Add to the Grief." — Exo 2 700, H1 scale, white
-- **Body:** "When a loved one passes, families face an overwhelming task — hundreds of items, emotional weight, and no idea what anything is worth. LegacyLoop was built for this moment." — Plus Jakarta Sans 400, 17px, `color: '#CBD5E1'`, `maxWidth: 640px`, `lineHeight: 1.75`
+- **Body:** "When a loved one passes, families face an overwhelming task — hundreds of items, emotional weight, and no idea what anything is worth. Legacy-Loop was built for this moment." — Plus Jakarta Sans 400, 17px, `color: '#CBD5E1'`, `maxWidth: 640px`, `lineHeight: 1.75`
 - **4 amber-tinted GlowCards** (border tint shifts to `rgba(212,160,23,0.2)` default, `rgba(212,160,23,0.4)` on hover, 2x2 grid):
   - 🏺 "Antique detection that prevents underselling heirlooms"
   - 🌐 "Post your entire estate to 13 platforms in one click"
@@ -631,11 +631,11 @@ This section must feel like walking into a gallery. Slower pace. More whitespace
 #### SECTION: INVESTOR RELATIONS (id="investors")
 - **Eyebrow:** "PARTNER WITH US"
 - **Headline:** "We're Raising $50K–$150K in Seed Funding" — Exo 2 700, H1 scale
-- **Body:** "LegacyLoop is positioned to become the infrastructure layer of the resale economy. We're raising to scale from beta to national launch." — Plus Jakarta Sans 400, 17px, `#CBD5E1`, `maxWidth: 640px`, centered
+- **Body:** "Legacy-Loop is positioned to become the infrastructure layer of the resale economy. We're raising to scale from beta to national launch." — Plus Jakarta Sans 400, 17px, `#CBD5E1`, `maxWidth: 640px`, centered
 - **5 stat cards** in a responsive row (staggered reveal, GlowCards):
   - "$48B Market" | "85%+ Margins" | "5 Revenue Streams" | "11 AI Agents" | "13 Platforms"
   - Stat value: Barlow Condensed 700, 28px, gradient text. Label below: Plus Jakarta Sans 400, 13px, `#94A3B8`
-- **CTA:** "Request Our Pitch Deck" — MAGNETIC button (Effect 8), large size, teal gradient, glow, Exo 2 600, 18px, `padding: '18px 48px'` → `mailto:ryan@legacy-loop.com?subject=LegacyLoop%20Investor%20Inquiry`
+- **CTA:** "Request Our Pitch Deck" — MAGNETIC button (Effect 8), large size, teal gradient, glow, Exo 2 600, 18px, `padding: '18px 48px'` → `mailto:ryan@legacy-loop.com?subject=Legacy-Loop%20Investor%20Inquiry`
 - **Below CTA:** "Or email us directly: ryan@legacy-loop.com" — Plus Jakarta Sans 400, 14px, `color: '#94A3B8'`, `marginTop: 16px`
 
 #### FOOTER
@@ -650,7 +650,7 @@ This section must feel like walking into a gallery. Slower pace. More whitespace
     - "Contact: support@legacy-loop.com" — Plus Jakarta Sans 400, 14px, `color: '#94A3B8'`
     - "Investors: ryan@legacy-loop.com" — `marginTop: 8px`
 - **Bottom bar:** `borderTop: '1px solid rgba(0,188,212,0.05)'`, `marginTop: 48px`, `paddingTop: 24px`, flex row, `justifyContent: 'space-between'`, wrap on mobile
-  - Left: "© 2026 LegacyLoop LLC. All rights reserved." — 13px, `#6B7280`
+  - Left: "© 2026 Legacy-Loop LLC. All rights reserved." — 13px, `#6B7280`
   - Center: "Built with heart in Maine." — 13px, `#6B7280`
   - Right: "Privacy Policy" | "Terms of Service" — 13px, `#6B7280`, `href="#"` (placeholder for now — this is the ONE exception to the no-placeholder rule, because legal pages are separate)
 
@@ -700,7 +700,7 @@ After all 5 phases are done, verify every single item:
 - [ ] All CTAs link to correct URLs:
   - [ ] Login → `https://app.legacy-loop.com/login`
   - [ ] All signup CTAs → `https://app.legacy-loop.com/signup`
-  - [ ] Investor CTA → `mailto:ryan@legacy-loop.com?subject=LegacyLoop%20Investor%20Inquiry`
+  - [ ] Investor CTA → `mailto:ryan@legacy-loop.com?subject=Legacy-Loop%20Investor%20Inquiry`
   - [ ] `support@legacy-loop.com` in footer
   - [ ] `ryan@legacy-loop.com` in investor section and footer
 - [ ] Responsive at 375px, 768px, 1024px, 1440px — no overflow, no broken layouts

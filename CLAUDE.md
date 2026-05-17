@@ -27,7 +27,7 @@ against WORLD_CLASS_STANDARDS.md.
 
 ## WHO WE ARE
 
-LegacyLoop is an AI-powered resale automation platform.
+Legacy-Loop is an AI-powered resale automation platform.
 Mission: "Connecting Generations" — never misspell, never alter.
 Landing: legacy-loop.com | App: app.legacy-loop.com
 Company: Legacy-Loop Tech LLC
@@ -326,7 +326,7 @@ app/globals.css          — Modify ONLY with explicit approval
 ## SECTION 10: ACCESSIBILITY — SENIOR-FRIENDLY
 ## ═══════════════════════════════════════════
 
-LegacyLoop's primary audience includes seniors. Accessibility is mandatory.
+Legacy-Loop's primary audience includes seniors. Accessibility is mandatory.
 
 - WCAG 2.1 AA minimum on all elements
 - Color contrast: 4.5:1 normal text, 3:1 large text
@@ -354,7 +354,7 @@ All commands use V17.1 format. No exceptions.
 ### §10 COMMAND BLOCK (fill per command)
 ```
 CMD-[NAME]
-LegacyLoop | [Date] | V17.1
+Legacy-Loop | [Date] | V17.1
 
 OBJECTIVE:
 [1-3 sentences. What problem is solved. Why now.]
