@@ -1288,8 +1288,14 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
       sections.forEach((s) => {
         const el = document.getElementById(s.id)
         if (!el) return
+        // getBoundingClientRect + scrollY gives document-relative position
+        // for any element regardless of offsetParent nesting. offsetTop
+        // would measure from nearest positioned ancestor — breaks for nav
+        // anchors that are <div>s nested inside a positioned <section>
+        // (Mission anchor is the only such anchor today).
+        const rect = el.getBoundingClientRect()
         const midScroll =
-          el.offsetTop + el.offsetHeight / 2 - window.innerHeight / 2
+          rect.top + window.scrollY + el.offsetHeight / 2 - window.innerHeight / 2
         next[s.id] = Math.max(0, Math.min(1, midScroll / totalScroll))
       })
       setDotPercents(next)
