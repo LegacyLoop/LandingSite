@@ -90,7 +90,8 @@ export default function IncidentResponsePage() {
         alignItems: 'center',
         justifyContent: 'center',
         background: 'rgba(13,17,23,0.95)',
-        backdropFilter: 'blur(24px)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(0,188,212,0.08)',
       }}>
         <div style={{ maxWidth: 800, width: '100%', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

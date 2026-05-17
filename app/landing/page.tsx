@@ -1049,8 +1049,8 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
           alignItems: 'center',
           justifyContent: 'center',
           background: scrolled ? 'rgba(13,17,23,0.9)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(24px) saturate(180%)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(24px) saturate(180%)' : 'none',
+          backdropFilter: scrolled ? 'blur(12px) saturate(150%)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(12px) saturate(150%)' : 'none',
           borderBottom: scrolled
             ? '1px solid rgba(0,188,212,0.08)'
             : '1px solid transparent',
@@ -1205,7 +1205,8 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
             right: 0,
             zIndex: 999,
             background: 'rgba(13,17,23,0.97)',
-            backdropFilter: 'blur(24px)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             borderBottom: '1px solid rgba(0,188,212,0.08)',
             padding: '24px 32px',
             display: 'flex',
@@ -1354,8 +1355,8 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
           pointerEvents: visible ? 'auto' : 'none',
           transition: 'opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
           background: 'rgba(13,17,23,0.92)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           borderTop: '1px solid rgba(0,188,212,0.15)',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}

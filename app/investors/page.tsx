@@ -62,7 +62,7 @@ export default function InvestorsPage() {
       <nav style={{
         position: 'sticky', top: 0, zIndex: 100, height: 68,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(13,17,23,0.95)', backdropFilter: 'blur(24px)',
+        background: 'rgba(13,17,23,0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(0,188,212,0.08)',
       }}>
         <div style={{ maxWidth: 1080, width: '100%', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

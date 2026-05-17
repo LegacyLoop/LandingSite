@@ -253,3 +253,18 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* --- Performance: Backdrop-Filter Opt-Out ---
+   Disable backdrop-filter for users who request reduced transparency
+   (macOS "Reduce Transparency" toggle, Windows High Contrast Mode auto-
+   sets this, forced-colors environments). On weak GPU rigs the blur +
+   saturate compositor work dominates frame budget on sticky-nav scroll;
+   opt-out path returns flat semi-transparent surfaces (background colors
+   already carry sufficient opacity to remain readable without blur). */
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  [style*="backdrop-filter"],
+  [style*="-webkit-backdrop-filter"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
