@@ -101,9 +101,18 @@ a {
   text-decoration: none;
 }
 
-/* --- Custom Cursor (desktop only) --- */
-@media (pointer: fine) {
-  body {
+/* --- Custom Cursor (desktop only · JS-gated) ---
+   Defensive 2-layer gate:
+   1) Media query requires BOTH pointer:fine AND hover:hover · catches
+      real mouse devices · excludes Windows touch-driver false positives
+      (Chrome on Windows 11 reports maxTouchPoints>0 even on pure-mouse
+      desktops · which previously hid OS cursor with no replacement).
+   2) Class-gated · only applies when CustomCursor JS component
+      successfully mounts and adds the class to body. If JS fails
+      OR component bails for any reason · class never added ·
+      OS cursor stays visible. Belt-and-suspenders fallback. */
+@media (pointer: fine) and (hover: hover) {
+  body.custom-cursor-active {
     cursor: none;
   }
 }

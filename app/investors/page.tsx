@@ -67,7 +67,7 @@ export default function InvestorsPage() {
       }}>
         <div style={{ maxWidth: 1080, width: '100%', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/landing" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png" alt="LegacyLoop" style={{ height: 32, objectFit: 'contain' }} />
+            <img src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png" alt="Legacy-Loop" style={{ height: 32, objectFit: 'contain' }} />
             <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: '#FFFFFF' }}>Legacy-Loop</span>
           </a>
           <a href="/landing" style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', textDecoration: 'none' }}>Back to Home</a>
@@ -82,7 +82,7 @@ export default function InvestorsPage() {
             We&apos;re Raising $50K&ndash;$150K in Seed Funding
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 18, color: '#CBD5E1', maxWidth: 640, margin: '0 auto', lineHeight: 1.65 }}>
-            LegacyLoop is positioned to become the infrastructure layer of the resale economy. We&apos;re raising to scale from beta to national launch.
+            Legacy-Loop is positioned to become the infrastructure layer of the resale economy. We&apos;re raising to scale from beta to national launch.
           </p>
         </div>
       </section>
@@ -122,7 +122,7 @@ export default function InvestorsPage() {
             </div>
           </div>
 
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(24px, 3vw, 34px)', color: '#F1F5F9', marginBottom: 24, textAlign: 'center' }}>Why LegacyLoop</h2>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(24px, 3vw, 34px)', color: '#F1F5F9', marginBottom: 24, textAlign: 'center' }}>Why Legacy-Loop</h2>
           {[
             { icon: '🤖', title: '10 AI Bots + MegaBot', desc: 'From item identification to video ad creation — every step automated with purpose-built AI.' },
             { icon: '🧠', title: '4-Engine MegaBot Consensus', desc: 'OpenAI, Claude, Gemini, and Grok run in parallel. When 4 AIs agree, you can trust the number.' },
@@ -146,10 +146,10 @@ export default function InvestorsPage() {
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(24px, 3vw, 34px)', color: '#F1F5F9', marginBottom: 16 }}>Interested in Partnering?</h2>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 17, color: '#CBD5E1', marginBottom: 40, lineHeight: 1.65 }}>
-            We&apos;d love to share our pitch deck and discuss how LegacyLoop is building the future of resale.
+            We&apos;d love to share our pitch deck and discuss how Legacy-Loop is building the future of resale.
           </p>
           <a
-            href="mailto:ryan@legacy-loop.com?subject=LegacyLoop%20Investor%20Inquiry"
+            href="mailto:ryan@legacy-loop.com?subject=Legacy-Loop%20Investor%20Inquiry"
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               background: 'linear-gradient(135deg, #00bcd4, #009688)', color: '#fff',
@@ -170,7 +170,7 @@ export default function InvestorsPage() {
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(0,188,212,0.08)', padding: '32px', textAlign: 'center' }}>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280' }}>
-          &copy; 2026 LegacyLoop Tech LLC. All rights reserved. | <a href="/landing" style={{ color: '#6B7280', textDecoration: 'none' }}>Home</a> | <a href="/privacy" style={{ color: '#6B7280', textDecoration: 'none' }}>Privacy</a> | <a href="/terms" style={{ color: '#6B7280', textDecoration: 'none' }}>Terms</a>
+          &copy; 2026 Legacy-Loop Tech LLC. All rights reserved. | <a href="/landing" style={{ color: '#6B7280', textDecoration: 'none' }}>Home</a> | <a href="/privacy" style={{ color: '#6B7280', textDecoration: 'none' }}>Privacy</a> | <a href="/terms" style={{ color: '#6B7280', textDecoration: 'none' }}>Terms</a>
         </p>
       </footer>
     </div>

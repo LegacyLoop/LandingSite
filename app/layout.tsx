@@ -39,11 +39,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "LegacyLoop — AI-Powered Resale Platform | Connecting Generations",
+  title: "Legacy-Loop — AI-Powered Resale Platform | Connecting Generations",
   description:
-    "LegacyLoop makes selling simple, fair, and dignified. 10 AI bots + MegaBot consensus engine, 13 platforms, AI Shipping Center. Built for estates, families, and everyday sellers.",
+    "Legacy-Loop makes selling simple, fair, and dignified. 10 AI bots + MegaBot consensus engine, 13 platforms, AI Shipping Center. Built for estates, families, and everyday sellers.",
   openGraph: {
-    title: "LegacyLoop — Connecting Generations",
+    title: "Legacy-Loop — Connecting Generations",
     description:
       "AI-powered resale automation. 10 specialized bots + MegaBot. 13 platforms. Fair pricing powered by 4 AI engines.",
     type: "website",
@@ -71,7 +71,7 @@ export default function RootLayout({
             the Next.js Viewport schema yet. */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="LegacyLoop" />
+        <meta name="apple-mobile-web-app-title" content="Legacy-Loop" />
       </head>
       <body>
         {/* If JS fails completely, force-hide any preloader overlay */}

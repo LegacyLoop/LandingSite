@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
       }}>
         <div style={{ maxWidth: 800, width: '100%', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/landing" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png" alt="LegacyLoop" style={{ height: 32, objectFit: 'contain' }} />
+            <img src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png" alt="Legacy-Loop" style={{ height: 32, objectFit: 'contain' }} />
             <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: '#FFFFFF' }}>Legacy-Loop</span>
           </a>
           <a href="/landing" style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', textDecoration: 'none' }}>Back to Home</a>
@@ -84,7 +84,7 @@ export default function PrivacyPolicyPage() {
 
         {/* Section 1 */}
         <h2 style={heading}>1. Introduction</h2>
-        <p style={body}>LegacyLoop (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the LegacyLoop platform accessible at legacy-loop.com (the &ldquo;Service&rdquo;). We are committed to protecting your personal information and your right to privacy.</p>
+        <p style={body}>Legacy-Loop (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the Legacy-Loop platform accessible at legacy-loop.com (the &ldquo;Service&rdquo;). We are committed to protecting your personal information and your right to privacy.</p>
         <p style={body}>This Privacy Policy explains what information we collect, how we use it, and what rights you have in relation to it. Please read it carefully. If you disagree with its terms, please discontinue use of our Service.</p>
 
         {/* Section 2 */}
@@ -116,7 +116,7 @@ export default function PrivacyPolicyPage() {
         <h2 style={heading}>3. How We Use Your Information</h2>
         <p style={body}>We use the information we collect to:</p>
         <ul style={list}>
-          <li style={li}>Provide, operate, and maintain the LegacyLoop platform</li>
+          <li style={li}>Provide, operate, and maintain the Legacy-Loop platform</li>
           <li style={li}>Process and complete transactions</li>
           <li style={li}>Send transactional emails and service notifications</li>
           <li style={li}>Improve, personalize, and expand our Service</li>
@@ -153,7 +153,7 @@ export default function PrivacyPolicyPage() {
 
         {/* Section 7 */}
         <h2 style={heading}>7. Facebook and Meta Platform</h2>
-        <p style={body}>LegacyLoop may integrate with Facebook and Instagram through Meta&apos;s official APIs. When you connect your Facebook or Instagram account:</p>
+        <p style={body}>Legacy-Loop may integrate with Facebook and Instagram through Meta&apos;s official APIs. When you connect your Facebook or Instagram account:</p>
         <ul style={list}>
           <li style={li}>We access only the permissions you explicitly grant</li>
           <li style={li}>We use this access to post content to your connected pages and accounts on your behalf</li>
@@ -173,13 +173,13 @@ export default function PrivacyPolicyPage() {
           <li style={li}>Objection: object to certain types of processing, including marketing</li>
           <li style={li}>Restriction: request that we limit how we use your data</li>
         </ul>
-        <p style={body}>To exercise these rights, contact us at: privacy@legacy-loop.com or hello@legacy-loop.com</p>
+        <p style={body}>To exercise these rights, contact us at: support@legacy-loop.com or support@legacy-loop.com</p>
 
         {/* Section 9 */}
         <h2 style={heading}>9. Data Deletion</h2>
         <p style={body}>You have the right to request deletion of your personal data at any time. To do so:</p>
         <ol style={{ ...list, listStyleType: 'decimal' }}>
-          <li style={li}>Email us at: hello@legacy-loop.com with subject line &ldquo;Data Deletion Request&rdquo;</li>
+          <li style={li}>Email us at: support@legacy-loop.com with subject line &ldquo;Data Deletion Request&rdquo;</li>
           <li style={li}>Include your full name and the email address associated with your account</li>
           <li style={li}>We will confirm receipt within 5 business days</li>
           <li style={li}>Deletion will be completed within 30 days of your request</li>
@@ -189,12 +189,13 @@ export default function PrivacyPolicyPage() {
 
         {/* Section 10 */}
         <h2 style={heading}>10. Children&apos;s Privacy</h2>
-        <p style={body}>LegacyLoop is not directed to children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us immediately at hello@legacy-loop.com and we will take steps to delete that information.</p>
+        <p style={body}>Legacy-Loop is not directed to children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us immediately at support@legacy-loop.com and we will take steps to delete that information.</p>
 
         {/* Section 11 */}
         <h2 style={heading}>11. Security</h2>
         <p style={body}>We implement commercially reasonable technical and organizational measures to protect your personal information against unauthorized access, loss, or alteration. These include encrypted data storage, secure HTTPS connections, and access controls.</p>
         <p style={body}>However, no method of transmission over the Internet is 100% secure. We cannot guarantee absolute security and encourage you to use strong passwords and keep your account credentials confidential.</p>
+        <p style={body}>For full details on our security practices, see our <a href="/security" style={{ color: '#00BCD4', textDecoration: 'none' }}>Security &amp; Trust Center</a>, which includes our <a href="/security/incident-response" style={{ color: '#00BCD4', textDecoration: 'none' }}>Incident Response Plan</a> and <a href="/security/security-review" style={{ color: '#00BCD4', textDecoration: 'none' }}>Security Review Process</a>.</p>
 
         {/* Section 12 */}
         <h2 style={heading}>12. Changes to This Policy</h2>
@@ -206,13 +207,11 @@ export default function PrivacyPolicyPage() {
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,188,212,0.15)', borderRadius: 12, padding: 24, marginTop: 16 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '12px 24px', fontFamily: 'var(--font-body)', fontSize: 15 }}>
             <span style={{ color: '#94A3B8' }}>Email</span>
-            <a href="mailto:hello@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>hello@legacy-loop.com</a>
-            <span style={{ color: '#94A3B8' }}>Support Email</span>
             <a href="mailto:support@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>support@legacy-loop.com</a>
             <span style={{ color: '#94A3B8' }}>Website</span>
             <span style={{ color: '#CBD5E1' }}>legacy-loop.com</span>
             <span style={{ color: '#94A3B8' }}>Mailing Address</span>
-            <span style={{ color: '#CBD5E1' }}>LegacyLoop, Maine, USA</span>
+            <span style={{ color: '#CBD5E1' }}>Legacy-Loop, Maine, USA</span>
           </div>
         </div>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', fontStyle: 'italic', marginTop: 24 }}>Last updated: March 2026</p>
@@ -220,7 +219,7 @@ export default function PrivacyPolicyPage() {
 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(0,188,212,0.08)', padding: '32px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280' }}>&copy; 2026 LegacyLoop Tech LLC. All rights reserved. | <a href="/landing" style={{ color: '#6B7280', textDecoration: 'none' }}>Home</a> | <a href="/terms" style={{ color: '#6B7280', textDecoration: 'none' }}>Terms of Service</a></p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280' }}>&copy; 2026 Legacy-Loop Tech LLC. All rights reserved. | <a href="/landing" style={{ color: '#6B7280', textDecoration: 'none' }}>Home</a> | <a href="/security" style={{ color: '#6B7280', textDecoration: 'none' }}>Security</a> | <a href="/terms" style={{ color: '#6B7280', textDecoration: 'none' }}>Terms of Service</a> | <a href="/data-deletion" style={{ color: '#6B7280', textDecoration: 'none' }}>Data Deletion</a></p>
       </footer>
     </div>
   )

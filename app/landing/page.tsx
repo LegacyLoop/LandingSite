@@ -79,7 +79,7 @@ function Preloader({ isLoaded }: { isLoaded: boolean }) {
     >
       <img
         src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png"
-        alt="LegacyLoop"
+        alt="Legacy-Loop"
         style={{
           width: 72,
           height: 72,
@@ -132,18 +132,38 @@ function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
-    const mq = window.matchMedia('(pointer: fine)')
-    // iPad + Magic Keyboard reports pointer:fine AND maxTouchPoints>0.
-    // Only render the custom cursor on true non-touch desktop so it
-    // doesn't paint a stray white dot on touch tablets.
-    const hasTouch =
-      'ontouchstart' in window || navigator.maxTouchPoints > 0
-    setIsDesktop(mq.matches && !hasTouch)
-    const handler = (e: MediaQueryListEvent) =>
-      setIsDesktop(e.matches && !hasTouch)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
+    // Desktop detection · two MQ flags (canonical CSS Media Queries L4):
+    //   pointer: fine  → primary pointer is precise (mouse / trackpad)
+    //   hover: hover   → primary pointer can hover (mouse · NOT touch)
+    // BOTH must be true. Avoids navigator.maxTouchPoints which
+    // false-positives on Windows 11 PCs · Chrome reports maxTouchPoints>0
+    // whenever touch drivers are installed · even on pure-mouse desktops ·
+    // causing cursor to disappear entirely.
+    const pointerMq = window.matchMedia('(pointer: fine)')
+    const hoverMq = window.matchMedia('(hover: hover)')
+    const compute = () => pointerMq.matches && hoverMq.matches
+    setIsDesktop(compute())
+    const handler = () => setIsDesktop(compute())
+    pointerMq.addEventListener('change', handler)
+    hoverMq.addEventListener('change', handler)
+    return () => {
+      pointerMq.removeEventListener('change', handler)
+      hoverMq.removeEventListener('change', handler)
+    }
   }, [])
+
+  useEffect(() => {
+    // Class-gate companion to globals.css media rule. Only when JS
+    // confirms desktop AND component is mounted · add class to <body>
+    // which permits CSS `body.custom-cursor-active { cursor: none }`
+    // to actually hide the OS cursor. If JS fails or component bails ·
+    // class never set · OS cursor stays visible (safe fallback).
+    if (!isDesktop) return
+    document.body.classList.add('custom-cursor-active')
+    return () => {
+      document.body.classList.remove('custom-cursor-active')
+    }
+  }, [isDesktop])
 
   useEffect(() => {
     if (!isDesktop) return
@@ -1043,7 +1063,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
           {/* Left — Logo */}
           <img
             src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-04.png"
-            alt="LegacyLoop"
+            alt="Legacy-Loop"
             style={{
               height: isTablet ? 36 : 48,
               objectFit: 'contain',
@@ -1756,7 +1776,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
         {/* Logo — stacked lockup, true transparent PNG */}
         <motion.img
           src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-03.png"
-          alt="LegacyLoop — Connecting Generations"
+          alt="Legacy-Loop — Connecting Generations"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
@@ -2557,8 +2577,8 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                   objectFit: 'cover',
                 }}
                 sources={[
-                  { src: '/LegacyLoop_Landing_GS_Hero.webm', type: 'video/webm' },
-                  { src: '/LegacyLoop_Landing_GS_Hero.mp4', type: 'video/mp4' },
+                  { src: '/Legacy-Loop_Landing_GS_Hero.webm', type: 'video/webm' },
+                  { src: '/Legacy-Loop_Landing_GS_Hero.mp4', type: 'video/mp4' },
                 ]}
               />
             </motion.div>
@@ -3178,7 +3198,7 @@ function GradientText({
 // ---------- WHAT YOU GET — PLATFORM ADVANTAGE (was MarketOpportunity) ----------
 // Flipped from investor/market-size stats to user-facing platform
 // capability stats per Ryan's April 17 note: this is visible to the
-// general public on the landing, so it must sell what LegacyLoop
+// general public on the landing, so it must sell what Legacy-Loop
 // gives YOU — not what the resale market is worth.
 function MarketOpportunitySection() {
   const width = useWindowWidth()
@@ -4001,7 +4021,7 @@ function ShippingCenterSection() {
           }}
         >
           A full Transportation Management System built right into the platform.
-          Compare rates, print labels, and track shipments — without leaving LegacyLoop.
+          Compare rates, print labels, and track shipments — without leaving Legacy-Loop.
         </p>
 
         {/* Carrier badges */}
@@ -4100,7 +4120,7 @@ function ProductPreviewSection() {
   const screenshots = [
     {
       src: '/images/screenshots/app-screenshot-01.png',
-      alt: 'LegacyLoop Dashboard — item management and AI analysis overview',
+      alt: 'Legacy-Loop Dashboard — item management and AI analysis overview',
       transform: noTransform
         ? 'none'
         : 'perspective(1200px) rotateY(8deg) rotateX(2deg) scale(0.92)',
@@ -4108,13 +4128,13 @@ function ProductPreviewSection() {
     },
     {
       src: '/images/screenshots/app-screenshot-03.png',
-      alt: 'LegacyLoop AI Bot Results — detailed item valuation and pricing',
+      alt: 'Legacy-Loop AI Bot Results — detailed item valuation and pricing',
       transform: noTransform ? 'none' : 'scale(1.02)',
       zIndex: 2,
     },
     {
       src: '/images/screenshots/app-screenshot-05.png',
-      alt: 'LegacyLoop Listing Manager — multi-platform listing creation',
+      alt: 'Legacy-Loop Listing Manager — multi-platform listing creation',
       transform: noTransform
         ? 'none'
         : 'perspective(1200px) rotateY(-8deg) rotateX(2deg) scale(0.92)',
@@ -4148,7 +4168,7 @@ function ProductPreviewSection() {
             lineHeight: 1.65,
           }}
         >
-          Real screenshots from the live LegacyLoop platform. Every feature you
+          Real screenshots from the live Legacy-Loop platform. Every feature you
           see is built and working.
         </p>
 
@@ -5333,7 +5353,7 @@ function EstateSection() {
         >
           When a loved one passes, families face an overwhelming task — hundreds
           of items, emotional weight, and no idea what anything is worth.
-          LegacyLoop was built for this moment.
+          Legacy-Loop was built for this moment.
         </p>
         </div>
 
@@ -5389,7 +5409,7 @@ function EstateSection() {
           >
             <img
               src="/images/estate/senior-tablet.png"
-              alt="Senior woman using LegacyLoop on a tablet to manage estate items"
+              alt="Senior woman using Legacy-Loop on a tablet to manage estate items"
               loading="lazy"
               style={{
                 maxWidth: 420,
@@ -5938,7 +5958,7 @@ function EstateSection() {
                 />
                 <img
                   src="/images/garage/family-garage.png"
-                  alt="Family using LegacyLoop to manage their garage sale"
+                  alt="Family using Legacy-Loop to manage their garage sale"
                   loading="lazy"
                   style={{
                     width: '100%',
@@ -6349,7 +6369,7 @@ function VideoShowcaseSection() {
               lineHeight: 1.65,
             }}
           >
-            LegacyLoop connects generations through technology built with heart.
+            Legacy-Loop connects generations through technology built with heart.
             Every item tells a story. Every sale preserves a legacy.
           </p>
         </div>
@@ -6438,7 +6458,7 @@ function VideoShowcaseSection() {
             ))}
           </div>
 
-          {/* Mission Statement — the heart of LegacyLoop */}
+          {/* Mission Statement — the heart of Legacy-Loop */}
           <div
             id="mission"
             style={{
@@ -6472,7 +6492,7 @@ function VideoShowcaseSection() {
                 marginBottom: 48,
               }}
             >
-              LegacyLoop was built to honor something bigger than profit.
+              Legacy-Loop was built to honor something bigger than profit.
               We combine the power of artificial intelligence with compassionate human values
               to help families navigate life&apos;s transitions with dignity. Through every sale,
               donation, and partnership, we provide resources and hope to those who need it most.
@@ -6813,7 +6833,7 @@ function AppDownloadSection() {
             >
               {reduced ? (
                 <>
-                  LegacyLoop lives on your <GradientText>phone</GradientText>.
+                  Legacy-Loop lives on your <GradientText>phone</GradientText>.
                 </>
               ) : (
                 <>
@@ -6828,7 +6848,7 @@ function AppDownloadSection() {
                     }}
                     style={{ display: 'inline-block' }}
                   >
-                    LegacyLoop lives on your&nbsp;
+                    Legacy-Loop lives on your&nbsp;
                   </motion.span>
                   <GlitchWord text="phone" isLoaded={isLoaded} />
                   <motion.span
@@ -7197,7 +7217,7 @@ function AppDownloadSection() {
                     letterSpacing: '-0.02em',
                   }}
                 >
-                  LegacyLoop
+                  Legacy-Loop
                 </span>
                 <span
                   style={{
@@ -7481,7 +7501,7 @@ function WaitlistSection() {
             marginRight: 'auto',
           }}
         >
-          Lock in pre-launch pricing forever. Get priority access before public launch. Be part of LegacyLoop from day one.
+          Lock in pre-launch pricing forever. Get priority access before public launch. Be part of Legacy-Loop from day one.
         </p>
 
         {/* Founding spots counter — BIG number, AnimatedStat count-up on viewport */}
@@ -7586,7 +7606,7 @@ function WaitlistSection() {
                 marginBottom: 12,
               }}
             >
-              You&apos;re in. Welcome to LegacyLoop.
+              You&apos;re in. Welcome to Legacy-Loop.
             </div>
             <p
               style={{
@@ -7600,7 +7620,7 @@ function WaitlistSection() {
               Your founding member rate is locked. Check your inbox — we&apos;ll be in touch soon.
             </p>
             <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('I just locked in founding member pricing at @LegacyLoopApp — AI-powered resale for the next generation. Join early: https://legacy-loop.com')}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('I just locked in founding member pricing at @Legacy-LoopApp — AI-powered resale for the next generation. Join early: https://legacy-loop.com')}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -8076,7 +8096,7 @@ function Footer() {
             <div>
               <img
                 src="/logos/LegacyLoop-Logo-Master-Outlines-11.png"
-                alt="LegacyLoop"
+                alt="Legacy-Loop"
                 style={{ maxWidth: 200, objectFit: 'contain', display: 'block' }}
               />
               <div
@@ -8220,7 +8240,7 @@ function Footer() {
                 color: '#4B5563',
               }}
             >
-              &copy; 2026 LegacyLoop Tech LLC. All rights reserved.
+              &copy; 2026 Legacy-Loop Tech LLC. All rights reserved.
             </span>
             <span
               style={{
@@ -8500,7 +8520,7 @@ function HelpCenter() {
                 marginBottom: 12,
               }}
             >
-              LegacyLoop Help Center
+              Legacy-Loop Help Center
             </div>
 
             {/* Title */}

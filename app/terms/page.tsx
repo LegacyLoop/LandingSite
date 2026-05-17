@@ -75,7 +75,7 @@ export default function TermsOfServicePage() {
       }}>
         <div style={{ maxWidth: 800, width: '100%', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/landing" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png" alt="LegacyLoop" style={{ height: 32, objectFit: 'contain' }} />
+            <img src="/logos/LegacyLoop-Logo-Master-Outlines-transparent-05.png" alt="Legacy-Loop" style={{ height: 32, objectFit: 'contain' }} />
             <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: '#FFFFFF' }}>Legacy-Loop</span>
           </a>
           <a href="/landing" style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', textDecoration: 'none' }}>Back to Home</a>
@@ -92,17 +92,17 @@ export default function TermsOfServicePage() {
         </div>
 
         <div style={{ background: 'rgba(0,188,212,0.05)', border: '1px solid rgba(0,188,212,0.15)', borderRadius: 12, padding: '16px 20px', marginBottom: 48 }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#CBD5E1', margin: 0, lineHeight: 1.6 }}>Please read these Terms of Service carefully before using LegacyLoop. By accessing or using our platform, you agree to be bound by these Terms.</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#CBD5E1', margin: 0, lineHeight: 1.6 }}>Please read these Terms of Service carefully before using Legacy-Loop. By accessing or using our platform, you agree to be bound by these Terms.</p>
         </div>
 
         {/* Section 1 */}
         <h2 style={heading}>1. Agreement to Terms</h2>
-        <p style={body}>These Terms of Service (&ldquo;Terms&rdquo;) constitute a legally binding agreement between you and LegacyLoop (&ldquo;Company,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) governing your access to and use of legacy-loop.com and all related services (collectively, the &ldquo;Service&rdquo;).</p>
+        <p style={body}>These Terms of Service (&ldquo;Terms&rdquo;) constitute a legally binding agreement between you and Legacy-Loop (&ldquo;Company,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) governing your access to and use of legacy-loop.com and all related services (collectively, the &ldquo;Service&rdquo;).</p>
         <p style={body}>By creating an account, accessing, or using the Service, you confirm that you have read, understood, and agree to be bound by these Terms. If you do not agree, do not use the Service.</p>
 
         {/* Section 2 */}
         <h2 style={heading}>2. Description of Service</h2>
-        <p style={body}>LegacyLoop is an AI-powered resale automation platform designed to help individuals and families sell secondhand items, manage estate sales, and conduct garage and yard sales. The Service includes:</p>
+        <p style={body}>Legacy-Loop is an AI-powered resale automation platform designed to help individuals and families sell secondhand items, manage estate sales, and conduct garage and yard sales. The Service includes:</p>
         <ul style={list}>
           <li style={li}>AI-powered item identification and valuation</li>
           <li style={li}>Automated listing generation</li>
@@ -137,39 +137,39 @@ export default function TermsOfServicePage() {
 
         {/* Section 5 */}
         <h2 style={heading}>5. Seller Responsibilities</h2>
-        <p style={body}>As a seller using LegacyLoop, you acknowledge and agree that:</p>
+        <p style={body}>As a seller using Legacy-Loop, you acknowledge and agree that:</p>
         <ul style={list}>
           <li style={li}>You have the legal right to sell the items you list</li>
           <li style={li}>Item descriptions and photos must be accurate and honest</li>
           <li style={li}>You are responsible for fulfilling sales you commit to</li>
-          <li style={li}>LegacyLoop&apos;s AI valuations are estimates only — final pricing decisions are yours</li>
+          <li style={li}>Legacy-Loop&apos;s AI valuations are estimates only — final pricing decisions are yours</li>
           <li style={li}>You are responsible for collecting and remitting any applicable sales taxes</li>
           <li style={li}>You are responsible for proper packing and shipping of sold items</li>
         </ul>
 
         {/* Section 6 */}
         <h2 style={heading}>6. Fees and Payments</h2>
-        <p style={body}>LegacyLoop operates on a tiered service model. Applicable fees, commission rates, and subscription terms are described at legacy-loop.com and in your account dashboard. By using paid features, you agree to those fees.</p>
-        <p style={body}>Payments are processed through Stripe. By making a payment, you also agree to Stripe&apos;s terms of service. LegacyLoop does not store your full payment card information.</p>
+        <p style={body}>Legacy-Loop operates on a tiered service model. Applicable fees, commission rates, and subscription terms are described at legacy-loop.com and in your account dashboard. By using paid features, you agree to those fees.</p>
+        <p style={body}>Payments are processed through Stripe. By making a payment, you also agree to Stripe&apos;s terms of service. Legacy-Loop does not store your full payment card information.</p>
 
         {/* Section 7 */}
         <h2 style={heading}>7. AI Features and Accuracy</h2>
-        <p style={body}>LegacyLoop uses artificial intelligence to provide item identification, valuation estimates, listing suggestions, and other automated features. You acknowledge that:</p>
+        <p style={body}>Legacy-Loop uses artificial intelligence to provide item identification, valuation estimates, listing suggestions, and other automated features. You acknowledge that:</p>
         <ul style={list}>
           <li style={li}>AI-generated valuations are estimates and not guaranteed</li>
           <li style={li}>AI item identification may not always be accurate</li>
           <li style={li}>You retain final responsibility for all listing decisions and pricing</li>
-          <li style={li}>LegacyLoop is not liable for losses arising from reliance on AI-generated outputs</li>
+          <li style={li}>Legacy-Loop is not liable for losses arising from reliance on AI-generated outputs</li>
         </ul>
 
         {/* Section 8 */}
         <h2 style={heading}>8. Third-Party Integrations</h2>
-        <p style={body}>The Service integrates with third-party platforms including Facebook, Instagram, eBay, Stripe, Shippo, and others. Use of these integrations is subject to the respective third-party terms of service. LegacyLoop is not responsible for the actions, content, or policies of third-party platforms.</p>
+        <p style={body}>The Service integrates with third-party platforms including Facebook, Instagram, eBay, Stripe, Shippo, and others. Use of these integrations is subject to the respective third-party terms of service. Legacy-Loop is not responsible for the actions, content, or policies of third-party platforms.</p>
 
         {/* Section 9 */}
         <h2 style={heading}>9. Intellectual Property</h2>
-        <p style={body}>The LegacyLoop name, logo, platform design, software, and content created by us are protected by intellectual property laws and owned by LegacyLoop. You may not copy, reproduce, or distribute our proprietary materials without written permission.</p>
-        <p style={body}>You retain ownership of content you upload (photos, descriptions). By uploading content, you grant LegacyLoop a non-exclusive license to use, display, and distribute that content for the purposes of operating the Service.</p>
+        <p style={body}>The Legacy-Loop name, logo, platform design, software, and content created by us are protected by intellectual property laws and owned by Legacy-Loop. You may not copy, reproduce, or distribute our proprietary materials without written permission.</p>
+        <p style={body}>You retain ownership of content you upload (photos, descriptions). By uploading content, you grant Legacy-Loop a non-exclusive license to use, display, and distribute that content for the purposes of operating the Service.</p>
 
         {/* Section 10 */}
         <h2 style={heading}>10. Disclaimers</h2>
@@ -178,11 +178,11 @@ export default function TermsOfServicePage() {
         {/* Section 11 */}
         <h2 style={heading}>11. Limitation of Liability</h2>
         <p style={caps}>TO THE FULLEST EXTENT PERMITTED BY LAW, LEGACYLOOP SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE SERVICE, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
-        <p style={body}>Our total liability to you for any claim arising from use of the Service shall not exceed the amount you paid to LegacyLoop in the twelve months preceding the claim.</p>
+        <p style={body}>Our total liability to you for any claim arising from use of the Service shall not exceed the amount you paid to Legacy-Loop in the twelve months preceding the claim.</p>
 
         {/* Section 12 */}
         <h2 style={heading}>12. Indemnification</h2>
-        <p style={body}>You agree to indemnify, defend, and hold harmless LegacyLoop and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys&apos; fees) arising from your use of the Service, your violation of these Terms, or your violation of any third-party rights.</p>
+        <p style={body}>You agree to indemnify, defend, and hold harmless Legacy-Loop and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys&apos; fees) arising from your use of the Service, your violation of these Terms, or your violation of any third-party rights.</p>
 
         {/* Section 13 */}
         <h2 style={heading}>13. Governing Law</h2>
@@ -198,13 +198,13 @@ export default function TermsOfServicePage() {
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,188,212,0.15)', borderRadius: 12, padding: 24, marginTop: 16 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '12px 24px', fontFamily: 'var(--font-body)', fontSize: 15 }}>
             <span style={{ color: '#94A3B8' }}>Email</span>
-            <a href="mailto:hello@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>hello@legacy-loop.com</a>
+            <a href="mailto:support@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>support@legacy-loop.com</a>
             <span style={{ color: '#94A3B8' }}>Legal Inquiries</span>
             <a href="mailto:ryan@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>ryan@legacy-loop.com</a>
             <span style={{ color: '#94A3B8' }}>Website</span>
             <span style={{ color: '#CBD5E1' }}>legacy-loop.com</span>
             <span style={{ color: '#94A3B8' }}>Address</span>
-            <span style={{ color: '#CBD5E1' }}>LegacyLoop, Maine, USA</span>
+            <span style={{ color: '#CBD5E1' }}>Legacy-Loop, Maine, USA</span>
           </div>
         </div>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', fontStyle: 'italic', marginTop: 24 }}>Last updated: March 2026</p>
@@ -212,7 +212,7 @@ export default function TermsOfServicePage() {
 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(0,188,212,0.08)', padding: '32px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280' }}>&copy; 2026 LegacyLoop Tech LLC. All rights reserved. | <a href="/landing" style={{ color: '#6B7280', textDecoration: 'none' }}>Home</a> | <a href="/privacy" style={{ color: '#6B7280', textDecoration: 'none' }}>Privacy Policy</a></p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280' }}>&copy; 2026 Legacy-Loop Tech LLC. All rights reserved. | <a href="/landing" style={{ color: '#6B7280', textDecoration: 'none' }}>Home</a> | <a href="/security" style={{ color: '#6B7280', textDecoration: 'none' }}>Security</a> | <a href="/privacy" style={{ color: '#6B7280', textDecoration: 'none' }}>Privacy Policy</a> | <a href="/data-deletion" style={{ color: '#6B7280', textDecoration: 'none' }}>Data Deletion</a></p>
       </footer>
     </div>
   )
