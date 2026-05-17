@@ -2586,8 +2586,8 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                   objectFit: 'cover',
                 }}
                 sources={[
-                  { src: '/Legacy-Loop_Landing_GS_Hero.webm', type: 'video/webm' },
-                  { src: '/Legacy-Loop_Landing_GS_Hero.mp4', type: 'video/mp4' },
+                  { src: '/LegacyLoop_Landing_GS_Hero.webm', type: 'video/webm' },
+                  { src: '/LegacyLoop_Landing_GS_Hero.mp4', type: 'video/mp4' },
                 ]}
               />
             </motion.div>
@@ -2956,6 +2956,10 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                 objectFit: 'cover',
               }}
               sources={[
+                {
+                  src: '/Legacyloop_Gs_Subsection_Girl_Web.webm',
+                  type: 'video/webm',
+                },
                 {
                   src: '/Legacyloop_Gs_Subsection_Girl_Web.mp4',
                   type: 'video/mp4',
