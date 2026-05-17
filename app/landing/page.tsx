@@ -365,7 +365,14 @@ function useWindowWidth() {
   return w
 }
 
-/** Detect touch device on mount. Returns stable boolean after first render.
+/** Detect touch device via CSS Media Queries Level 4 (hover/pointer).
+ *  Touch = NOT (hover:hover AND pointer:fine). Clones the canonical pattern
+ *  used by CustomCursor() above. Avoids navigator.maxTouchPoints which
+ *  false-positives on Windows 11 PCs running Chrome with touch drivers
+ *  installed — those report maxTouchPoints>0 even on pure-mouse desktops,
+ *  triggering the iPad fallback path and cancelling parallax / GlowCard
+ *  reveal / StaggeredWords animations on Windows.
+ *
  *  Critical for iPad Safari: framer-motion v12 WAAPI animations frequently
  *  get stuck at their initial state on iPad, leaving elements invisible.
  *  Any component that animates opacity from 0 to 1 outside data-hero-content
@@ -373,9 +380,12 @@ function useWindowWidth() {
 function useIsTouch() {
   const [isTouch, setIsTouch] = useState(false)
   useEffect(() => {
-    setIsTouch(
-      'ontouchstart' in window || navigator.maxTouchPoints > 0
-    )
+    const hoverMq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const compute = () => !hoverMq.matches
+    setIsTouch(compute())
+    const handler = () => setIsTouch(compute())
+    hoverMq.addEventListener('change', handler)
+    return () => hoverMq.removeEventListener('change', handler)
   }, [])
   return isTouch
 }
@@ -487,7 +497,7 @@ function GlowCard({
     // On touch devices (iPad, phones), show immediately — IntersectionObserver
     // combined with Lenis smooth scroll fails to trigger on iPad Safari/Chrome,
     // leaving all GlowCard content permanently at opacity: 0
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) {
       setVisible(true)
       return
@@ -642,7 +652,7 @@ function CharReveal({
 
   useEffect(() => {
     // Touch devices: show text immediately — no animation delay
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) {
       setMounted(true)
       return
@@ -808,7 +818,7 @@ function AnimatedStat({
     const el = ref.current
     if (!el) return
     // On touch devices, start immediately — IO can fail with Lenis smooth scroll
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) {
       setStarted(true)
       return
@@ -1644,7 +1654,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
   // globals.css override can't unstick them. On touch devices, cancel every
   // WAAPI animation inside the hero and force inline visibility.
   useEffect(() => {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (!isTouch || !heroContentRef.current) return
 
     const forceVisible = () => {
@@ -2027,7 +2037,7 @@ function StaggeredWords({
   useEffect(() => {
     const isTouch =
       typeof window !== 'undefined' &&
-      ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+      !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (!isTouch) return
     const t = setTimeout(() => setTouchFired(true), 100)
     return () => clearTimeout(t)
@@ -2095,8 +2105,7 @@ function GlitchWord({
 
     // Touch devices: fire immediately — mirrors GlowCard's iPad-safety
     // pattern. IntersectionObserver + Lenis can miss on mobile Safari.
-    const isTouch =
-      'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) {
       const t = setTimeout(() => setFired(true), 150)
       return () => clearTimeout(t)
@@ -3490,7 +3499,7 @@ function MegaBotSection() {
   useEffect(() => {
     const el = barRef.current
     if (!el) return
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) {
       setFillActive(true)
       return
@@ -5990,7 +5999,7 @@ function SocialProofSection() {
   useEffect(() => {
     const el = barRef.current
     if (!el) return
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) {
       setBarActive(true)
       return
@@ -8687,7 +8696,7 @@ export default function LandingPage() {
   // On touch devices: show IMMEDIATELY — framer-motion animations are unreliable
   // on iPad Safari/Chrome. Desktop: 3s delay for entrance animation.
   useEffect(() => {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) {
       setIsLoaded(true)
       return
@@ -8700,7 +8709,7 @@ export default function LandingPage() {
   // Lenis breaks IntersectionObserver and scroll behavior on iPad/touch devices,
   // causing content to stay invisible. Use native scroll on touch devices.
   useEffect(() => {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (isTouch) return // Native scroll works perfectly on touch devices
 
     // Inject Lenis CSS so scroll isn't blocked
