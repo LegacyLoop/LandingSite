@@ -163,6 +163,34 @@ export default function PrivacyPolicyPage() {
         </ul>
         <p style={body}>Our use of information received from Meta APIs complies with Meta&apos;s Platform Terms and Developer Policies.</p>
 
+        <h3 style={subheading}>Meta data we receive</h3>
+        <ul style={list}>
+          <li style={li}><strong>Facebook Login data:</strong> your name, email address, profile picture, and Facebook user ID, used only to create and authenticate your Legacy-Loop account.</li>
+          <li style={li}><strong>Page connection data:</strong> the name, ID, and access tokens of any Facebook Page you connect, used solely to publish and manage listings you authorize.</li>
+          <li style={li}><strong>Instagram data:</strong> your connected Instagram business account ID and the media required to post listings on your behalf.</li>
+          <li style={li}><strong>Messenger data:</strong> messages exchanged through Messenger and Instagram Direct that relate to your listings, used only to power your Legacy-Loop buyer&ndash;seller inbox. We do not read unrelated conversations.</li>
+        </ul>
+
+        <h3 style={subheading}>Sub-Processors</h3>
+        <p style={body}>We share the minimum data necessary with the following sub-processors to operate the service. Each is bound by data-protection terms:</p>
+        <ul style={list}>
+          <li style={li}><strong>Vercel Inc.</strong> &mdash; application hosting and delivery</li>
+          <li style={li}><strong>Chiselstrike Inc. (Turso)</strong> &mdash; database hosting</li>
+          <li style={li}><strong>Cloudinary Ltd.</strong> &mdash; image storage and processing</li>
+          <li style={li}><strong>Anthropic PBC</strong> &mdash; AI processing of listing content</li>
+        </ul>
+
+        <h3 style={subheading}>Our commitments for Meta Platform Data</h3>
+        <ul style={list}>
+          <li style={li}>We <strong>do not train AI or machine-learning models</strong> on Meta Platform Data.</li>
+          <li style={li}>We <strong>do not sell or rent</strong> Meta Platform Data to any third party.</li>
+          <li style={li}>Backups containing Meta Platform Data are <strong>purged within 90 days</strong>.</li>
+          <li style={li}>You may request a copy of the Meta-derived data we hold (data portability) by emailing <a href="mailto:privacy@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>privacy@legacy-loop.com</a>.</li>
+        </ul>
+
+        <h3 style={subheading}>Data deletion</h3>
+        <p style={body}>You can delete your Meta-derived data at any time via our <a href="/data-deletion" style={{ color: '#00BCD4', textDecoration: 'none' }}>Data Deletion</a> page or by emailing <a href="mailto:privacy@legacy-loop.com" style={{ color: '#00BCD4', textDecoration: 'none' }}>privacy@legacy-loop.com</a>. Facebook&apos;s data deletion requests are handled automatically via our deletion callback endpoint. Meta retains and processes data under its own <a href="https://www.facebook.com/privacy/policy/" style={{ color: '#00BCD4', textDecoration: 'none' }}>Privacy Policy</a>, which governs Meta&apos;s own practices.</p>
+
         {/* Section 8 */}
         <h2 style={heading}>8. Your Privacy Rights</h2>
         <p style={body}>Depending on your location, you may have the following rights:</p>
