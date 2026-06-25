@@ -103,7 +103,7 @@ export default function DataDeletionPage() {
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, color: '#00BCD4', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>LEGACYLOOP LEGAL</span>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(36px, 5vw, 48px)', color: '#F1F5F9', margin: '16px 0 12px', lineHeight: 1.2 }}>Data Deletion</h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#94A3B8' }}>Effective: March 2026 | legacy-loop.com/data-deletion</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#94A3B8' }}>Effective June 24, 2026 | legacy-loop.com/data-deletion</p>
         </div>
 
         {/* Section 1 */}
@@ -149,8 +149,12 @@ export default function DataDeletionPage() {
                 <td style={tableCell}>We confirm receipt of your deletion request</td>
               </tr>
               <tr>
+                <td style={{ ...tableCell, fontWeight: 600, color: '#F1F5F9' }}>Immediate</td>
+                <td style={tableCell}>Hard delete of your account and personal data across our active systems</td>
+              </tr>
+              <tr>
                 <td style={{ ...tableCell, fontWeight: 600, color: '#F1F5F9' }}>Within 30 days</td>
-                <td style={tableCell}>All personal data is permanently deleted from our systems</td>
+                <td style={tableCell}>Encrypted backups are purged; security logs retained up to 90 days</td>
               </tr>
               <tr>
                 <td style={{ ...tableCell, fontWeight: 600, color: '#F1F5F9' }}>Within 30 days</td>
@@ -172,6 +176,7 @@ export default function DataDeletionPage() {
           <li style={li}><strong style={{ color: '#F1F5F9' }}>Fraud prevention:</strong> Data needed to prevent fraud or enforce our Terms of Service</li>
           <li style={li}><strong style={{ color: '#F1F5F9' }}>Anonymized data:</strong> Aggregated, anonymized analytics data that cannot identify you</li>
           <li style={li}><strong style={{ color: '#F1F5F9' }}>Backups:</strong> Encrypted backups are purged on a rolling schedule (typically within 90 days)</li>
+          <li style={li}><strong style={{ color: '#F1F5F9' }}>Security logs:</strong> Retained up to 90 days for security and abuse prevention</li>
         </ul>
 
         {/* Section 5 */}
@@ -209,7 +214,7 @@ export default function DataDeletionPage() {
             <span style={{ color: '#CBD5E1' }}>Legacy-Loop Tech LLC, Maine, USA</span>
           </div>
         </div>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', fontStyle: 'italic', marginTop: 24 }}>Last updated: March 2026</p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', fontStyle: 'italic', marginTop: 24 }}>Last updated June 24, 2026</p>
       </main>
 
       {/* Footer */}
