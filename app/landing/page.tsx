@@ -1140,7 +1140,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
               </a>
             )}
             <a
-              href="https://app.legacy-loop.com/auth/signup"
+              href="#waitlist"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1905,7 +1905,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             marginTop: 40,
           }}
         >
-          <MagneticButton href="https://app.legacy-loop.com/auth/signup">
+          <MagneticButton href="#waitlist">
             Start Your Legacy
           </MagneticButton>
           <a
@@ -2863,7 +2863,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
             marginBottom: isMobile ? 56 : 88,
           }}
         >
-          <MagneticButton href="https://app.legacy-loop.com/auth/signup?tier=free">
+          <MagneticButton href="#waitlist">
             Start Selling Free
           </MagneticButton>
           <a
@@ -3029,7 +3029,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
             )}
 
             <a
-              href="https://app.legacy-loop.com/auth/signup?tier=free"
+              href="#waitlist"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -5026,7 +5026,7 @@ function PricingSection() {
               </div>
 
               <a
-                href={`https://app.legacy-loop.com/auth/signup?tier=${tier.slug}&billing=${isAnnual ? 'annual' : 'monthly'}`}
+                href="#waitlist"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -5765,7 +5765,7 @@ function EstateSection() {
                     ))}
                   </div>
                   <a
-                    href={`https://app.legacy-loop.com/auth/signup?tier=${tier.slug}`}
+                    href="#waitlist"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -5928,7 +5928,7 @@ function EstateSection() {
 
                 {/* CTA */}
                 <a
-                  href="https://app.legacy-loop.com/auth/signup?tier=neighborhood-bundle"
+                  href="#waitlist"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -8020,7 +8020,7 @@ function FinalCTASection() {
           </p>
         </div>
 
-        <MagneticButton href="https://app.legacy-loop.com/auth/signup">
+        <MagneticButton href="#waitlist">
           Join Early Access
         </MagneticButton>
 
@@ -8202,7 +8202,7 @@ function Footer() {
             {/* Column 2 — Product */}
             <div>
               <div style={colHeading}>Product</div>
-              <a href="https://app.legacy-loop.com/auth/signup" style={linkStyle}
+              <a href="#waitlist" style={linkStyle}
                 onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#FFFFFF')}
                 onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#6B7280')}
               >Get Started</a>
