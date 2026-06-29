@@ -7401,26 +7401,35 @@ function WaitlistSection() {
   const isMobile = width < 768
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
+  const [tierInterest, setTierInterest] = useState('undecided')
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !firstName || isSubmitting) return
     setIsSubmitting(true)
+    setError('')
     try {
-      await fetch('https://n8n.legacy-loop.com/webhook/waitlist', {
+      // Posts cross-subdomain to the app floor (CORS allow-listed on the API side).
+      const res = await fetch('https://app.legacy-loop.com/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, email, timestamp: new Date().toISOString() }),
-      }).catch(() => {})
+        body: JSON.stringify({ firstName, email, tierInterest }),
+      })
+      const data = await res.json().catch(() => ({} as { ok?: boolean; error?: string }))
+      // Only show success on a real {ok:true} — honest, not a faked confirmation.
+      if (res.ok && data.ok) {
+        setSubmitted(true)
+      } else {
+        setError(data.error || 'Something went wrong. Please try again.')
+      }
     } catch {
-      // Graceful degradation — still show success
+      setError('We could not reach the server. Please try again in a moment.')
+    } finally {
+      setIsSubmitting(false)
     }
-    // Brief delay for perceived quality
-    await new Promise(r => setTimeout(r, 800))
-    setIsSubmitting(false)
-    setSubmitted(true)
   }
 
   const inputStyle: React.CSSProperties = {
@@ -7637,7 +7646,7 @@ function WaitlistSection() {
                 marginBottom: 20,
               }}
             >
-              Your founding member rate is locked. Check your inbox — we&apos;ll be in touch soon.
+              Your founding member rate is locked. Your welcome email is on its way from hello@legacy-loop.com — check your inbox (it may land in Promotions the first time).
             </p>
             <a
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('I just locked in founding member pricing at @Legacy-LoopApp — AI-powered resale for the next generation. Join early: https://legacy-loop.com')}`}
@@ -7677,6 +7686,7 @@ function WaitlistSection() {
               <input
                 type="text"
                 placeholder="First name"
+                aria-label="First name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
@@ -7693,6 +7703,7 @@ function WaitlistSection() {
               <input
                 type="email"
                 placeholder="your@email.com"
+                aria-label="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -7707,6 +7718,26 @@ function WaitlistSection() {
                 }}
               />
             </div>
+
+            {/* Tier interest — optional, helps us route founding cohorts */}
+            <select
+              value={tierInterest}
+              onChange={(e) => setTierInterest(e.target.value)}
+              aria-label="Which best describes you?"
+              style={{
+                ...inputStyle,
+                cursor: 'pointer',
+                appearance: 'none',
+                WebkitAppearance: 'none',
+                color: tierInterest === 'undecided' ? '#94A3B8' : '#F1F5F9',
+              }}
+            >
+              <option value="undecided" style={{ color: '#0D1117' }}>Which best describes you? (optional)</option>
+              <option value="founding" style={{ color: '#0D1117' }}>Founding member — first 100</option>
+              <option value="diy" style={{ color: '#0D1117' }}>Casual seller</option>
+              <option value="power" style={{ color: '#0D1117' }}>Power seller</option>
+              <option value="estate" style={{ color: '#0D1117' }}>Estate manager</option>
+            </select>
 
             {/* B7 — Premium CTA button */}
             <button
@@ -7756,6 +7787,16 @@ function WaitlistSection() {
                 'Secure My Founding Rate →'
               )}
             </button>
+
+            {error && (
+              <p role="alert" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#fca5a5', margin: '4px 0 0', textAlign: 'center' }}>
+                {error}
+              </p>
+            )}
+
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', margin: '4px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
+              We&apos;ll email you from hello@legacy-loop.com — check your inbox (the first email may land in Promotions).
+            </p>
           </form>
         )}
 
