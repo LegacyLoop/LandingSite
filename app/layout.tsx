@@ -83,9 +83,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/logos/LegacyLoop-Logo-Master-White-08.png",
-        width: 700,
-        height: 585,
+        url: "/icons/icon-512.png",
+        width: 454,
+        height: 451,
         alt: "Legacy-Loop — Connecting Generations",
       },
     ],
@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Legacy-Loop — Connecting Generations",
     description: "AI-powered resale automation. Simple, fair, and dignified.",
-    images: ["/logos/LegacyLoop-Logo-Master-White-08.png"],
+    images: ["/icons/icon-512.png"],
   },
 };
 
@@ -108,7 +108,7 @@ const jsonLd = [
     name: "Legacy-Loop",
     legalName: "Legacy-Loop Tech LLC",
     url: "https://legacy-loop.com",
-    logo: "https://legacy-loop.com/logos/LegacyLoop-Logo-Master-White-08.png",
+    logo: "https://legacy-loop.com/icons/icon-512.png",
     description:
       "AI-powered resale automation platform. Simple, fair, and dignified. Connecting Generations.",
     slogan: "Connecting Generations",
