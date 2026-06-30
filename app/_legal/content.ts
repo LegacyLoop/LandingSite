@@ -5,6 +5,7 @@ import type { LegalContent } from "./LegalDoc";
 // Published AS-IS — do not paraphrase. Single source rendered by app/components/LegalDoc.tsx.
 
 const META = "Legacy-Loop Tech LLC · Waterville, Maine · Effective June 24, 2026 · Last updated June 24, 2026";
+const PRIVACY_META = "Legacy-Loop Tech LLC · Waterville, Maine · Effective June 24, 2026 · Last updated June 30, 2026";
 
 export const COOKIE_POLICY: LegalContent = {
   title: "Cookie Policy",
@@ -87,9 +88,9 @@ export const COOKIE_POLICY: LegalContent = {
 
 export const PRIVACY_POLICY: LegalContent = {
   title: "Privacy Policy",
-  meta: META,
+  meta: PRIVACY_META,
   effective: "June 24, 2026",
-  updated: "June 24, 2026",
+  updated: "June 30, 2026",
   intro: [
     { t: "p", text: "This Privacy Policy explains how Legacy-Loop Tech LLC (filed in Maine as LEGACY-LOOP TECH LLC) (“Legacy-Loop,” “we,” “us”) collects, uses, shares, and protects information when you use the Legacy-Loop platform, websites, and applications, including app.legacy-loop.com and legacy-loop.com (the “Service”). Legacy-Loop is an AI-assisted resale automation platform based in Maine, United States." },
     { t: "sub", text: "Soft-beta note." },
@@ -107,6 +108,7 @@ export const PRIVACY_POLICY: LegalContent = {
           "Documents you upload to the Document Vault (e.g., receipts, certificates, appraisals, manuals, and title/ownership or estate documents) to help value and document your items. Please do not upload documents containing sensitive personal data such as Social Security numbers, full financial-account numbers, government IDs, or health records — the Vault is for item and ownership documentation only.",
           "Location information. Approximate location (e.g., from your IP address or the ZIP/area you provide) for regional pricing, and — with your consent — meetup/pickup location for local sales, which may be shared with Google Maps to display and coordinate meetups. We do not perform precise background GPS tracking.",
           "Automatically collected data. Device, log, and usage information such as IP address, browser type, pages viewed, and actions taken, used to operate and secure the Service.",
+          "Waitlist information. If you join our pre-launch waitlist, we collect the name and email address you provide and the tier or cohort you express interest in, and we generate an internal estimate of your likely interest to prioritize outreach. To produce that estimate we share only the interest category with our AI provider, never your name or email.",
         ] },
       ],
     },
@@ -223,12 +225,15 @@ export const PRIVACY_POLICY: LegalContent = {
           t: "table",
           head: ["Sub-processor", "Function", "Data it touches", "Location"],
           rows: [
-            ["Vercel Inc.", "Application hosting and content delivery (CDN)", "Web/app traffic, server logs, IP addresses", "United States"],
+            ["Vercel Inc.", "Application hosting and content delivery (CDN), including the waitlist intake endpoint", "Web/app traffic, server logs, IP addresses, and waitlist form submissions in transit (name, email, interest)", "United States"],
             ["Turso (Chiselstrike Inc.)", "Primary database; encryption at rest at the database layer", "Account data, listings, messages, encrypted connected-platform tokens", "United States"],
             ["Stripe, Inc.", "Primary payment processing", "Card data entered client-side via Stripe (held by Stripe); we store only Stripe IDs", "United States"],
             ["OpenAI, L.L.C.", "AI vision — item identification/analysis (GPT-4o)", "Item photos you upload", "United States"],
-            ["Anthropic PBC", "AI — drafting suggested message auto-replies (Claude)", "Native (non-Meta) buyer message text", "United States"],
+            ["Anthropic PBC", "AI — drafting suggested message replies (Claude)", "Buyer and customer message text, including messages from connected Facebook, Instagram, or Messenger accounts, processed in real time to draft suggested replies you choose to send (inference only; never used to train any model)", "United States"],
             ["Google LLC (Gemini)", "AI — text routing, search, assistant features", "Item/listing text and queries", "United States"],
+            ["Google LLC — Gemini", "AI scoring and classification of waitlist leads (deriving a likely persona, an interest score, a short internal lead brief, and tailored outreach copy)", "Stated interest category only. We do not send your name, email address, or other identifiers to this model.", "United States"],
+            ["Google LLC — Google Sheets", "Storage of our pre-launch waitlist (lead list), including the derived interest score", "Name, email address, stated interest, sign-up source and date, and a derived interest score", "United States"],
+            ["Google LLC — Google Workspace (Gmail)", "Sending your waitlist confirmation email and internal lead notifications to our team", "Name, email address, stated interest, and cohort", "United States"],
             ["xAI Corp. (Grok)", "AI — text routing/assistant features", "Item/listing text and queries", "United States"],
             ["Perplexity AI, Inc.", "AI — research/search features", "Item/listing text and queries", "United States"],
             ["ElevenLabs Inc.", "Text-to-speech (voice) features", "Text submitted for narration", "United States"],
@@ -240,7 +245,7 @@ export const PRIVACY_POLICY: LegalContent = {
             ["Twilio Inc.", "SMS / text notifications", "Phone number and message content (only with consent)", "United States"],
             ["Twilio SendGrid", "Transactional and account email", "Name, email address, message metadata", "United States"],
             ["Meta Platforms, Inc.", "Facebook, Instagram, and Messenger integration", "Connected-account data per the permissions you grant", "United States"],
-            ["n8n", "Internal workflow automation", "Operational data as configured in our workflows", "Self-hosted (US)"],
+            ["n8n (self-hosted)", "Workflow automation, including our waitlist lead pipeline", "Name, email address, stated interest, and a derived interest score (waitlist), plus other operational data configured in our workflows", "Self-hosted on DigitalOcean (United States)"],
           ],
         },
         { t: "p", text: "Cloudinary (Cloudinary, Inc.) provides image storage and delivery for the photos and documents you upload (United States)." },
@@ -327,7 +332,7 @@ export const PRIVACY_POLICY: LegalContent = {
         { t: "p", text: "Mailing address: P.O. Box 1485, Waterville, ME 04903" },
         { t: "p", text: "Privacy contact: privacy@legacy-loop.com · Support: support@legacy-loop.com" },
         { t: "p", text: "Data deletion: https://app.legacy-loop.com/data-deletion · Privacy: https://app.legacy-loop.com/privacy · legacy-loop.com" },
-        { t: "p", text: "© 2026 Legacy-Loop Tech LLC. Effective June 24, 2026. Last updated June 24, 2026." },
+        { t: "p", text: "© 2026 Legacy-Loop Tech LLC. Effective June 24, 2026. Last updated June 30, 2026." },
       ],
     },
   ],
