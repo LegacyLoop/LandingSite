@@ -7536,7 +7536,7 @@ function WaitlistSection() {
         {/* Founding spots counter — BIG number, AnimatedStat count-up on viewport */}
         <div style={{ marginBottom: 12 }}>
           <AnimatedStat
-            target={153}
+            target={50}
             duration={2200}
             style={{
               fontFamily: 'var(--font-data)',
@@ -7561,7 +7561,7 @@ function WaitlistSection() {
             marginBottom: 6,
           }}
         >
-          of 200 founding spots remaining
+          founding spots in the first cohort
         </p>
         <p
           style={{
@@ -7572,30 +7572,12 @@ function WaitlistSection() {
             marginBottom: 36,
           }}
         >
-          Spots are filling fast
+          Early access — pre-launch pricing locked for life
         </p>
 
-        {/* Progress bar — 47 of 200 = 23.5% filled */}
-        <div
-          style={{
-            width: '100%',
-            maxWidth: 400,
-            height: 4,
-            borderRadius: 2,
-            background: 'rgba(255,255,255,0.06)',
-            margin: '0 auto 40px',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              width: '23.5%',
-              height: '100%',
-              borderRadius: 2,
-              background: 'linear-gradient(90deg, #00BCD4, #009688)',
-            }}
-          />
-        </div>
+        {/* Founding cohort indicator — honest pre-launch (no fabricated fill).
+            Live real-count wiring queued in CMD-WAITLIST-LANDING-PRO. */}
+        <div style={{ marginBottom: 40 }} />
 
         {submitted ? (
           /* ===== B8 — SUCCESS STATE ===== */
@@ -8074,7 +8056,7 @@ function FinalCTASection() {
             marginTop: 20,
           }}
         >
-          <AnimatedStat target={153} duration={2200} style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#00BCD4' }} /> founding spots remaining — join before they&apos;re gone
+          <AnimatedStat target={50} duration={2200} style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#00BCD4' }} /> founding spots in the first cohort — early access, open now
         </p>
       </div>
     </section>
