@@ -7403,6 +7403,7 @@ function WaitlistSection() {
   const [email, setEmail] = useState('')
   const [tierInterest, setTierInterest] = useState('undecided')
   const [submitted, setSubmitted] = useState(false)
+  const [already, setAlready] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -7418,9 +7419,10 @@ function WaitlistSection() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, email, tierInterest }),
       })
-      const data = await res.json().catch(() => ({} as { ok?: boolean; error?: string }))
+      const data = await res.json().catch(() => ({} as { ok?: boolean; already?: boolean; error?: string }))
       // Only show success on a real {ok:true} — honest, not a faked confirmation.
       if (res.ok && data.ok) {
+        setAlready(Boolean(data.already))
         setSubmitted(true)
       } else {
         setError(data.error || 'Something went wrong. Please try again.')
@@ -7617,7 +7619,7 @@ function WaitlistSection() {
                 marginBottom: 12,
               }}
             >
-              You&apos;re in. Welcome to Legacy-Loop.
+              {already ? "You're already on the list." : "You're in. Welcome to Legacy-Loop."}
             </div>
             <p
               style={{
@@ -7628,7 +7630,7 @@ function WaitlistSection() {
                 marginBottom: 20,
               }}
             >
-              Your founding member rate is locked. Your welcome email is on its way from hello@legacy-loop.com — check your inbox (it may land in Promotions the first time).
+              {already ? "Good news — you're already on the founding list. Your original confirmation is in your inbox (check Promotions the first time). We'll email you the moment your cohort opens." : "Your founding member rate is locked. Your welcome email is on its way from hello@legacy-loop.com — check your inbox (it may land in Promotions the first time)."}
             </p>
             <a
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('I just locked in founding member pricing at @Legacy-LoopApp — AI-powered resale for the next generation. Join early: https://legacy-loop.com')}`}
