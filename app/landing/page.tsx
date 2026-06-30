@@ -8294,6 +8294,16 @@ function Footer() {
                 color: '#4B5563',
               }}
             >
+              {/* Canonical NAP — local-SEO · byte-identical to GBP + app footer */}
+              Legacy-Loop Tech LLC &middot; Waterville, ME (service area) &middot; <a href="tel:+12076149204" style={{ color: '#4B5563', textDecoration: 'none' }}>207-614-9204</a> &middot; <a href="https://legacy-loop.com" style={{ color: '#4B5563', textDecoration: 'none' }}>https://legacy-loop.com</a>
+            </span>
+            <span
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 12,
+                color: '#4B5563',
+              }}
+            >
               Built with heart in Maine. 🌲
             </span>
           </div>
