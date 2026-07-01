@@ -7409,6 +7409,27 @@ function WaitlistSection() {
   const [already, setAlready] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  // Part 4 — real live founding count from the Google Sheet (via app proxy). Null until it loads;
+  // on any failure it stays null and the live line simply hides (never a fabricated number).
+  const [live, setLive] = useState<{ claimed: number; cohortSize: number; spotsLeft: number } | null>(null)
+  useEffect(() => {
+    let alive = true
+    fetch('https://app.legacy-loop.com/api/waitlist/count')
+      .then((r) => r.json())
+      .then((d) => {
+        if (alive && d && d.ok === true && typeof d.claimed === 'number') {
+          setLive({
+            claimed: d.claimed,
+            cohortSize: typeof d.cohortSize === 'number' ? d.cohortSize : 50,
+            spotsLeft: typeof d.spotsLeft === 'number' ? d.spotsLeft : Math.max(0, 50 - d.claimed),
+          })
+        }
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -7584,9 +7605,26 @@ function WaitlistSection() {
           Early access — pre-launch pricing locked for life
         </p>
 
-        {/* Founding cohort indicator — honest pre-launch (no fabricated fill).
-            Live real-count wiring queued in CMD-WAITLIST-LANDING-PRO. */}
-        <div style={{ marginBottom: 40 }} />
+        {/* Founding cohort indicator — real count from the Sheet (no fabricated fill). Hidden until loaded. */}
+        {live ? (
+          <div style={{ marginBottom: 40 }}>
+            <p
+              style={{
+                fontFamily: 'var(--font-data)',
+                fontWeight: 600,
+                fontSize: 14,
+                letterSpacing: '0.05em',
+                color: '#00BCD4',
+                margin: 0,
+              }}
+            >
+              {live.claimed} of {live.cohortSize} founding spots claimed
+              <span style={{ color: '#94A3B8', fontWeight: 400 }}> &middot; {live.spotsLeft} still open</span>
+            </p>
+          </div>
+        ) : (
+          <div style={{ marginBottom: 40 }} />
+        )}
 
         {submitted ? (
           /* ===== B8 — SUCCESS STATE ===== */
