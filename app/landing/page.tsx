@@ -7424,6 +7424,10 @@ function WaitlistSection() {
       if (res.ok && data.ok) {
         setAlready(Boolean(data.already))
         setSubmitted(true)
+        // Redirect to the real /thank-you route so the Google Ads conversion fires.
+        // A returning duplicate (?already=1) shows the graceful copy and does NOT convert.
+        window.location.assign(data.already ? '/thank-you?already=1' : '/thank-you')
+        return
       } else {
         setError(data.error || 'Something went wrong. Please try again.')
       }
