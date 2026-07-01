@@ -7400,8 +7400,11 @@ function WaitlistSection() {
   const sp = useSectionPadding(width)
   const isMobile = width < 768
   const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [tierInterest, setTierInterest] = useState('undecided')
+  const [reason, setReason] = useState('')
+  const [zip, setZip] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [already, setAlready] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -7417,7 +7420,7 @@ function WaitlistSection() {
       const res = await fetch('https://app.legacy-loop.com/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, email, tierInterest }),
+        body: JSON.stringify({ firstName, lastName, email, tierInterest, reason, zip }),
       })
       const data = await res.json().catch(() => ({} as { ok?: boolean; already?: boolean; error?: string }))
       // Only show success on a real {ok:true} — honest, not a faked confirmation.
@@ -7689,12 +7692,11 @@ function WaitlistSection() {
                 }}
               />
               <input
-                type="email"
-                placeholder="your@email.com"
-                aria-label="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                type="text"
+                placeholder="Last name (optional)"
+                aria-label="Last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 style={inputStyle}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = 'rgba(0,188,212,0.5)'
@@ -7706,6 +7708,23 @@ function WaitlistSection() {
                 }}
               />
             </div>
+            <input
+              type="email"
+              placeholder="your@email.com"
+              aria-label="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={inputStyle}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(0,188,212,0.5)'
+                e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(0,188,212,0.25)'
+                e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+              }}
+            />
 
             {/* Tier interest — optional, helps us route founding cohorts */}
             <select
@@ -7726,6 +7745,52 @@ function WaitlistSection() {
               <option value="power" style={{ color: '#0D1117' }}>Power seller</option>
               <option value="estate" style={{ color: '#0D1117' }}>Estate manager</option>
             </select>
+
+            {/* Part 3 — "What brings you?" (non-PII intent signal, helps us welcome you) + optional ZIP */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                gap: 12,
+              }}
+            >
+              <select
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                aria-label="What brings you to Legacy-Loop?"
+                style={{
+                  ...inputStyle,
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  color: reason === '' ? '#94A3B8' : '#F1F5F9',
+                }}
+              >
+                <option value="" style={{ color: '#0D1117' }}>What brings you to Legacy-Loop? (optional)</option>
+                <option value="estate" style={{ color: '#0D1117' }}>Estate or downsizing</option>
+                <option value="declutter" style={{ color: '#0D1117' }}>Decluttering or a garage sale</option>
+                <option value="exploring" style={{ color: '#0D1117' }}>Just exploring</option>
+              </select>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                placeholder="ZIP (optional)"
+                aria-label="ZIP code (optional)"
+                value={zip}
+                onChange={(e) => setZip(e.target.value)}
+                maxLength={10}
+                style={inputStyle}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0,188,212,0.5)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0,188,212,0.25)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                }}
+              />
+            </div>
 
             {/* B7 — Premium CTA button */}
             <button
