@@ -11,6 +11,7 @@ import {
   useInView,
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
+import WaitlistWalkthrough from './WaitlistWalkthrough'
 
 /* ==============================================
    PHASE 1 — FOUNDATION (Effects Layer)
@@ -7409,6 +7410,10 @@ function WaitlistSection() {
   const [already, setAlready] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  // CMD-WAITLIST-WALKTHROUGH — guided "Find My Plan" flow swaps in place of
+  // the flat form (senior-friendly · no modal, no scroll-trap). Flat form
+  // stays the fast lane below the divider.
+  const [showWalkthrough, setShowWalkthrough] = useState(false)
   // Part 4 — real live founding count from the Google Sheet (via app proxy). Null until it loads;
   // on any failure it stays null and the live line simply hides (never a fabricated number).
   const [live, setLive] = useState<{ claimed: number; cohortSize: number; spotsLeft: number } | null>(null)
@@ -7693,18 +7698,80 @@ function WaitlistSection() {
               Tell a friend →
             </a>
           </div>
+        ) : showWalkthrough ? (
+          /* ===== GUIDED WALKTHROUGH (in-place swap) ===== */
+          <WaitlistWalkthrough
+            live={live}
+            isMobile={isMobile}
+            onExit={() => setShowWalkthrough(false)}
+          />
         ) : (
-          /* ===== FORM ===== */
-          <form
-            onSubmit={handleSubmit}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 12,
-              maxWidth: 480,
-              margin: '0 auto',
-            }}
-          >
+          /* ===== CHOICE: guided walkthrough (star) + flat form (fast lane) ===== */
+          <>
+            {/* Find My Plan — the primary path */}
+            <div style={{ marginBottom: 28 }}>
+              <MagneticButton
+                onClick={() => setShowWalkthrough(true)}
+                style={{
+                  width: '100%',
+                  maxWidth: 480,
+                  margin: '0 auto',
+                  fontSize: 17,
+                  padding: '18px 32px',
+                  minHeight: 56,
+                }}
+              >
+                Find My Plan — 2 minutes &rarr;
+              </MagneticButton>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 13,
+                  color: '#94A3B8',
+                  margin: '12px 0 0',
+                  lineHeight: 1.5,
+                }}
+              >
+                No account needed &middot; takes about 2 minutes &middot; find your service, tier, and price
+              </p>
+            </div>
+
+            {/* Divider — "or join quickly" */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                maxWidth: 480,
+                margin: '0 auto 24px',
+              }}
+            >
+              <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.10)' }} />
+              <span
+                style={{
+                  fontFamily: 'var(--font-data)',
+                  fontWeight: 600,
+                  fontSize: 12,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase' as const,
+                  color: '#6B7280',
+                }}
+              >
+                or join quickly
+              </span>
+              <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.10)' }} />
+            </div>
+
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+                maxWidth: 480,
+                margin: '0 auto',
+              }}
+            >
             <div
               style={{
                 display: 'flex',
@@ -7888,11 +7955,12 @@ function WaitlistSection() {
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', margin: '4px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
               We&apos;ll email you from hello@legacy-loop.com — check your inbox (the first email may land in Promotions).
             </p>
-          </form>
+            </form>
+          </>
         )}
 
         {/* B5 — Trust signals row */}
-        {!submitted && (
+        {!submitted && !showWalkthrough && (
           <div
             style={{
               display: 'flex',
@@ -7933,7 +8001,7 @@ function WaitlistSection() {
         )}
 
         {/* B6 — Benefits row */}
-        {!submitted && (
+        {!submitted && !showWalkthrough && (
           <div
             style={{
               display: 'grid',
