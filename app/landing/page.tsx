@@ -11,7 +11,17 @@ import {
   useInView,
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
-import WaitlistWalkthrough from './WaitlistWalkthrough'
+import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
+
+// CMD-WAITLIST-INTAKE-ELEVATE — a captured "reserve this offering" intent,
+// lifted to the landing page so section CTAs (white-glove / estate care /
+// neighborhood) carry the exact SKU into the waitlist form. In-page state only
+// (no JSON-in-URL). `source` distinguishes which door the visitor came through.
+interface OfferingIntent {
+  offering: string
+  source: string
+  note?: string
+}
 
 /* ==============================================
    PHASE 1 — FOUNDATION (Effects Layer)
@@ -5188,13 +5198,20 @@ function PricingSection() {
 }
 
 // ---------- BUILT FOR ESTATES ----------
-function EstateSection() {
+function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingIntent) => void }) {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
   const isMobile = width < 768
   const isTablet = width >= 768 && width < 1024
   const [activeTab, setActiveTab] = useState<'whiteglove' | 'estatecare' | 'neighborhood'>('whiteglove')
+
+  // Carry an offering into the waitlist form + smooth-scroll there.
+  const reserveOffering = (offering: string, source: string, note?: string) => {
+    setOfferingIntent({ offering, source, note })
+    const el = document.getElementById('waitlist')
+    if (el) el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
+  }
 
   // Parallax — generations-hands background drifts gently for senior-safe depth
   const estateSectionRef = useRef<HTMLElement>(null)
@@ -5214,6 +5231,7 @@ function EstateSection() {
   const whiteGloveTiers = [
     {
       name: 'Estate Essentials',
+      offeringId: 'wgEssentials',
       price: '$1,750',
       oldPrice: '$2,500',
       commission: '25% commission',
@@ -5221,6 +5239,7 @@ function EstateSection() {
     },
     {
       name: 'Estate Professional',
+      offeringId: 'wgProfessional',
       price: '$3,500',
       oldPrice: '$5,000',
       commission: '30% commission',
@@ -5229,6 +5248,7 @@ function EstateSection() {
     },
     {
       name: 'Estate Legacy',
+      offeringId: 'wgLegacy',
       price: '$7,000',
       oldPrice: '$10,000',
       commission: '35% commission',
@@ -5623,6 +5643,37 @@ function EstateSection() {
                       </span>
                     ))}
                   </div>
+                  {/* CMD-WAITLIST-INTAKE-ELEVATE — carry this tier into the waitlist */}
+                  <button
+                    type="button"
+                    onClick={() => reserveOffering(tier.offeringId, 'landing-estate-card')}
+                    aria-label={`Reserve ${tier.name} and join the waitlist`}
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      marginTop: 20,
+                      borderRadius: 12,
+                      border: '1px solid transparent',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      color: '#0D1117',
+                      background: 'linear-gradient(135deg, #D4A017, #B8860B)',
+                      boxShadow: '0 0 20px rgba(212,160,23,0.15), 0 2px 8px rgba(212,160,23,0.1)',
+                      transition: 'transform 0.2s ease, filter 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.02)'
+                      e.currentTarget.style.filter = 'brightness(1.06)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)'
+                      e.currentTarget.style.filter = 'brightness(1)'
+                    }}
+                  >
+                    Reserve this tier
+                  </button>
                 </GlowCard>
               ))}
             </div>
@@ -5765,18 +5816,20 @@ function EstateSection() {
                       </span>
                     ))}
                   </div>
-                  <a
-                    href="#waitlist"
+                  <button
+                    type="button"
+                    onClick={() => reserveOffering('estateCare', 'landing-estate-card', tier.name)}
+                    aria-label={`Reserve ${tier.name} and join the waitlist`}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      width: '100%',
                       minHeight: 44,
                       borderRadius: 12,
                       fontFamily: 'var(--font-heading)',
                       fontWeight: 600,
                       fontSize: 14,
-                      textDecoration: 'none',
                       cursor: 'pointer',
                       marginTop: 20,
                       background: 'linear-gradient(135deg, #D4A017, #B8860B)',
@@ -5787,7 +5840,7 @@ function EstateSection() {
                     }}
                   >
                     Get Started
-                  </a>
+                  </button>
                 </GlowCard>
               ))}
             </div>
@@ -5928,18 +5981,20 @@ function EstateSection() {
                 </div>
 
                 {/* CTA */}
-                <a
-                  href="#waitlist"
+                <button
+                  type="button"
+                  onClick={() => reserveOffering('neighborhood', 'landing-neighborhood-card')}
+                  aria-label="Start a Neighborhood Bundle and join the waitlist"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    width: '100%',
                     minHeight: 48,
                     borderRadius: 12,
                     fontFamily: 'var(--font-heading)',
                     fontWeight: 600,
                     fontSize: 15,
-                    textDecoration: 'none',
                     cursor: 'pointer',
                     marginTop: 24,
                     background: 'linear-gradient(135deg, #D4A017, #B8860B)',
@@ -5950,7 +6005,7 @@ function EstateSection() {
                   }}
                 >
                   Start a Neighborhood Bundle
-                </a>
+                </button>
               </GlowCard>
 
               {/* Neighborhood garage-sale photo pair — visible on every
@@ -7396,14 +7451,24 @@ function AppDownloadSection() {
 }
 
 // ---------- PRE-SALES WAITLIST + FOUNDING MEMBERS ----------
-function WaitlistSection() {
+function WaitlistSection({
+  activeSection,
+  offeringIntent,
+  setOfferingIntent,
+}: {
+  activeSection: string
+  offeringIntent: OfferingIntent | null
+  setOfferingIntent: (i: OfferingIntent | null) => void
+}) {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const isMobile = width < 768
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  const [tierInterest, setTierInterest] = useState('undecided')
+  // Offering-true choice: '' | founding | an OFFERINGS SKU id. Drives the full
+  // field bundle at submit (NOT sent raw as tierInterest).
+  const [quickChoice, setQuickChoice] = useState('')
   const [reason, setReason] = useState('')
   const [zip, setZip] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -7436,6 +7501,48 @@ function WaitlistSection() {
     }
   }, [])
 
+  // When a section CTA carries an offering, pre-select the matching dropdown
+  // value if one exists (WG Essentials/Legacy have no dropdown option — the chip
+  // + captured intent carry them instead).
+  const SELECTABLE = ['diy', 'power', 'estateManager', 'estateCare', 'wgProfessional', 'neighborhood', 'free']
+  useEffect(() => {
+    if (offeringIntent && SELECTABLE.includes(offeringIntent.offering)) {
+      setQuickChoice(offeringIntent.offering)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offeringIntent])
+
+  // Resolve the offering-true field bundle: captured CTA intent > dropdown
+  // choice > section inference. Every value obeys the §1 vocabulary law.
+  const buildPayload = (): Record<string, string> => {
+    const payload: Record<string, string> = { firstName, lastName, email, zip, section: activeSection }
+    let bundle: Partial<Record<'tierInterest' | 'reason' | 'sellerType' | 'servicePreference' | 'offering', string>> = {}
+    let source = 'landing-quick'
+    let note: string | undefined
+
+    if (offeringIntent && OFFERINGS[offeringIntent.offering]) {
+      const o = OFFERINGS[offeringIntent.offering]
+      bundle = { tierInterest: o.tierInterest, reason: o.reason, sellerType: o.sellerType, servicePreference: o.servicePreference, offering: o.id }
+      source = offeringIntent.source
+      note = offeringIntent.note
+    } else if (quickChoice && OFFERINGS[quickChoice]) {
+      const o = OFFERINGS[quickChoice]
+      bundle = { tierInterest: o.tierInterest, reason: o.reason, sellerType: o.sellerType, servicePreference: o.servicePreference, offering: o.id }
+    } else if (quickChoice === 'founding') {
+      bundle = { tierInterest: 'founding', reason: reason || 'exploring' }
+    } else if (activeSection === 'estate') {
+      // Blank dropdown while browsing the estate section — never lose the intent.
+      bundle = { tierInterest: 'estate', reason: 'estate', sellerType: 'estate', servicePreference: 'diy', offering: 'estateManager' }
+    } else {
+      bundle = { tierInterest: 'undecided', reason: reason || '' }
+    }
+
+    payload.source = source
+    for (const [k, v] of Object.entries(bundle)) if (v) payload[k] = v
+    if (note) payload.note = note
+    return payload
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !firstName || isSubmitting) return
@@ -7446,7 +7553,7 @@ function WaitlistSection() {
       const res = await fetch('https://app.legacy-loop.com/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, email, tierInterest, reason, zip }),
+        body: JSON.stringify(buildPayload()),
       })
       const data = await res.json().catch(() => ({} as { ok?: boolean; already?: boolean; error?: string }))
       // Only show success on a real {ok:true} — honest, not a faked confirmation.
@@ -7708,6 +7815,59 @@ function WaitlistSection() {
         ) : (
           /* ===== CHOICE: guided walkthrough (star) + flat form (fast lane) ===== */
           <>
+            {/* CMD-WAITLIST-INTAKE-ELEVATE — captured offering chip. A visitor who
+                clicked a section CTA (e.g. Estate Legacy $7,000) arrives with it held. */}
+            {offeringIntent && OFFERINGS[offeringIntent.offering] && (() => {
+              const o = OFFERINGS[offeringIntent.offering]
+              const gold = o.register === 'estate'
+              const accent = gold ? '#D4A017' : '#00BCD4'
+              const chipBg = gold ? 'rgba(212,160,23,0.10)' : 'rgba(0,188,212,0.10)'
+              const chipBorder = gold ? 'rgba(212,160,23,0.35)' : 'rgba(0,188,212,0.35)'
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 10,
+                    flexWrap: 'wrap',
+                    maxWidth: 480,
+                    margin: '0 auto 24px',
+                    padding: '12px 18px',
+                    borderRadius: 14,
+                    background: chipBg,
+                    border: `1px solid ${chipBorder}`,
+                  }}
+                >
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#CBD5E1' }}>Reserving:</span>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 15, color: '#F1F5F9' }}>{o.name}</span>
+                  <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 15, color: accent }}>
+                    {o.price}{o.priceSuffix ?? ''}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setOfferingIntent(null)}
+                    aria-label="Clear selected offering"
+                    style={{
+                      marginLeft: 4,
+                      minHeight: 32,
+                      minWidth: 32,
+                      padding: '4px 10px',
+                      borderRadius: 999,
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: 'transparent',
+                      color: '#94A3B8',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 13,
+                    }}
+                  >
+                    Change
+                  </button>
+                </div>
+              )
+            })()}
+
             {/* Find My Plan — the primary path */}
             <div style={{ marginBottom: 28 }}>
               <MagneticButton
@@ -7831,24 +7991,36 @@ function WaitlistSection() {
               }}
             />
 
-            {/* Tier interest — optional, helps us route founding cohorts */}
+            {/* Which best describes you — offering-true. Each value drives the
+                full field bundle at submit (see buildPayload). Optional. */}
             <select
-              value={tierInterest}
-              onChange={(e) => setTierInterest(e.target.value)}
+              value={quickChoice}
+              onChange={(e) => setQuickChoice(e.target.value)}
               aria-label="Which best describes you?"
               style={{
                 ...inputStyle,
+                fontSize: 16,
                 cursor: 'pointer',
                 appearance: 'none',
                 WebkitAppearance: 'none',
-                color: tierInterest === 'undecided' ? '#94A3B8' : '#F1F5F9',
+                color: quickChoice === '' ? '#94A3B8' : '#F1F5F9',
               }}
             >
-              <option value="undecided" style={{ color: '#0D1117' }}>Which best describes you? (optional)</option>
+              <option value="" style={{ color: '#0D1117' }}>Which best describes you? (optional)</option>
+              <optgroup label="Selling my own things" style={{ color: '#0D1117' }}>
+                <option value="diy" style={{ color: '#0D1117' }}>Just me, a few things</option>
+                <option value="power" style={{ color: '#0D1117' }}>Me — a lot to sell</option>
+              </optgroup>
+              <optgroup label="Estate &amp; downsizing" style={{ color: '#0D1117' }}>
+                <option value="estateManager" style={{ color: '#0D1117' }}>I&apos;ll manage the estate myself</option>
+                <option value="estateCare" style={{ color: '#0D1117' }}>Estate — guided, with support</option>
+                <option value="wgProfessional" style={{ color: '#0D1117' }}>Estate — do it all for me</option>
+              </optgroup>
+              <optgroup label="Group sale" style={{ color: '#0D1117' }}>
+                <option value="neighborhood" style={{ color: '#0D1117' }}>A neighborhood / group sale</option>
+              </optgroup>
               <option value="founding" style={{ color: '#0D1117' }}>Founding member — first 100</option>
-              <option value="diy" style={{ color: '#0D1117' }}>Casual seller</option>
-              <option value="power" style={{ color: '#0D1117' }}>Power seller</option>
-              <option value="estate" style={{ color: '#0D1117' }}>Estate manager</option>
+              <option value="free" style={{ color: '#0D1117' }}>Just exploring</option>
             </select>
 
             {/* Part 3 — "What brings you?" (non-PII intent signal, helps us welcome you) + optional ZIP */}
@@ -8914,6 +9086,33 @@ function HelpCenter() {
 export default function LandingPage() {
   const [isLoaded, setIsLoaded] = useState(false)
 
+  // Section-aware intake: track which section is active so a blank-dropdown
+  // submit can infer intent, and every POST carries `section` telemetry.
+  const [activeSection, setActiveSection] = useState('hero')
+  // Offering carried from a section CTA into the waitlist form.
+  const [offeringIntent, setOfferingIntent] = useState<OfferingIntent | null>(null)
+
+  useEffect(() => {
+    const ids = ['hero', 'garage-sale', 'megabot', 'how-it-works', 'shipping', 'bots', 'pricing', 'estate', 'mission', 'download', 'waitlist']
+    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => el !== null)
+    if (els.length === 0) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        // Pick the most-visible intersecting section as active.
+        let best: { id: string; ratio: number } | null = null
+        for (const e of entries) {
+          if (e.isIntersecting && (!best || e.intersectionRatio > best.ratio)) {
+            best = { id: e.target.id, ratio: e.intersectionRatio }
+          }
+        }
+        if (best) setActiveSection(best.id)
+      },
+      { threshold: [0.25, 0.5, 0.75], rootMargin: '-20% 0px -20% 0px' },
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
   // On touch devices: show IMMEDIATELY — framer-motion animations are unreliable
   // on iPad Safari/Chrome. Desktop: 3s delay for entrance animation.
   useEffect(() => {
@@ -8991,12 +9190,16 @@ export default function LandingPage() {
         <ProductPreviewSection />
         <AIAgentsSection />
         <PricingSection />
-        <EstateSection />
+        <EstateSection setOfferingIntent={setOfferingIntent} />
         <SocialProofSection />
         <TechSection />
         <AppDownloadSection />
         <VideoShowcaseSection />
-        <WaitlistSection />
+        <WaitlistSection
+          activeSection={activeSection}
+          offeringIntent={offeringIntent}
+          setOfferingIntent={setOfferingIntent}
+        />
         <FinalCTASection />
         <Footer />
       </main>

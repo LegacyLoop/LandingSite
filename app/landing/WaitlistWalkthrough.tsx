@@ -21,7 +21,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 type Register = 'estate' | 'energetic'
 
-interface Offering {
+export interface Offering {
   id: string
   name: string
   price: string
@@ -32,7 +32,10 @@ interface Offering {
   tagline: string
   features: string[]
   register: Register
-  // Derived payload signals (superset-compatible with the flat form)
+  // Derived payload signals (superset-compatible with the flat form).
+  // VOCABULARY LAW (Track B whitelist): sellerType garage|estate|neighborhood ·
+  // servicePreference diy|assisted|whiteGlove · reason estate|declutter|exploring|neighborhood ·
+  // tierInterest founding|diy|power|estate|undecided · offering = id (exact SKU).
   tierInterest: string
   sellerType: string
   servicePreference: string
@@ -53,6 +56,7 @@ interface Answers {
   count?: 'few' | 'room' | 'most' | 'entire'
   family?: 'f2' | 'f4' | 'f6'
   timeline?: 'asap' | 'weeks' | 'months'
+  appraisal?: string[]
 }
 
 interface LiveCount {
@@ -72,7 +76,7 @@ interface WaitlistWalkthroughProps {
 // PricingSection L4568-4613 · whiteGloveTiers L5213-5236 · Estate Care
 // L5667-5689 · Neighborhood Bundle L5850/5872/5922.
 
-const OFFERINGS: Record<string, Offering> = {
+export const OFFERINGS: Record<string, Offering> = {
   free: {
     id: 'free',
     name: 'Free',
@@ -83,7 +87,7 @@ const OFFERINGS: Record<string, Offering> = {
     features: ['Basic AI identification', 'Public store page', 'Email support'],
     register: 'energetic',
     tierInterest: 'diy',
-    sellerType: 'individual',
+    sellerType: 'garage',
     servicePreference: 'diy',
     reason: 'exploring',
   },
@@ -98,7 +102,7 @@ const OFFERINGS: Record<string, Offering> = {
     features: ['Enhanced AI pricing', '5 core bots included', '20 credits/month included', 'BuyerBot matching', 'Priority email support'],
     register: 'energetic',
     tierInterest: 'diy',
-    sellerType: 'individual',
+    sellerType: 'garage',
     servicePreference: 'diy',
     reason: 'declutter',
   },
@@ -113,7 +117,7 @@ const OFFERINGS: Record<string, Offering> = {
     features: ['MegaBot (credit-based)', 'All specialty bots', '50 credits/month included', 'Advanced analytics', 'Phone support'],
     register: 'energetic',
     tierInterest: 'power',
-    sellerType: 'individual',
+    sellerType: 'garage',
     servicePreference: 'diy',
     reason: 'declutter',
   },
@@ -158,7 +162,7 @@ const OFFERINGS: Record<string, Offering> = {
     register: 'estate',
     tierInterest: 'estate',
     sellerType: 'estate',
-    servicePreference: 'full',
+    servicePreference: 'whiteGlove',
     reason: 'estate',
   },
   wgProfessional: {
@@ -172,7 +176,7 @@ const OFFERINGS: Record<string, Offering> = {
     register: 'estate',
     tierInterest: 'estate',
     sellerType: 'estate',
-    servicePreference: 'full',
+    servicePreference: 'whiteGlove',
     reason: 'estate',
   },
   wgLegacy: {
@@ -186,7 +190,7 @@ const OFFERINGS: Record<string, Offering> = {
     register: 'estate',
     tierInterest: 'estate',
     sellerType: 'estate',
-    servicePreference: 'full',
+    servicePreference: 'whiteGlove',
     reason: 'estate',
   },
   neighborhood: {
@@ -199,9 +203,9 @@ const OFFERINGS: Record<string, Offering> = {
     tagline: 'One coordinated sale for the whole street.',
     features: ['On-site planning with all families', 'AI pricing for every item', 'Custom event flyer + email campaign', 'Professional photography', 'Individual family sales reports'],
     register: 'energetic',
-    tierInterest: 'diy',
+    tierInterest: 'founding',
     sellerType: 'neighborhood',
-    servicePreference: 'full',
+    servicePreference: 'whiteGlove',
     reason: 'neighborhood',
   },
 }
@@ -242,6 +246,21 @@ const FAMILY_OPTIONS: StepOption[] = [
   { id: 'f2', text: '2–3 families', sub: 'A small block sale', icon: 'community', points: { neighborhood: 8 } },
   { id: 'f4', text: '4–5 families', sub: 'A busy weekend event', icon: 'community', points: { neighborhood: 10 } },
   { id: 'f6', text: '6–8 families', sub: 'The whole street', icon: 'community', points: { neighborhood: 10 } },
+]
+
+// Estate-only timeline micro-step (mirrors app quiz L119-122). ASAP boosts white-glove.
+const TIMELINE_OPTIONS: StepOption[] = [
+  { id: 'asap', text: 'As soon as possible', sub: 'A deadline or a settlement to close', icon: 'clock', points: { whiteGlove: 6, estate: 3 } },
+  { id: 'weeks', text: 'Over the next few weeks', sub: 'Steady, no rush', icon: 'clock', points: { estate: 3 } },
+  { id: 'months', text: 'We have time', sub: 'At your pace', icon: 'clock', points: { estate: 2, diy: 3 } },
+]
+
+// Estate-only, OPTIONAL appraisal chips on the result (non-blocking multi-select).
+const APPRAISAL_CHIPS: { id: string; label: string }[] = [
+  { id: 'antiques', label: 'Antiques' },
+  { id: 'jewelry', label: 'Fine jewelry' },
+  { id: 'art', label: 'Art' },
+  { id: 'vehicle', label: 'A vehicle' },
 ]
 
 // ── Icons (brand SVG · no emoji · stroke currentColor) ───────────────
@@ -339,6 +358,8 @@ function recommend(a: Answers): { primary: string; alternates: string[] } {
       return { primary: 'wgEssentials', alternates: ['wgProfessional', 'estateCare'] }
     }
     if (help === 'assist') {
+      // ASAP on an estate escalates to white-glove (deadline-driven settlements).
+      if (a.timeline === 'asap') return { primary: 'wgEssentials', alternates: ['estateCare', 'wgProfessional'] }
       return { primary: 'estateCare', alternates: ['estateManager', 'wgEssentials'] }
     }
     // diy
@@ -401,7 +422,7 @@ function useReducedMotionLocal(): boolean {
 
 // ── Component ────────────────────────────────────────────────────────
 
-type Phase = 'situation' | 'help' | 'scale' | 'results' | 'signup'
+type Phase = 'situation' | 'help' | 'scale' | 'timeline' | 'results' | 'signup'
 
 export default function WaitlistWalkthrough({ live, isMobile, onExit }: WaitlistWalkthroughProps) {
   const reduced = useReducedMotionLocal()
@@ -426,9 +447,27 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
   const primary = OFFERINGS[rec.primary]
   const confidence = confidenceOf(scores)
 
-  // Dynamic step order (drives the "Step n of N" header)
+  // Precision detail carried in `note` (family size · appraisal flags · urgency).
+  const walkthroughNote = useMemo(() => {
+    const parts: string[] = []
+    if (answers.situation === 'neighborhood' && answers.family) parts.push(FAMILY_LABEL[answers.family])
+    if (answers.timeline === 'asap') parts.push('Timeline: ASAP')
+    if (answers.appraisal && answers.appraisal.length > 0) {
+      const labels = answers.appraisal
+        .map((id) => APPRAISAL_CHIPS.find((c) => c.id === id)?.label ?? id)
+        .join(', ')
+      parts.push(`Appraisal: ${labels}`)
+    }
+    return parts.join(' · ')
+  }, [answers.situation, answers.family, answers.timeline, answers.appraisal])
+
+  // Dynamic step order (drives the "Step n of N" header). Estate earns one more
+  // beat (timeline · settlements are deadline-driven); garage/exploring stay short.
   const order: Phase[] = useMemo(() => {
-    if (answers.situation === 'estate' || answers.situation === 'downsize') {
+    if (answers.situation === 'estate') {
+      return ['situation', 'help', 'scale', 'timeline', 'results', 'signup']
+    }
+    if (answers.situation === 'downsize') {
       return ['situation', 'help', 'scale', 'results', 'signup']
     }
     return ['situation', 'scale', 'results', 'signup']
@@ -467,6 +506,15 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
     haptic()
     setAnswers((prev) => ({ ...prev, count: opt.id as NonNullable<Answers['count']> }))
     setScores((prev) => addPoints(prev, opt.points))
+    // Estate earns the timeline beat; everyone else goes straight to results.
+    const next: Phase = answers.situation === 'estate' ? 'timeline' : 'results'
+    setTimeout(() => transition(next), reduced ? 0 : 260)
+  }
+
+  const pickTimeline = (opt: StepOption) => {
+    haptic()
+    setAnswers((prev) => ({ ...prev, timeline: opt.id as NonNullable<Answers['timeline']> }))
+    setScores((prev) => addPoints(prev, opt.points))
     setTimeout(() => transition('results'), reduced ? 0 : 260)
   }
 
@@ -475,6 +523,14 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
     setAnswers((prev) => ({ ...prev, family: opt.id as NonNullable<Answers['family']> }))
     setScores((prev) => addPoints(prev, opt.points))
     setTimeout(() => transition('results'), reduced ? 0 : 260)
+  }
+
+  const toggleAppraisal = (id: string) => {
+    haptic()
+    setAnswers((prev) => {
+      const cur = prev.appraisal ?? []
+      return { ...prev, appraisal: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] }
+    })
   }
 
   const goBack = () => {
@@ -491,8 +547,12 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
       transition(answers.situation === 'estate' || answers.situation === 'downsize' ? 'help' : 'situation')
       return
     }
-    if (phase === 'results') {
+    if (phase === 'timeline') {
       transition('scale')
+      return
+    }
+    if (phase === 'results') {
+      transition(answers.situation === 'estate' ? 'timeline' : 'scale')
       return
     }
     if (phase === 'signup') {
@@ -518,6 +578,8 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
           zip,
           sellerType: primary.sellerType,
           servicePreference: primary.servicePreference,
+          offering: primary.id,
+          ...(walkthroughNote ? { note: walkthroughNote } : {}),
           source: 'landing-walkthrough',
         }),
       })
@@ -818,7 +880,11 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
               color: '#94A3B8',
             }}
           >
-            {phase === 'results' ? 'Your recommendation' : phase === 'signup' ? 'Reserve your spot' : `Step ${stepIndex + 1} of ${order.length - 1}`}
+            {phase === 'results'
+              ? 'Your recommendation'
+              : phase === 'signup'
+                ? 'Reserve your spot'
+                : `${register === 'estate' ? 'At your pace · ' : ''}Step ${stepIndex + 1} of ${order.length - 1}`}
           </span>
           <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, color: pal.accent }}>
             {progressPct}% complete
@@ -878,6 +944,17 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
           </div>
         )}
 
+        {/* STEP 3b — timeline (ESTATE path only · deadline-driven) */}
+        {phase === 'timeline' && (
+          <div>
+            {stepHeading('What’s your timeline?', 'Estate settlements often run on a deadline — we’ll match your pace.')}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {TIMELINE_OPTIONS.map((opt) => answerCard(opt, pickTimeline))}
+            </div>
+            <div style={{ marginTop: 16 }}>{backButton('Back')}</div>
+          </div>
+        )}
+
         {/* STEP 4 — results */}
         {phase === 'results' && (
           <div>
@@ -924,6 +1001,69 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
             </div>
 
             {renderOfferingCard(primary, true)}
+
+            {/* NEIGHBORHOOD — family-count now drives a live detail (no dead data) */}
+            {answers.situation === 'neighborhood' && answers.family && (
+              <div
+                style={{
+                  marginTop: 14,
+                  padding: '14px 16px',
+                  borderRadius: 12,
+                  background: pal.dim,
+                  border: `1px solid ${pal.border}`,
+                }}
+              >
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#CBD5E1', margin: 0, lineHeight: 1.5 }}>
+                  <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: pal.accent }}>{FAMILY_LABEL[answers.family]}</span>
+                  {answers.family === 'f2'
+                    ? ' fit the base bundle — one coordinated sale, one flyer, one buyer list.'
+                    : ' — the base bundle covers the first two, additional families join at $89 each (was $149).'}
+                </p>
+              </div>
+            )}
+
+            {/* ESTATE — optional, dignified appraisal chips (non-blocking) */}
+            {answers.situation === 'estate' && (
+              <div style={{ marginTop: 16 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#CBD5E1', margin: '0 0 10px', lineHeight: 1.5 }}>
+                  Do any of these apply? <span style={{ color: '#94A3B8' }}>(optional)</span>
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {APPRAISAL_CHIPS.map((chip) => {
+                    const on = (answers.appraisal ?? []).includes(chip.id)
+                    return (
+                      <button
+                        key={chip.id}
+                        type="button"
+                        onClick={() => toggleAppraisal(chip.id)}
+                        aria-pressed={on}
+                        style={{
+                          minHeight: 44,
+                          padding: '8px 16px',
+                          borderRadius: 999,
+                          cursor: 'pointer',
+                          fontFamily: 'var(--font-body)',
+                          fontWeight: on ? 600 : 500,
+                          fontSize: 14,
+                          color: on ? pal.accent : '#CBD5E1',
+                          background: on ? pal.dim : 'rgba(255,255,255,0.03)',
+                          border: `1.5px solid ${on ? pal.border : 'rgba(255,255,255,0.12)'}`,
+                          boxShadow: on ? `0 0 0 3px ${pal.glow}` : 'none',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {chip.label}
+                      </button>
+                    )
+                  })}
+                </div>
+                {(answers.appraisal ?? []).length > 0 && (
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: pal.accent, margin: '12px 0 0', lineHeight: 1.55 }}>
+                    We’ll arrange expert appraisal so nothing valuable is undersold.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Why we recommend this — the visitor's own answers echoed */}
             {whyPoints.length > 0 && (
