@@ -8034,16 +8034,21 @@ function WaitlistSection({
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                aria-label="What brings you to Legacy-Loop?"
+                aria-label="What brings you here?"
                 style={{
                   ...inputStyle,
+                  fontSize: 16,
                   cursor: 'pointer',
                   appearance: 'none',
                   WebkitAppearance: 'none',
+                  minWidth: 0,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
                   color: reason === '' ? '#94A3B8' : '#F1F5F9',
                 }}
               >
-                <option value="" style={{ color: '#0D1117' }}>What brings you to Legacy-Loop? (optional)</option>
+                <option value="" style={{ color: '#0D1117' }}>What brings you here? (optional)</option>
                 <option value="estate" style={{ color: '#0D1117' }}>Estate or downsizing</option>
                 <option value="declutter" style={{ color: '#0D1117' }}>Decluttering or a garage sale</option>
                 <option value="exploring" style={{ color: '#0D1117' }}>Just exploring</option>
