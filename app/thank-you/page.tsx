@@ -25,11 +25,17 @@ export default function ThankYouPage() {
     const isAlready = new URLSearchParams(window.location.search).get("already") === "1";
     setAlready(isAlready);
     if (!GADS_ID) return; // no-op until the Google Ads id is set in Vercel env
+    // CMD-GADS-CONSENT-GOLIVE V20: Consent Mode v2 default-denied is set in <head>. The conversion
+    // fires ONLY when the persisted consent choice is granted (accepted).
+    let consent: string | null = null;
+    try { consent = localStorage.getItem("ll-cookie-consent"); } catch { /* SSR/blocked storage */ }
     if (!document.getElementById("gads-js")) {
       window.dataLayer = window.dataLayer || [];
-      window.gtag = function gtag() {
-        (window.dataLayer as unknown[]).push(arguments);
-      } as (...args: unknown[]) => void;
+      if (typeof window.gtag !== "function") {
+        window.gtag = function gtag() {
+          (window.dataLayer as unknown[]).push(arguments);
+        } as (...args: unknown[]) => void;
+      }
       const s = document.createElement("script");
       s.id = "gads-js";
       s.async = true;
@@ -38,7 +44,7 @@ export default function ThankYouPage() {
       window.gtag("js", new Date());
       window.gtag("config", GADS_ID);
     }
-    if (!isAlready && GADS_LABEL && typeof window.gtag === "function") {
+    if (!isAlready && GADS_LABEL && consent === "accepted" && typeof window.gtag === "function") {
       window.gtag("event", "conversion", { send_to: `${GADS_ID}/${GADS_LABEL}` });
     }
   }, []);

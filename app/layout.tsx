@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Exo_2, Plus_Jakarta_Sans, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
+import CookieConsent from "./components/CookieConsent";
 
 const exo2 = Exo_2({
   variable: "--font-exo2",
@@ -164,6 +165,17 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* CMD-GADS-CONSENT-GOLIVE V20 · Google Consent Mode v2 — DENIED defaults set BEFORE any
+            tag loads (pre-hydration). Upgrades to granted only if the user previously accepted.
+            The CookieConsent banner calls gtag('consent','update',…); /thank-you fires the Ads
+            conversion only when consent is granted. EU/EEA/UK safe-by-default. */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = window.gtag || gtag;
+          gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied','wait_for_update':500});
+          try{if(localStorage.getItem('ll-cookie-consent')==='accepted'){gtag('consent','update',{'ad_storage':'granted','ad_user_data':'granted','ad_personalization':'granted','analytics_storage':'granted'});}}catch(e){}
+        `}} />
       </head>
       <body>
         {/* If JS fails completely, force-hide any preloader overlay */}
@@ -171,6 +183,7 @@ export default function RootLayout({
           <style>{`[style*="z-index: 100000"], [style*="zIndex"] { display: none !important; }`}</style>
         </noscript>
         {children}
+        <CookieConsent />
       </body>
     </html>
   );
