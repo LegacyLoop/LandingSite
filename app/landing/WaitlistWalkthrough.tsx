@@ -1059,7 +1059,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
                 </div>
                 {(answers.appraisal ?? []).length > 0 && (
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: pal.accent, margin: '12px 0 0', lineHeight: 1.55 }}>
-                    We’ll arrange expert appraisal so nothing valuable is undersold.
+                    We’ll flag potentially valuable items for a deeper AI review so nothing is undersold.
                   </p>
                 )}
               </div>
