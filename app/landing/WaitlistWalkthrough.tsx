@@ -1206,7 +1206,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
                 onBlur={blurInput}
               />
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', margin: '-2px 0 4px', lineHeight: 1.5 }}>
-                Adding your ZIP lets us reserve local pricing — some areas see up to +21% more value.
+                Adding your ZIP lets us tune pricing to your regional market.
               </p>
 
               <button

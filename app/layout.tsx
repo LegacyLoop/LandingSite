@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://legacy-loop.com"),
   title: "Legacy-Loop — AI-Powered Resale Platform | Connecting Generations",
   description:
-    "Legacy-Loop makes selling simple, fair, and dignified. 10 AI bots + MegaBot consensus engine, 13 platforms, AI Shipping Center. Built for estates, families, and everyday sellers.",
+    "Legacy-Loop makes selling simple, fair, and dignified. 10 AI bots + MegaBot consensus engine, listing copy prepared for 12 marketplaces, and live carrier shipping rates. Built for estates, families, and everyday sellers.",
   applicationName: "Legacy-Loop",
   keywords: [
     "resale automation",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Legacy-Loop — Connecting Generations",
     description:
-      "AI-powered resale automation. 10 specialized bots + MegaBot. 13 platforms. Fair pricing powered by 4 AI engines.",
+      "AI-powered resale automation. 10 specialized bots + MegaBot. Listing copy prepared for 12 marketplaces. Fair pricing powered by 4 AI engines.",
     type: "website",
     url: "https://legacy-loop.com",
     siteName: "Legacy-Loop",

@@ -2265,7 +2265,7 @@ function LivePulsePill() {
           display: 'inline-block',
         }}
       />
-      LIVE · 00:{String(secs).padStart(2, '0')}
+      EXAMPLE PRICING
     </span>
   )
 }
@@ -2550,7 +2550,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
           >
             Snap a photo. Know the price.{' '}
             <span style={{ color: '#F1F5F9', fontWeight: 600 }}>
-              Cash by Saturday.
+              Priced before Saturday.
             </span>
           </p>
           </div>
@@ -2875,7 +2875,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
           }}
         >
           <MagneticButton href="#waitlist">
-            Start Selling Free
+            Join the Free Waitlist
           </MagneticButton>
           <a
             href="#ugc-proof"
@@ -2935,7 +2935,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
           id="ugc-proof"
           style={{ textAlign: 'center', marginBottom: isMobile ? 28 : 40 }}
         >
-          <SectionEyebrow text="REAL PEOPLE · REAL GARAGES" />
+          <SectionEyebrow text="WHAT A SATURDAY LOOKS LIKE" />
         </div>
         <div
           style={{
@@ -3028,7 +3028,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
               </p>
             ) : (
               <ScrollRevealText
-                text="She found a $280 Polaroid buried in a box of old stuff. Then she priced her whole garage in an afternoon."
+                text="Photograph the pile. Get a price on every piece. Decide what goes and what stays."
                 style={{
                   fontFamily: 'var(--font-heading)',
                   fontWeight: 500,
@@ -5223,7 +5223,7 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
 
   const features = [
     { emoji: '🏺', text: 'Antique detection that prevents underselling heirlooms' },
-    { emoji: '🌐', text: 'Post your entire estate to 13 platforms in one click' },
+    { emoji: '🌐', text: 'Listing copy prepared for every major marketplace, ready to post' },
     { emoji: '💬', text: 'AI Messaging Agent handles buyer conversations for you' },
     { emoji: '🚚', text: 'AI Shipping Center — USPS, UPS, FedEx, DHL, Arta white-glove. Parcel, LTL freight, and local pickup' },
   ]
@@ -5717,27 +5717,18 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
               }}
             >
               {[
+                // WAVE 0 TRUTH SWEEP 2026-07-29: three phantom Estate Care plans removed
+                // ($75 / $150 / $299 per month, "Estate Starter / Plus / Unlimited"). None of
+                // them existed in the product — we were advertising something we could not sell,
+                // including "API access" and a "white-label store" that do not exist. Estate is
+                // deliberately a human consultation, not an automated tier. That is the offer.
                 {
-                  name: 'Estate Starter',
-                  slug: 'estate-starter',
-                  price: '$75',
-                  period: '/mo',
-                  features: ['Up to 50 active items', 'AI identification & pricing', 'Multi-platform crosslisting', 'Basic shipping tools', 'Community support'],
-                },
-                {
-                  name: 'Estate Plus',
-                  slug: 'estate-plus',
-                  price: '$150',
-                  period: '/mo',
-                  features: ['Up to 200 active items', 'Priority AI processing', 'Advanced analytics dashboard', 'BuyerBot & NegotiationBot', 'Phone & email support'],
+                  name: 'Estate Consultation',
+                  slug: 'estate-consultation',
+                  price: 'Talk to us',
+                  period: '',
+                  features: ['A real conversation before anything is listed', 'We walk the home and the timeline with you', 'AI identification and pricing on every item', 'Full-service options quoted per estate', 'One person you can call'],
                   recommended: true,
-                },
-                {
-                  name: 'Estate Unlimited',
-                  slug: 'estate-unlimited',
-                  price: '$299',
-                  period: '/mo',
-                  features: ['Unlimited active items', 'All bots including CarBot', 'White-label store', 'API access & integrations', 'Dedicated support line'],
                 },
               ].map((tier) => (
                 <GlowCard
@@ -6095,7 +6086,7 @@ function SocialProofSection() {
     >
       <div style={{ maxWidth: 600, margin: '0 auto' }}>
         <AnimatedStat
-          target={47}
+          target={100}
           style={{
             fontFamily: 'var(--font-data)',
             fontWeight: 700,
@@ -6117,7 +6108,7 @@ function SocialProofSection() {
             marginTop: 8,
           }}
         >
-          Beta signups and counting
+          Founding spots open — locked-for-life pricing
         </p>
 
         <div ref={barRef} style={{ marginTop: 40 }}>
@@ -6130,7 +6121,7 @@ function SocialProofSection() {
               marginBottom: 12,
             }}
           >
-            Pre-Launch Pricing: 47 of 100 early access spots remaining
+            Pre-Launch Pricing: all 100 founding spots are open
           </p>
           <div
             style={{
@@ -6147,7 +6138,7 @@ function SocialProofSection() {
                 height: '100%',
                 background: 'linear-gradient(90deg, #00bcd4, #009688)',
                 borderRadius: 8,
-                width: barActive ? '47%' : '0%',
+                width: barActive ? '100%' : '0%',
                 transition: 'width 1.5s ease-out',
               }}
             />
@@ -6587,7 +6578,7 @@ function VideoShowcaseSection() {
                 { icon: '✝️', title: 'Faith-Driven', desc: 'Guided by purpose and conviction in every decision we make.' },
                 { icon: '💛', title: 'Compassion', desc: 'Serving seniors, families, veterans, and communities with empathy.' },
                 { icon: '🤝', title: 'Integrity', desc: 'Honest, ethical, and transparent in every interaction.' },
-                { icon: '🎖️', title: 'Veterans First', desc: '25% off subscriptions, 20% off white-glove, 25% reduced commissions. A portion of our success funds veteran housing.' },
+                { icon: '🎖️', title: 'Veterans First', desc: '25% off subscriptions, 20% off white-glove, 25% reduced commissions.' },
               ].map((value, i) => (
                 <GlowCard
                   key={value.title}
@@ -7440,7 +7431,7 @@ function AppDownloadSection() {
             lineHeight: 1.6,
           }}
         >
-          Trusted by sellers across Maine.{' '}
+          Built in Maine.{' '}
           <span style={{ color: '#F1F5F9', fontWeight: 500 }}>
             Free to install. Always.
           </span>
