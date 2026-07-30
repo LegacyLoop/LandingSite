@@ -126,7 +126,8 @@ export const OFFERINGS: Record<string, Offering> = {
     name: 'Estate Manager',
     price: '$75',
     priceSuffix: '/mo',
-    wasPrice: '$99',
+    // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2): "was $99" strikethrough removed — a former price that
+    // never existed (pre-revenue, zero customers). Current pre-launch price stays (real SaaS tier).
     commission: '4% commission',
     tagline: 'Manage an entire estate yourself with every AI tool.',
     features: ['All bots including CarBot', '100 credits/month included', 'White-label store', 'Dedicated account manager', 'API access'],
@@ -139,11 +140,12 @@ export const OFFERINGS: Record<string, Offering> = {
   estateCare: {
     id: 'estateCare',
     name: 'Estate Care',
-    price: '$75',
-    priceSuffix: '/mo',
-    priceNote: 'Starter, Plus & Unlimited plans ($75–$299/mo)',
-    commission: 'Self-service tools',
-    tagline: 'AI-guided estate tools with support at every step.',
+    // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CEO R4 · Rule 4): estate price ($75/mo · the
+    // "$75–$299/mo Starter/Plus/Unlimited" plans) removed — estate services are consult-first, not
+    // purchasable (CANONICAL_FACTS §8). Archived LANDING-A.
+    price: 'By consultation',
+    commission: '',
+    tagline: 'AI-guided estate help, planned with you — a conversation first.',
     features: ['Up to 200 active items', 'Priority AI processing', 'BuyerBot & NegotiationBot', 'Advanced analytics dashboard', 'Phone & email support'],
     register: 'estate',
     tierInterest: 'estate',
@@ -154,10 +156,10 @@ export const OFFERINGS: Record<string, Offering> = {
   wgEssentials: {
     id: 'wgEssentials',
     name: 'Estate Essentials',
-    price: '$1,750',
-    wasPrice: '$2,500',
-    commission: '25% commission',
-    tagline: 'We photograph, list, and sell — you stay in the loop.',
+    // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): price $1,750 / was $2,500 / 25% commission removed — consult-first. Archived LANDING-A.
+    price: 'By consultation',
+    commission: '',
+    tagline: 'We photograph, list, and sell — planned with you, a conversation first.',
     features: ['Item photography', 'AI listing creation', 'Buyer outreach', 'Shipping coordination', 'Donation management'],
     register: 'estate',
     tierInterest: 'estate',
@@ -168,10 +170,10 @@ export const OFFERINGS: Record<string, Offering> = {
   wgProfessional: {
     id: 'wgProfessional',
     name: 'Estate Professional',
-    price: '$3,500',
-    wasPrice: '$5,000',
-    commission: '30% commission',
-    tagline: 'A dedicated estate manager carries the whole sale.',
+    // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): price $3,500 / was $5,000 / 30% commission removed — consult-first. Archived LANDING-A.
+    price: 'By consultation',
+    commission: '',
+    tagline: 'A guided estate sale, carried with you from start to finish.',
     features: ['Everything in Essentials', 'Buyer negotiation', 'Premium listing placement', 'Dedicated estate manager', 'Full reporting'],
     register: 'estate',
     tierInterest: 'estate',
@@ -182,10 +184,10 @@ export const OFFERINGS: Record<string, Offering> = {
   wgLegacy: {
     id: 'wgLegacy',
     name: 'Estate Legacy',
-    price: '$7,000',
-    wasPrice: '$10,000',
-    commission: '35% commission',
-    tagline: 'Full white-glove concierge for an entire household.',
+    // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): price $7,000 / was $10,000 / 35% commission removed — consult-first. Archived LANDING-A.
+    price: 'By consultation',
+    commission: '',
+    tagline: 'Full white-glove estate care for an entire household.',
     features: ['Everything in Professional', 'White-glove concierge', 'Family coordination tools', 'Archive and documentation', 'Priority support'],
     register: 'estate',
     tierInterest: 'estate',
@@ -196,10 +198,10 @@ export const OFFERINGS: Record<string, Offering> = {
   neighborhood: {
     id: 'neighborhood',
     name: 'Neighborhood Bundle',
-    price: '$239',
-    wasPrice: '$399',
-    priceNote: '2–8 families per bundle · additional families $89 each',
-    commission: '20% commission',
+    // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): price $239 / was $399 / "$89 each" / 20% commission removed — consult-first. Archived LANDING-A.
+    price: 'By consultation',
+    priceNote: '2–8 families per bundle',
+    commission: '',
     tagline: 'One coordinated sale for the whole street.',
     features: ['On-site planning with all families', 'AI pricing for every item', 'Custom event flyer + email campaign', 'Professional photography', 'Individual family sales reports'],
     register: 'energetic',
