@@ -1,0 +1,36 @@
+# CMD-LANE-C-REGISTER-CI-GATE V20 · LANDING handoff · Agent C · 2026-07-29
+#
+# The landing repo's FIRST workflow. Same tripwire as the app, scanning the
+# LANDING rows of the shared Truth Register. Lane A owns the landing checkout —
+# this gate is CI-side only and never touches product code.
+#
+# Zero dependencies (pure Node builtins) — no `npm ci`, no secrets.
+# See scripts/truth-gate.mjs header + this dir's README.md for the sync rule.
+
+name: truth-gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truth-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  truth-gate:
+    name: register truth gate — LANDING (Node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22'
+      - name: Truth gate — no removed LANDING claim may return
+        run: node scripts/truth-gate.mjs --repo=LANDING
