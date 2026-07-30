@@ -3014,7 +3014,9 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                   margin: 0,
                 }}
               >
-                She found a{' '}
+                {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §5): fabricated "$280
+                    Polaroid / she priced her whole garage" customer story removed (zero customers). */}
+                There's often{' '}
                 <span
                   style={{
                     color: '#22C55E',
@@ -3022,9 +3024,9 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                     fontWeight: 700,
                   }}
                 >
-                  $280 Polaroid
+                  real value
                 </span>{' '}
-                buried in a box of old stuff. Then she priced her whole garage in an afternoon.
+                buried in a box of old things. Photograph the pile and price the whole garage in an afternoon.
               </p>
             ) : (
               <ScrollRevealText
@@ -3814,7 +3816,8 @@ function MegaBotSection() {
               marginBottom: 12,
             }}
           >
-            87% Average AI Agreement
+            {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §6): "87% Average AI Agreement" removed — never measured. */}
+            Four AIs. One consensus price.
           </div>
           <div
             style={{
@@ -3831,7 +3834,7 @@ function MegaBotSection() {
                 height: '100%',
                 background: 'linear-gradient(90deg, #00bcd4, #009688)',
                 borderRadius: 8,
-                width: fillActive ? '87%' : '0%',
+                width: fillActive ? '100%' : '0%',
                 transition: 'width 2s ease-out',
               }}
             />
@@ -3846,7 +3849,8 @@ function MegaBotSection() {
               textAlign: 'center',
             }}
           >
-            Cost per 4-AI analysis: less than a cup of coffee. Margin: 85%+
+            {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §5): cost/coffee + "Margin: 85%+" financial claim removed. */}
+            Every price is the consensus of four independent AI engines.
           </p>
         </div>
       </div>
@@ -4350,7 +4354,8 @@ function AIAgentsSection() {
     {
       emoji: '⏳',
       name: 'AntiqueBot',
-      desc: 'Never undersell a family heirloom',
+      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): "Never undersell" outcome guarantee softened.
+      desc: 'Flags likely antiques so a valuable heirloom is not missed',
       tier: 'POWER+',
       tierColor: '#8B5CF6',
       tierBg: 'rgba(139,92,246,0.15)',
@@ -5222,7 +5227,7 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
   const estateBgY = useTransform(estateScroll, [0, 1], ['-8%', '8%'])
 
   const features = [
-    { emoji: '🏺', text: 'Antique detection that prevents underselling heirlooms' },
+    { emoji: '🏺', text: 'Antique detection that helps you spot a valuable heirloom before it sells' },
     { emoji: '🌐', text: 'Listing copy prepared for every major marketplace, ready to post' },
     { emoji: '💬', text: 'AI Messaging Agent handles buyer conversations for you' },
     { emoji: '🚚', text: 'AI Shipping Center — USPS, UPS, FedEx, DHL, Arta white-glove. Parcel, LTL freight, and local pickup' },
@@ -5232,26 +5237,29 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
     {
       name: 'Estate Essentials',
       offeringId: 'wgEssentials',
-      price: '$1,750',
-      oldPrice: '$2,500',
-      commission: '25% commission',
+      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CEO R4 · Rule 4): $1,750 / was $2,500 / 25% commission removed — estate services are consult-first (CANONICAL_FACTS §8). Archived LANDING-B.
+      price: 'By consultation',
+      oldPrice: '',
+      commission: '',
       features: ['Item photography', 'AI listing creation', 'Buyer outreach', 'Shipping coordination', 'Donation management'],
     },
     {
       name: 'Estate Professional',
       offeringId: 'wgProfessional',
-      price: '$3,500',
-      oldPrice: '$5,000',
-      commission: '30% commission',
+      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): $3,500 / was $5,000 / 30% commission removed — consult-first. Archived LANDING-B.
+      price: 'By consultation',
+      oldPrice: '',
+      commission: '',
       features: ['Everything in Essentials', 'Buyer negotiation', 'Premium listing placement', 'Dedicated estate manager', 'Full reporting'],
       recommended: true,
     },
     {
       name: 'Estate Legacy',
       offeringId: 'wgLegacy',
-      price: '$7,000',
-      oldPrice: '$10,000',
-      commission: '35% commission',
+      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): $7,000 / was $10,000 / 35% commission removed — consult-first. Archived LANDING-B.
+      price: 'By consultation',
+      oldPrice: '',
+      commission: '',
       features: ['Everything in Professional', 'White-glove concierge', 'Family coordination tools', 'Archive and documentation', 'Priority support'],
     },
   ]
@@ -5520,7 +5528,8 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
               margin: 0,
             }}
           >
-            Pre-Launch Pricing Active — Founding clients receive discounted rates locked in at launch price.
+            {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): "discounted rates locked in at launch price" removed from the estate section — estate services are consult-first, no rates shown. */}
+            Early Access — estate services are offered by consultation while we build the program out.
           </p>
         </div>
 
@@ -5881,20 +5890,17 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
                 </h3>
 
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
+                  {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): neighborhood price $239 / was $399 removed — estate services are consult-first. Archived LANDING-A. */}
                   <span
                     style={{
-                      fontFamily: 'var(--font-data)',
+                      fontFamily: 'var(--font-heading)',
                       fontWeight: 700,
-                      fontSize: 40,
-                      background: 'linear-gradient(135deg, #D4A017, #FFFFFF)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
+                      fontSize: 22,
+                      color: '#D4A017',
                     }}
                   >
-                    $239
+                    By consultation
                   </span>
-                  <s style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: '#6B7280' }}>$399</s>
                 </div>
                 <p
                   style={{
@@ -6193,7 +6199,8 @@ function TechSection() {
     {
       emoji: '⚡',
       title: 'Next.js',
-      desc: 'React framework trusted by Netflix, TikTok, Notion',
+      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2): borrowed credibility "trusted by Netflix, TikTok, Notion" removed.
+      desc: 'Built on Next.js and React — a fast, modern web foundation',
     },
     {
       emoji: '🔷',
@@ -6203,7 +6210,8 @@ function TechSection() {
     {
       emoji: '🤖',
       title: 'Real AI APIs',
-      desc: 'Every analysis is live AI. No fake data. No demos.',
+      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §6): "No fake data. No demos." removed — the product ships demo/sample data (isDemo).
+      desc: 'Every analysis runs on live AI models — OpenAI, Claude, Gemini, and Grok.',
     },
     {
       emoji: '📦',
