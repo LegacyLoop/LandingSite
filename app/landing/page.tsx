@@ -5202,21 +5202,19 @@ function PricingSection() {
   )
 }
 
-// ---------- BUILT FOR ESTATES ----------
-function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingIntent) => void }) {
+// ---------- ESTATE & COMMUNITY — EDUCATION + ONE DOOR ----------
+// CMD-ESTATE-EXPERIENCE-V2 V20 (FIX 1 + FIX 3): the tab/pricing skeleton is gone.
+// This section now teaches what the estate services ARE — what we lift off the family's
+// shoulders, who shows up, what happens first — then opens ONE door into the consultation
+// intake at /estate. No prices, no package buy-buttons, no fake urgency. Dignity register:
+// gold (#D4A017), calm pacing, generous whitespace. G6: real capability + a single quiet
+// "in development" marker, no roadmap show on a grief-adjacent page.
+function EstateSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
   const isMobile = width < 768
   const isTablet = width >= 768 && width < 1024
-  const [activeTab, setActiveTab] = useState<'whiteglove' | 'estatecare' | 'neighborhood'>('whiteglove')
-
-  // Carry an offering into the waitlist form + smooth-scroll there.
-  const reserveOffering = (offering: string, source: string, note?: string) => {
-    setOfferingIntent({ offering, source, note })
-    const el = document.getElementById('waitlist')
-    if (el) el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
-  }
 
   // Parallax — generations-hands background drifts gently for senior-safe depth
   const estateSectionRef = useRef<HTMLElement>(null)
@@ -5226,62 +5224,38 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
   })
   const estateBgY = useTransform(estateScroll, [0, 1], ['-8%', '8%'])
 
+  // What we lift off the family's shoulders — honest, live capabilities (CANONICAL_FACTS §6).
   const features = [
     { emoji: '🏺', text: 'Antique detection that helps you spot a valuable heirloom before it sells' },
     { emoji: '🌐', text: 'Listing copy prepared for every major marketplace, ready to post' },
     { emoji: '💬', text: 'AI Messaging Agent handles buyer conversations for you' },
-    { emoji: '🚚', text: 'AI Shipping Center — USPS, UPS, FedEx, DHL, Arta white-glove. Parcel, LTL freight, and local pickup' },
+    { emoji: '🚚', text: 'AI Shipping Center — live rates from USPS, UPS, FedEx, DHL and Arta. Parcel, LTL freight, or local pickup' },
   ]
 
-  const whiteGloveTiers = [
+  // The three ways families work with us — EDUCATION, not pricing. No buttons, no badges.
+  // Anchored to the Estate Stewardship Program source (what each service is, in plain words).
+  const ways = [
     {
-      name: 'Estate Essentials',
-      offeringId: 'wgEssentials',
-      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CEO R4 · Rule 4): $1,750 / was $2,500 / 25% commission removed — estate services are consult-first (CANONICAL_FACTS §8). Archived LANDING-B.
-      price: 'By consultation',
-      oldPrice: '',
-      commission: '',
-      features: ['Item photography', 'AI listing creation', 'Buyer outreach', 'Shipping coordination', 'Donation management'],
+      name: 'White-Glove Estate Service',
+      body: 'Our team comes to you. We catalogue, photograph, price, list, and sell every item — then handle the buyer conversations, shipping, and final coordination. You just say yes. Maine-first while we grow.',
     },
     {
-      name: 'Estate Professional',
-      offeringId: 'wgProfessional',
-      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): $3,500 / was $5,000 / 30% commission removed — consult-first. Archived LANDING-B.
-      price: 'By consultation',
-      oldPrice: '',
-      commission: '',
-      features: ['Everything in Essentials', 'Buyer negotiation', 'Premium listing placement', 'Dedicated estate manager', 'Full reporting'],
-      recommended: true,
+      name: 'Estate Care',
+      body: 'Prefer to stay hands-on? We start with a real conversation, then put AI identification and pricing behind every item — with one person you can call at each step.',
     },
     {
-      name: 'Estate Legacy',
-      offeringId: 'wgLegacy',
-      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): $7,000 / was $10,000 / 35% commission removed — consult-first. Archived LANDING-B.
-      price: 'By consultation',
-      oldPrice: '',
-      commission: '',
-      features: ['Everything in Professional', 'White-glove concierge', 'Family coordination tools', 'Archive and documentation', 'Priority support'],
+      name: 'Neighborhood Bundle',
+      body: 'Several families on one street, selling together. One coordinated sale, shared photography and marketing, and an individual report for every home. Two to eight families.',
     },
   ]
 
-  const neighborhoodFeatures = [
-    { col: 'left', items: ['On-site planning with all families', 'AI pricing for all items', 'Custom event flyer (digital + print-ready)', 'Email campaign to local buyers', 'Individual family sales reports'] },
-    { col: 'right', items: ['Professional photography (all items)', 'Unified public sale page', 'Social media graphics', 'Day-of coordination materials', 'Donation coordination (shared pickup)'] },
+  // What happens first — the human process. Modest by design (G6): no outcome promises,
+  // no dates, no roadmap. Just the honest first three steps.
+  const firstSteps = [
+    { n: '01', title: 'You reach out', body: 'Tell us about the home and the timeline. Nothing to pay, nothing to sign.' },
+    { n: '02', title: 'We talk it through', body: 'A real conversation — Ryan reviews every inquiry personally and calls you back.' },
+    { n: '03', title: 'We build a plan', body: 'Shaped around your home, your pace, and what matters most to your family.' },
   ]
-
-  const tabStyle = (isActive: boolean) => ({
-    fontFamily: 'var(--font-heading)',
-    fontWeight: 600 as const,
-    fontSize: 14,
-    padding: '10px 24px',
-    borderRadius: 24,
-    border: 'none',
-    cursor: 'pointer' as const,
-    transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-    background: isActive ? 'linear-gradient(135deg, #D4A017, #B8860B)' : 'transparent',
-    color: isActive ? '#0D1117' : '#94A3B8',
-    letterSpacing: '0.02em',
-  })
 
   return (
     <section
@@ -5319,8 +5293,7 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
         }}
       />
 
-      {/* Corner crosshair markers — estate-gold, restrained opacity
-          (0.35 vs default 0.55) to honor the dignified register */}
+      {/* Corner crosshair markers — estate-gold, restrained opacity (0.35) for the dignified register */}
       {[
         { top: 20, left: 20 },
         { top: 20, right: 20 },
@@ -5360,9 +5333,8 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
           zIndex: 2,
         }}
       >
-        {/* Ghost oversized "LEGACY" word — dignified gold, very low opacity.
-            No glitch, no HUD pill for this section: the grief-aware register
-            calls for restraint (Law 2, Pillar 03). */}
+        {/* Ghost oversized "LEGACY" word — dignified gold, very low opacity. No glitch, no HUD
+            pill: the grief-aware register calls for restraint (Law 2, Pillar 03). */}
         <span
           aria-hidden
           style={{
@@ -5385,27 +5357,30 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
           LEGACY
         </span>
 
+        {/* FIX 3 — grief section reframed service-first: lead with what we lift, dignity intact. */}
         <div style={{ position: 'relative', zIndex: 1 }}>
           <SectionEyebrow text="FOR FAMILIES & COMMUNITIES" color="#D4A017" />
           <SectionHeading>Selling Should Not Add to the Grief.</SectionHeading>
-        <p
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
-            fontSize: 17,
-            color: '#CBD5E1',
-            maxWidth: 640,
-            margin: '0 auto 48px',
-            textAlign: 'center',
-            lineHeight: 1.75,
-          }}
-        >
-          When a loved one passes, families face an overwhelming task — hundreds
-          of items, emotional weight, and no idea what anything is worth.
-          Legacy-Loop was built for this moment.
-        </p>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 17,
+              color: '#CBD5E1',
+              maxWidth: 660,
+              margin: '0 auto 48px',
+              textAlign: 'center',
+              lineHeight: 1.75,
+            }}
+          >
+            When a loved one passes — or a home simply needs to change hands — the task can feel
+            impossible: hundreds of items, real emotional weight, and no idea what anything is worth.
+            You do not have to carry it alone. We come to you, identify and price every item, prepare
+            the listings, handle the buyers, and coordinate shipping and donations. You just say yes.
+          </p>
         </div>
 
+        {/* What we lift off your shoulders — honest capability cards + the senior-on-tablet photo */}
         <div
           style={{
             display: (isMobile || isTablet) ? 'flex' : 'grid',
@@ -5445,10 +5420,7 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
             ))}
           </div>
 
-          {/* Senior-using-tablet photo — now visible on every viewport.
-              Mobile/tablet: stacks below the 4 feature cards (image is
-              capped at 420px and scales down with width:100%).
-              Desktop: sits in the right column next to the 4-card grid. */}
+          {/* Senior-using-tablet photo — visible on every viewport. */}
           <div
             style={{
               display: 'flex',
@@ -5474,583 +5446,190 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
           </div>
         </div>
 
-        {/* Services Tab Toggle */}
-        <div style={{ marginTop: 80, textAlign: 'center' }}>
-          <div
+        {/* The three ways families work with us — EDUCATION cards (no prices, no buttons) */}
+        <div style={{ marginTop: 80 }}>
+          <h3
             style={{
-              display: 'inline-flex',
-              gap: 4,
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(212,160,23,0.15)',
-              borderRadius: 28,
-              padding: 4,
-              marginBottom: 48,
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: 'clamp(20px, 3vw, 26px)',
+              color: '#F1F5F9',
+              textAlign: 'center',
+              marginBottom: 12,
             }}
           >
-            <button
-              onClick={() => setActiveTab('whiteglove')}
-              style={tabStyle(activeTab === 'whiteglove')}
-            >
-              White Glove
-            </button>
-            <button
-              onClick={() => setActiveTab('estatecare')}
-              style={tabStyle(activeTab === 'estatecare')}
-            >
-              Estate Care
-            </button>
-            <button
-              onClick={() => setActiveTab('neighborhood')}
-              style={tabStyle(activeTab === 'neighborhood')}
-            >
-              Neighborhood Bundle
-            </button>
-          </div>
-        </div>
-
-        {/* Pre-Launch Banner */}
-        <div
-          style={{
-            background: 'rgba(212,160,23,0.06)',
-            border: '1px solid rgba(212,160,23,0.2)',
-            borderRadius: 12,
-            padding: '14px 24px',
-            textAlign: 'center',
-            marginBottom: 48,
-          }}
-        >
+            Three ways families work with us
+          </h3>
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontWeight: 500,
               fontSize: 15,
-              color: '#D4A017',
-              margin: 0,
+              color: '#94A3B8',
+              textAlign: 'center',
+              maxWidth: 560,
+              margin: '0 auto 40px',
+              lineHeight: 1.65,
             }}
           >
-            {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): "discounted rates locked in at launch price" removed from the estate section — estate services are consult-first, no rates shown. */}
-            Early Access — estate services are offered by consultation while we build the program out.
+            Every estate is different. We&rsquo;ll help you find the right fit on the call — there is no
+            wrong door.
           </p>
-        </div>
-
-        {/* White Glove Tab */}
-        {activeTab === 'whiteglove' && (
-          <div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontWeight: 600,
-                fontSize: 22,
-                color: '#D4A017',
-                textAlign: 'center',
-                marginBottom: 32,
-              }}
-            >
-              White-Glove Estate Services
-            </h3>
-            <div
-              style={{
-                display: isMobile ? 'flex' : 'grid',
-                flexDirection: 'column',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-                gap: 20,
-              }}
-            >
-              {whiteGloveTiers.map((tier) => (
-                <GlowCard
-                  key={tier.name}
-                  defaultBorderColor={tier.recommended ? 'rgba(212,160,23,0.4)' : 'rgba(212,160,23,0.2)'}
-                  hoverBorderColor="rgba(212,160,23,0.5)"
-                  style={{
-                    textAlign: 'center',
-                    position: 'relative',
-                    transform: tier.recommended && width >= 1024 ? 'scale(1.03)' : 'none',
-                  }}
-                >
-                  {tier.recommended && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        fontFamily: 'var(--font-data)',
-                        fontWeight: 600,
-                        fontSize: 10,
-                        textTransform: 'uppercase' as const,
-                        letterSpacing: '0.05em',
-                        background: '#D4A017',
-                        color: '#0D1117',
-                        padding: '4px 12px',
-                        borderRadius: '0 0 8px 8px',
-                      }}
-                    >
-                      RECOMMENDED
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: 600,
-                      fontSize: 17,
-                      color: '#F1F5F9',
-                      marginBottom: 12,
-                      marginTop: tier.recommended ? 8 : 0,
-                    }}
-                  >
-                    {tier.name}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 8 }}>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-data)',
-                        fontWeight: 700,
-                        fontSize: 32,
-                        background: 'linear-gradient(135deg, #D4A017, #FFFFFF)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                      }}
-                    >
-                      {tier.price}
-                    </span>
-                    {tier.oldPrice && (
-                      <s
-                        style={{
-                          fontFamily: 'var(--font-body)',
-                          fontSize: 14,
-                          color: '#6B7280',
-                        }}
-                      >
-                        {tier.oldPrice}
-                      </s>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 13,
-                      color: '#94A3B8',
-                      marginTop: 4,
-                      marginBottom: 16,
-                    }}
-                  >
-                    {tier.commission}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, textAlign: 'left' }}>
-                    {tier.features.map((f) => (
-                      <span
-                        key={f}
-                        style={{
-                          fontFamily: 'var(--font-body)',
-                          fontSize: 13,
-                          color: '#CBD5E1',
-                        }}
-                      >
-                        <span style={{ color: '#D4A017', marginRight: 6 }}>&#10003;</span>
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                  {/* CMD-WAITLIST-INTAKE-ELEVATE — carry this tier into the waitlist */}
-                  <button
-                    type="button"
-                    onClick={() => reserveOffering(tier.offeringId, 'landing-estate-card')}
-                    aria-label={`Request a consultation about ${tier.name}`}
-                    style={{
-                      width: '100%',
-                      minHeight: 44,
-                      marginTop: 20,
-                      borderRadius: 12,
-                      border: '1px solid transparent',
-                      cursor: 'pointer',
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: 600,
-                      fontSize: 14,
-                      color: '#0D1117',
-                      background: 'linear-gradient(135deg, #D4A017, #B8860B)',
-                      boxShadow: '0 0 20px rgba(212,160,23,0.15), 0 2px 8px rgba(212,160,23,0.1)',
-                      transition: 'transform 0.2s ease, filter 0.2s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.02)'
-                      e.currentTarget.style.filter = 'brightness(1.06)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)'
-                      e.currentTarget.style.filter = 'brightness(1)'
-                    }}
-                  >
-                    {/* CMD-ESTATE-EXP-V2 MICRO-FIX 2026-07-30 (CEO 1a): "Reserve this tier" under a
-                        consultation-only card was incoherent — estate is consult-first (Rule 4). The
-                        click still carries tier interest into the waitlist. */}
-                    Request a consultation
-                  </button>
-                </GlowCard>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Estate Care Tab */}
-        {activeTab === 'estatecare' && (
-          <div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontWeight: 600,
-                fontSize: 22,
-                color: '#D4A017',
-                textAlign: 'center',
-                marginBottom: 12,
-              }}
-            >
-              Estate Care — Self-Service Tools
-            </h3>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: 15,
-                color: '#94A3B8',
-                textAlign: 'center',
-                maxWidth: 540,
-                margin: '0 auto 32px',
-                lineHeight: 1.6,
-              }}
-            >
-              For families who want to manage the process themselves with AI-powered tools and guidance at every step.
-            </p>
-            <div
-              style={{
-                display: isMobile ? 'flex' : 'grid',
-                flexDirection: 'column',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-                gap: 20,
-              }}
-            >
-              {[
-                // WAVE 0 TRUTH SWEEP 2026-07-29: three phantom Estate Care plans removed
-                // ($75 / $150 / $299 per month, "Estate Starter / Plus / Unlimited"). None of
-                // them existed in the product — we were advertising something we could not sell,
-                // including "API access" and a "white-label store" that do not exist. Estate is
-                // deliberately a human consultation, not an automated tier. That is the offer.
-                {
-                  name: 'Estate Consultation',
-                  slug: 'estate-consultation',
-                  price: 'Talk to us',
-                  period: '',
-                  features: ['A real conversation before anything is listed', 'We walk the home and the timeline with you', 'AI identification and pricing on every item', 'Full-service options quoted per estate', 'One person you can call'],
-                  recommended: true,
-                },
-              ].map((tier) => (
-                <GlowCard
-                  key={tier.name}
-                  defaultBorderColor={(tier as { recommended?: boolean }).recommended ? 'rgba(212,160,23,0.4)' : 'rgba(212,160,23,0.2)'}
-                  hoverBorderColor="rgba(212,160,23,0.5)"
-                  style={{
-                    textAlign: 'center',
-                    position: 'relative',
-                    transform: (tier as { recommended?: boolean }).recommended && width >= 1024 ? 'scale(1.03)' : 'none',
-                  }}
-                >
-                  {(tier as { recommended?: boolean }).recommended && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        fontFamily: 'var(--font-data)',
-                        fontWeight: 600,
-                        fontSize: 10,
-                        textTransform: 'uppercase' as const,
-                        letterSpacing: '0.05em',
-                        background: '#D4A017',
-                        color: '#0D1117',
-                        padding: '4px 12px',
-                        borderRadius: '0 0 8px 8px',
-                      }}
-                    >
-                      BEST VALUE
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: 600,
-                      fontSize: 17,
-                      color: '#F1F5F9',
-                      marginBottom: 12,
-                      marginTop: (tier as { recommended?: boolean }).recommended ? 8 : 0,
-                    }}
-                  >
-                    {tier.name}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4 }}>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-data)',
-                        fontWeight: 700,
-                        fontSize: 32,
-                        background: 'linear-gradient(135deg, #D4A017, #FFFFFF)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                      }}
-                    >
-                      {tier.price}
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8' }}>
-                      {tier.period}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, textAlign: 'left', marginTop: 16 }}>
-                    {tier.features.map((f) => (
-                      <span
-                        key={f}
-                        style={{
-                          fontFamily: 'var(--font-body)',
-                          fontSize: 13,
-                          color: '#CBD5E1',
-                        }}
-                      >
-                        <span style={{ color: '#D4A017', marginRight: 6 }}>&#10003;</span>
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => reserveOffering('estateCare', 'landing-estate-card', tier.name)}
-                    aria-label={`Reserve ${tier.name} and join the waitlist`}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '100%',
-                      minHeight: 44,
-                      borderRadius: 12,
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: 600,
-                      fontSize: 14,
-                      cursor: 'pointer',
-                      marginTop: 20,
-                      background: 'linear-gradient(135deg, #D4A017, #B8860B)',
-                      color: '#0D1117',
-                      border: '1px solid transparent',
-                      boxShadow: '0 0 20px rgba(212,160,23,0.15), 0 2px 8px rgba(212,160,23,0.1)',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    Get Started
-                  </button>
-                </GlowCard>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Neighborhood Bundle Tab */}
-        {activeTab === 'neighborhood' && (
-          <div>
-            <div
-              style={{
-                display: (isMobile || isTablet) ? 'flex' : 'grid',
-                flexDirection: 'column',
-                gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 380px',
-                gap: 32,
-                alignItems: 'start',
-              }}
-            >
+          <div
+            style={{
+              display: isMobile ? 'flex' : 'grid',
+              flexDirection: 'column',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gap: 20,
+            }}
+          >
+            {ways.map((w, i) => (
               <GlowCard
+                key={w.name}
+                delay={i * 80}
                 defaultBorderColor="rgba(212,160,23,0.2)"
                 hoverBorderColor="rgba(212,160,23,0.4)"
-                style={{ padding: '32px 28px' }}
+                style={{ padding: '28px 24px' }}
               >
                 <div
-                  style={{
-                    fontFamily: 'var(--font-data)',
-                    fontWeight: 600,
-                    fontSize: 11,
-                    textTransform: 'uppercase' as const,
-                    letterSpacing: '0.15em',
-                    color: '#D4A017',
-                    marginBottom: 8,
-                  }}
-                >
-                  COMMUNITY SALE PROGRAM
-                </div>
-                <h3
                   style={{
                     fontFamily: 'var(--font-heading)',
                     fontWeight: 700,
-                    fontSize: 24,
-                    color: '#F1F5F9',
-                    marginBottom: 16,
+                    fontSize: 18,
+                    color: '#D4A017',
+                    marginBottom: 12,
+                    lineHeight: 1.25,
                   }}
                 >
-                  Neighborhood Bundle
-                </h3>
-
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
-                  {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): neighborhood price $239 / was $399 removed — estate services are consult-first. Archived LANDING-A. */}
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: 700,
-                      fontSize: 22,
-                      color: '#D4A017',
-                    }}
-                  >
-                    By consultation
-                  </span>
+                  {w.name}
                 </div>
                 <p
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: 14,
+                    fontWeight: 400,
+                    fontSize: 15,
                     color: '#CBD5E1',
-                    marginBottom: 2,
+                    lineHeight: 1.65,
+                    margin: 0,
                   }}
                 >
-                  20% commission on sales
+                  {w.body}
                 </p>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 13,
-                    color: '#94A3B8',
-                    marginBottom: 24,
-                  }}
-                >
-                  2&ndash;8 families per bundle
-                </p>
+              </GlowCard>
+            ))}
+          </div>
+        </div>
 
-                {/* Two-column feature list */}
+        {/* What happens first — the human process, modest by design */}
+        <div style={{ marginTop: 72 }}>
+          <h3
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: 'clamp(20px, 3vw, 26px)',
+              color: '#F1F5F9',
+              textAlign: 'center',
+              marginBottom: 40,
+            }}
+          >
+            What happens first
+          </h3>
+          <div
+            style={{
+              display: isMobile ? 'flex' : 'grid',
+              flexDirection: 'column',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gap: isMobile ? 16 : 24,
+              maxWidth: 900,
+              margin: '0 auto',
+            }}
+          >
+            {firstSteps.map((s) => (
+              <div key={s.n} style={{ textAlign: isMobile ? 'left' : 'center' }}>
                 <div
                   style={{
-                    display: isMobile ? 'flex' : 'grid',
-                    flexDirection: 'column',
-                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-                    gap: isMobile ? 6 : 16,
+                    fontFamily: 'var(--font-data)',
+                    fontWeight: 700,
+                    fontSize: 15,
+                    letterSpacing: '0.1em',
+                    color: 'rgba(212,160,23,0.7)',
+                    marginBottom: 8,
                   }}
                 >
-                  {neighborhoodFeatures.map((col) => (
-                    <div key={col.col} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      {col.items.map((item) => (
-                        <span
-                          key={item}
-                          style={{
-                            fontFamily: 'var(--font-body)',
-                            fontSize: 13,
-                            color: '#CBD5E1',
-                          }}
-                        >
-                          <span style={{ color: '#D4A017', marginRight: 6 }}>&#10003;</span>
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  ))}
+                  {s.n}
                 </div>
-
-                {/* Additional families callout */}
                 <div
                   style={{
-                    marginTop: 24,
-                    background: 'rgba(212,160,23,0.06)',
-                    border: '1px solid rgba(212,160,23,0.15)',
-                    borderRadius: 10,
-                    padding: '12px 16px',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 14,
-                      color: '#CBD5E1',
-                    }}
-                  >
-                    Additional families:{' '}
-                    <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#D4A017' }}>
-                      $89/family
-                    </span>
-                    {' '}
-                    <s style={{ fontSize: 13, color: '#6B7280' }}>$149</s>
-                  </span>
-                </div>
-
-                {/* CTA */}
-                <button
-                  type="button"
-                  onClick={() => reserveOffering('neighborhood', 'landing-neighborhood-card')}
-                  aria-label="Start a Neighborhood Bundle and join the waitlist"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    minHeight: 48,
-                    borderRadius: 12,
                     fontFamily: 'var(--font-heading)',
                     fontWeight: 600,
-                    fontSize: 15,
-                    cursor: 'pointer',
-                    marginTop: 24,
-                    background: 'linear-gradient(135deg, #D4A017, #B8860B)',
-                    color: '#0D1117',
-                    border: '1px solid transparent',
-                    boxShadow: '0 0 20px rgba(212,160,23,0.15), 0 2px 8px rgba(212,160,23,0.1)',
-                    transition: 'all 0.3s ease',
+                    fontSize: 17,
+                    color: '#F1F5F9',
+                    marginBottom: 6,
                   }}
                 >
-                  Start a Neighborhood Bundle
-                </button>
-              </GlowCard>
-
-              {/* Neighborhood garage-sale photo pair — visible on every
-                  viewport. Sticky scroll behavior preserved on desktop;
-                  on mobile/tablet the images stack below the content block. */}
-              <div
-                style={
-                  isMobile || isTablet
-                    ? { marginTop: 8 }
-                    : { position: 'sticky', top: 100 }
-                }
-              >
-                <img
-                  src="/images/garage/garage-sale.png"
-                  alt="Organized neighborhood garage sale with electronics, vintage finds, and clothing"
-                  loading="lazy"
+                  {s.title}
+                </div>
+                <p
                   style={{
-                    width: '100%',
-                    borderRadius: 16,
-                    boxShadow:
-                      '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 14,
+                    color: '#94A3B8',
+                    lineHeight: 1.6,
+                    margin: 0,
+                    maxWidth: 260,
+                    marginLeft: isMobile ? 0 : 'auto',
+                    marginRight: isMobile ? 0 : 'auto',
                   }}
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).style.display = 'none'
-                  }}
-                />
-                <img
-                  src="/images/garage/family-garage.png"
-                  alt="Family using Legacy-Loop to manage their garage sale"
-                  loading="lazy"
-                  style={{
-                    width: '100%',
-                    borderRadius: 16,
-                    marginTop: 16,
-                    boxShadow:
-                      '0 20px 40px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.08)',
-                  }}
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).style.display = 'none'
-                  }}
-                />
+                >
+                  {s.body}
+                </p>
               </div>
-            </div>
+            ))}
           </div>
-        )}
+        </div>
+
+        {/* ONE door — the consultation intake at /estate. During the dark period /estate renders a
+            dignified placeholder that routes into the waitlist; at go-live Devin flips the flag and
+            the same URL becomes the guided intake. Both states are clean (FIX 6). */}
+        <div style={{ marginTop: 64, textAlign: 'center' }}>
+          <a
+            href="/estate"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 52,
+              padding: '15px 40px',
+              borderRadius: 14,
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 17,
+              textDecoration: 'none',
+              color: '#0D1117',
+              background: 'linear-gradient(135deg, #D4A017, #B8860B)',
+              boxShadow: '0 0 30px rgba(212,160,23,0.18), 0 4px 14px rgba(212,160,23,0.12)',
+            }}
+          >
+            Start with a conversation
+          </a>
+          {/* G6 — the single, quiet "in development" marker. No date, no roadmap. */}
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 14,
+              color: '#94A3B8',
+              marginTop: 18,
+              lineHeight: 1.6,
+              maxWidth: 520,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            The Estate Stewardship Program is being built out now — we&rsquo;re onboarding families
+            personally in the meantime. There is nothing to pay and nothing to sign.
+          </p>
+        </div>
       </div>
     </section>
   )
@@ -6198,28 +5777,31 @@ function TechSection() {
   const isTouch = useIsTouch()
   const cols = width < 640 ? '1fr' : 'repeat(2, 1fr)'
 
-  const items = [
+  // CMD-ESTATE-EXPERIENCE-V2 V20 (FIX 4): product cards replace the stack cards
+  // (Next.js / TypeScript / Real AI APIs). Honest capability copy per CANONICAL_FACTS §6;
+  // the 4th card is a COMING marker (Rule 4) with CEO-ruling-G8 wording, verbatim.
+  const items: { emoji: string; title: string; desc: string; muted?: boolean }[] = [
     {
-      emoji: '⚡',
-      title: 'Next.js',
-      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2): borrowed credibility "trusted by Netflix, TikTok, Notion" removed.
-      desc: 'Built on Next.js and React — a fast, modern web foundation',
+      emoji: '🎯',
+      title: 'BuyerBot',
+      desc: 'Surfaces likely buyers and the marketplaces that fit each item, so your listing reaches the right audience.',
     },
     {
-      emoji: '🔷',
-      title: 'TypeScript',
-      desc: '200+ routes. Zero type errors. Type-safe end to end.',
-    },
-    {
-      emoji: '🤖',
-      title: 'Real AI APIs',
-      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §6): "No fake data. No demos." removed — the product ships demo/sample data (isDemo).
-      desc: 'Every analysis runs on live AI models — OpenAI, Claude, Gemini, and Grok.',
+      emoji: '💬',
+      title: 'Messaging Center',
+      desc: 'Every buyer conversation — offers, questions, negotiations — in one organized place.',
     },
     {
       emoji: '📦',
       title: 'AI Shipping Center',
-      desc: 'Full TMS — USPS, UPS, FedEx, DHL, Arta. Parcel, LTL freight, local pickup.',
+      desc: 'Live rates from USPS, UPS, FedEx, DHL and Arta. Parcel, LTL freight, or local pickup — you choose, we print the label.',
+    },
+    {
+      // CEO ruling G8 — VERBATIM, visible future marker, no regulated words, no date.
+      emoji: '✨',
+      title: 'Hands-free selling — coming soon',
+      desc: 'AI runs the busywork; you approve every sale.',
+      muted: true,
     },
   ]
 
@@ -6279,9 +5861,9 @@ function TechSection() {
             ease: [0.23, 1, 0.32, 1],
           }}
         >
-          <SectionEyebrow text="THE INFRASTRUCTURE" />
+          <SectionEyebrow text="THE PLATFORM" />
           <SectionHeading>
-            <StaggeredWords text="Enterprise-Grade. Built to Scale." />
+            <StaggeredWords text="Everything the Sale Needs." />
           </SectionHeading>
         </motion.div>
 
@@ -6294,14 +5876,14 @@ function TechSection() {
           }}
         >
           {items.map((item, i) => (
-            <GlowCard key={item.title} delay={i * 80}>
+            <GlowCard key={item.title} delay={i * 80} style={item.muted ? { opacity: 0.82 } : undefined}>
               <span style={{ fontSize: 24 }}>{item.emoji}</span>
               <div
                 style={{
                   fontFamily: 'var(--font-heading)',
                   fontWeight: 600,
                   fontSize: 18,
-                  color: '#F1F5F9',
+                  color: item.muted ? '#94A3B8' : '#F1F5F9',
                   marginTop: 8,
                 }}
               >
@@ -6312,7 +5894,7 @@ function TechSection() {
                   fontFamily: 'var(--font-body)',
                   fontWeight: 400,
                   fontSize: 15,
-                  color: '#CBD5E1',
+                  color: item.muted ? '#94A3B8' : '#CBD5E1',
                   marginTop: 4,
                   lineHeight: 1.55,
                 }}
@@ -7492,8 +7074,10 @@ function WaitlistSection({
         if (alive && d && d.ok === true && typeof d.claimed === 'number') {
           setLive({
             claimed: d.claimed,
-            cohortSize: typeof d.cohortSize === 'number' ? d.cohortSize : 50,
-            spotsLeft: typeof d.spotsLeft === 'number' ? d.spotsLeft : Math.max(0, 50 - d.claimed),
+            // FIX 5 (CEO G3): canon fallback = 100 when the Sheet omits the field; the real
+            // cohort size, when present, still renders verbatim (the "first cohort" nuance).
+            cohortSize: typeof d.cohortSize === 'number' ? d.cohortSize : 100,
+            spotsLeft: typeof d.spotsLeft === 'number' ? d.spotsLeft : Math.max(0, 100 - d.claimed),
           })
         }
       })
@@ -7677,10 +7261,12 @@ function WaitlistSection({
           Lock in pre-launch pricing forever. Get priority access before public launch. Be part of Legacy-Loop from day one.
         </p>
 
-        {/* Founding spots counter — BIG number, AnimatedStat count-up on viewport */}
+        {/* Founding spots counter — BIG number, AnimatedStat count-up on viewport.
+            CMD-ESTATE-EXPERIENCE-V2 V20 (FIX 5 · CEO G3): canon = 100 founding spots. The
+            real "first cohort" size lives in the live Sheet indicator below (ONE story). */}
         <div style={{ marginBottom: 12 }}>
           <AnimatedStat
-            target={50}
+            target={100}
             duration={2200}
             style={{
               fontFamily: 'var(--font-data)',
@@ -7705,7 +7291,7 @@ function WaitlistSection({
             marginBottom: 6,
           }}
         >
-          founding spots in the first cohort
+          founding member spots
         </p>
         <p
           style={{
@@ -8412,7 +7998,7 @@ function FinalCTASection() {
             marginTop: 20,
           }}
         >
-          <AnimatedStat target={50} duration={2200} style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#00BCD4' }} /> founding spots in the first cohort — early access, open now
+          <AnimatedStat target={100} duration={2200} style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#00BCD4' }} /> founding member spots — early access, open now
         </p>
       </div>
     </section>
@@ -9197,7 +8783,7 @@ export default function LandingPage() {
         <ProductPreviewSection />
         <AIAgentsSection />
         <PricingSection />
-        <EstateSection setOfferingIntent={setOfferingIntent} />
+        <EstateSection />
         <SocialProofSection />
         <TechSection />
         <AppDownloadSection />
