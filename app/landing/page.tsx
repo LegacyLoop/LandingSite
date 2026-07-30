@@ -5656,7 +5656,7 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
                   <button
                     type="button"
                     onClick={() => reserveOffering(tier.offeringId, 'landing-estate-card')}
-                    aria-label={`Reserve ${tier.name} and join the waitlist`}
+                    aria-label={`Request a consultation about ${tier.name}`}
                     style={{
                       width: '100%',
                       minHeight: 44,
@@ -5681,7 +5681,10 @@ function EstateSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingI
                       e.currentTarget.style.filter = 'brightness(1)'
                     }}
                   >
-                    Reserve this tier
+                    {/* CMD-ESTATE-EXP-V2 MICRO-FIX 2026-07-30 (CEO 1a): "Reserve this tier" under a
+                        consultation-only card was incoherent — estate is consult-first (Rule 4). The
+                        click still carries tier interest into the waitlist. */}
+                    Request a consultation
                   </button>
                 </GlowCard>
               ))}
