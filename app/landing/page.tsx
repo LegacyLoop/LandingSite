@@ -4573,55 +4573,81 @@ function AIAgentsSection() {
   )
 }
 
-// ---------- PRICING (STRUCTURE-ONLY · NUMBERS GATED) ----------
-// CMD-LANDING-SHOWCASE-ARC V21 (FIX 4 · D-5): the priced tier grid ($10/$25/$75 monthly, the
-// oldMonthly strikethroughs, commission percentages, the credit packs, and "3.5% processing")
-// is removed. No price value ships until it is costed per cost-per-action and CEO-ratified
-// (Rule 4: a COMING price is never a number we cannot yet hold). This section shows the SHAPE
-// of pricing — three pillars, each with a reserved drop-in slot that reads a plain-language
-// marker today and accepts a real number later with ZERO redesign (slots, not rewrites).
-function PricingSection() {
+// ---------- PRICING (FOUNDING SUBSCRIPTION TIERS) ----------
+// CMD-LANDING-MASTER-ARC V21 (FIX 5 · CEO R-1): the numberless placeholder is DEAD. The
+// subscription pricing was never suspended — only the ESTATE side is consult-first. This is the
+// founding pre-launch tier presentation, source-verified and elevated.
+// NUMBERS TRACED TO SOURCE (app/landing/WaitlistWalkthrough.tsx OFFERINGS, the landing canon):
+//   free $0 / 12% (WW:83,85) · DIY $10 / 8% (WW:97,101) · Power $25 / 5% (WW:113,116) ·
+//   Estate Manager $75 / 4% (WW:128,132). Founding-100 framing per CANONICAL_FACTS §5.
+// No fake-discount strikethroughs (that theater stays dead). Zero emoji / pictographs — feature
+// ticks are inline SVG. Real CTAs carry the tier into the waitlist signup (offering intent).
+function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: OfferingIntent) => void }) {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
   const isMobile = width < 768
+  const cols = width >= 1200 ? 'repeat(4, 1fr)' : width >= 640 ? 'repeat(2, 1fr)' : '1fr'
 
-  // Each pillar carries a `slot` — the reserved place a real number drops into at launch.
-  // Today it reads a truthful non-numeric marker. No currency, no percent, no "/mo" anywhere.
-  const pillars = [
+  // Carry the chosen tier into the waitlist and glide there — real CTA, no dead button, no new backend.
+  const lockTier = (slug: string) => {
+    setOfferingIntent({ offering: slug, source: 'landing-pricing' })
+    document.getElementById('waitlist')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
+  }
+
+  const tiers = [
     {
-      emoji: '🔎',
-      name: 'Free Appraisal',
-      body: 'Your first AI appraisal is always free. See what an item is really worth before you decide anything.',
-      slot: 'Always free',
-      highlight: false,
+      slug: 'free',
+      name: 'Free',
+      price: '0',
+      commission: '12%',
+      founding: false,
+      recommended: false,
+      blurb: 'Start selling with AI at zero cost.',
+      features: ['AI item identification', 'Public store page', 'List-ready photos and copy', 'Email support'],
+      cta: 'Start Free',
     },
     {
-      emoji: '🔄',
-      name: 'The Monthly Loop',
-      body: 'One simple plan unlocks the full AI team — identification, pricing, listings, and buyer matching, month after month.',
-      slot: 'Pricing at launch',
-      highlight: true,
+      slug: 'diy',
+      name: 'DIY Seller',
+      price: '10',
+      commission: '8%',
+      founding: true,
+      recommended: false,
+      blurb: 'AI pricing and core bots for the hands-on seller.',
+      features: ['Everything in Free', 'Enhanced AI pricing', '5 core bots included', '20 credits / month', 'BuyerBot matching'],
+      cta: 'Lock Founding Rate',
     },
     {
-      emoji: '🤝',
-      name: 'Done-For-You',
-      body: 'Prefer we carry it? Our estate and white-glove service works on commission — you only pay when your items sell.',
-      slot: 'By consultation',
-      highlight: false,
+      slug: 'power',
+      name: 'Power Seller',
+      price: '25',
+      commission: '5%',
+      founding: true,
+      recommended: true,
+      blurb: 'MegaBot and every specialty bot for serious volume.',
+      features: ['Everything in DIY', 'MegaBot 4-AI consensus pricing', 'All specialty bots', '50 credits / month', 'Advanced analytics', 'Phone support'],
+      cta: 'Lock Founding Rate',
+    },
+    {
+      slug: 'estateManager',
+      name: 'Estate Manager',
+      price: '75',
+      commission: '4%',
+      founding: true,
+      recommended: false,
+      blurb: 'Every AI tool for managing an entire estate yourself.',
+      features: ['Everything in Power', 'All bots including CarBot', '100 credits / month', 'Branded store page', 'Priority support'],
+      cta: 'Lock Founding Rate',
     },
   ]
 
   return (
     <section
       id="pricing"
-      style={{
-        ...sp,
-        position: 'relative',
-        zIndex: 5,
-        overflow: 'hidden',
-      }}
+      style={{ ...sp, position: 'relative', zIndex: 5, overflow: 'hidden' }}
     >
-      {/* Corner crosshair markers — studio framing, consistent with the rest of the page */}
+      {/* Corner crosshair markers — studio framing */}
       {[
         { top: 20, left: 20 },
         { top: 20, right: 20 },
@@ -4644,8 +4670,8 @@ function PricingSection() {
         </motion.svg>
       ))}
 
-      <div style={{ maxWidth: 1120, margin: '0 auto', position: 'relative' }}>
-        {/* Ghost oversized "VALUE" word — depth vocabulary, preserved */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+        {/* Ghost oversized "VALUE" word — depth vocabulary */}
         <span
           aria-hidden
           style={{
@@ -4669,10 +4695,10 @@ function PricingSection() {
         </span>
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <SectionEyebrow text="PRICING" />
+          <SectionEyebrow text="FOUNDING PRICING" />
           <SectionHeading>
-            Straight Pricing.{' '}
-            <GradientText>Coming at Launch.</GradientText>
+            Lock Your Founding Rate.{' '}
+            <GradientText>Keep It for Life.</GradientText>
           </SectionHeading>
           <p
             style={{
@@ -4681,114 +4707,180 @@ function PricingSection() {
               fontSize: 17,
               color: '#CBD5E1',
               textAlign: 'center',
-              maxWidth: 620,
+              maxWidth: 640,
               margin: '0 auto 56px',
               lineHeight: 1.7,
             }}
           >
-            We&rsquo;re setting pre-launch pricing with our founding members right now — no hidden
-            fees, no surprises. Here is the shape of it. The numbers land at launch.
+            Join the first 100. Founding members lock pre-launch pricing for life — the rate you
+            start at is the rate you keep, even after public launch.
           </p>
 
-          {/* The three pillars — structure with reserved drop-in slots */}
+          {/* Tier grid — glow cards, staggered reveal, Barlow Condensed on every number */}
           <div
             style={{
               display: isMobile ? 'flex' : 'grid',
               flexDirection: 'column',
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gridTemplateColumns: cols,
               gap: 20,
               alignItems: 'stretch',
             }}
           >
-            {pillars.map((p, i) => (
+            {tiers.map((tier, i) => (
               <GlowCard
-                key={p.name}
+                key={tier.slug}
                 delay={i * 80}
-                defaultBorderColor={p.highlight ? 'rgba(0,188,212,0.4)' : 'rgba(0,188,212,0.15)'}
-                hoverBorderColor="rgba(0,188,212,0.5)"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  padding: '32px 28px',
-                  // PR-gate fix: do NOT pass transform here — GlowCard spreads style last and it
-                  // would clobber its own scroll-reveal + hover-lift animation (preserve what works).
-                  // The highlighted pillar is differentiated by its brighter border instead.
-                }}
+                defaultBorderColor={tier.recommended ? 'rgba(0,188,212,0.45)' : 'rgba(0,188,212,0.15)'}
+                hoverBorderColor="rgba(0,188,212,0.55)"
+                style={{ display: 'flex', flexDirection: 'column', padding: '28px 24px', position: 'relative' }}
               >
-                <div style={{ fontSize: 30, marginBottom: 14 }}>{p.emoji}</div>
+                {tier.recommended && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      fontSize: 10,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase' as const,
+                      background: 'linear-gradient(135deg, #00BCD4, #009688)',
+                      color: '#0D1117',
+                      padding: '4px 14px',
+                      borderRadius: '0 0 8px 8px',
+                    }}
+                  >
+                    Most Popular
+                  </div>
+                )}
+
                 <div
                   style={{
                     fontFamily: 'var(--font-heading)',
                     fontWeight: 700,
-                    fontSize: 20,
+                    fontSize: 18,
                     color: '#F1F5F9',
-                    marginBottom: 10,
+                    marginTop: tier.recommended ? 10 : 0,
+                    marginBottom: 4,
                   }}
                 >
-                  {p.name}
+                  {tier.name}
                 </div>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontWeight: 400,
-                    fontSize: 15,
-                    color: '#CBD5E1',
-                    lineHeight: 1.65,
-                    margin: '0 0 24px',
-                    flex: 1,
-                  }}
-                >
-                  {p.body}
-                </p>
 
-                {/* DROP-IN SLOT — the reserved place a real number lands at launch.
-                    Swapping the marker text for a price requires NO layout change. */}
-                <div
-                  style={{
-                    marginTop: 'auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 52,
-                    borderRadius: 12,
-                    border: '1px dashed rgba(0,188,212,0.35)',
-                    background: 'rgba(0,188,212,0.05)',
-                  }}
-                >
+                {/* Founding marker (no fake-discount theater — a real lock, not a was-price) */}
+                <div style={{ minHeight: 20, marginBottom: 10 }}>
+                  {tier.founding && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 700,
+                        fontSize: 11,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase' as const,
+                        color: '#22D3EE',
+                      }}
+                    >
+                      Founding rate
+                    </span>
+                  )}
+                </div>
+
+                {/* Price — Barlow Condensed */}
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                  <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 22, color: '#94A3B8' }}>$</span>
                   <span
                     style={{
                       fontFamily: 'var(--font-data)',
-                      fontWeight: 700,
-                      fontSize: 16,
-                      letterSpacing: '0.04em',
-                      textTransform: 'uppercase' as const,
-                      color: '#22D3EE',
+                      fontWeight: 800,
+                      fontSize: 48,
+                      lineHeight: 1,
+                      background: 'linear-gradient(135deg, #22D3EE, #FFFFFF)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
                     }}
                   >
-                    {p.slot}
+                    {tier.price}
                   </span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#94A3B8' }}>/mo</span>
                 </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 13,
+                    color: '#94A3B8',
+                    marginTop: 6,
+                    marginBottom: 16,
+                  }}
+                >
+                  <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#CBD5E1' }}>{tier.commission}</span> commission on sales
+                </div>
+
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 14,
+                    color: '#CBD5E1',
+                    lineHeight: 1.55,
+                    margin: '0 0 18px',
+                  }}
+                >
+                  {tier.blurb}
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 24, flex: 1 }}>
+                  {tier.features.map((f) => (
+                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden style={{ flexShrink: 0, marginTop: 2 }}>
+                        <path d="M3.5 8.5l3 3 6-7" stroke="#22D3EE" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#CBD5E1', lineHeight: 1.5 }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => lockTier(tier.slug)}
+                  aria-label={`${tier.cta} — ${tier.name}, and join the waitlist`}
+                  style={{
+                    width: '100%',
+                    minHeight: 48,
+                    borderRadius: 12,
+                    border: tier.recommended ? '1px solid transparent' : '1px solid rgba(0,188,212,0.3)',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    color: tier.recommended ? '#0D1117' : '#22D3EE',
+                    background: tier.recommended ? 'linear-gradient(135deg, #00BCD4, #009688)' : 'rgba(0,188,212,0.08)',
+                    boxShadow: tier.recommended ? '0 0 24px rgba(0,188,212,0.2)' : 'none',
+                    transition: 'transform 0.2s ease, filter 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.filter = 'brightness(1.08)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.filter = 'brightness(1)' }}
+                >
+                  {tier.cta}
+                </button>
               </GlowCard>
             ))}
           </div>
 
-          {/* Founding note + one door to the waitlist (no price) */}
           <p
             style={{
               fontFamily: 'var(--font-body)',
               fontWeight: 500,
-              fontSize: 15,
+              fontSize: 14,
               color: '#94A3B8',
               textAlign: 'center',
-              margin: '48px 0 28px',
+              margin: '40px 0 0',
               lineHeight: 1.6,
             }}
           >
-            Founding members lock in pre-launch pricing. Join the first 100.
+            No credit card to start. Founding pricing is limited to the first 100 members.
           </p>
-          <div style={{ textAlign: 'center' }}>
-            <MagneticButton href="#waitlist">Get Founding Access</MagneticButton>
-          </div>
         </div>
       </div>
     </section>
@@ -8375,7 +8467,7 @@ export default function LandingPage() {
         <ShippingCenterSection />
         <ProductPreviewSection />
         <AIAgentsSection />
-        <PricingSection />
+        <PricingSection setOfferingIntent={setOfferingIntent} />
         <EstateSection />
         <SocialProofSection />
         <TechSection />

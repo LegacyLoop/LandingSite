@@ -131,7 +131,10 @@ export const OFFERINGS: Record<string, Offering> = {
     // never existed (pre-revenue, zero customers). Current pre-launch price stays (real SaaS tier).
     commission: '4% commission',
     tagline: 'Manage an entire estate yourself with every AI tool.',
-    features: ['All bots including CarBot', '100 credits/month included', 'White-label store', 'Dedicated account manager', 'API access'],
+    // CMD-LANDING-MASTER-ARC (FIX 5): "Dedicated account manager" (staffing claim, solo pre-revenue)
+    // + "API access" (unverified) removed; "White-label store" -> "Branded store page". Truth-safe,
+    // consistent with the restored pricing section.
+    features: ['All bots including CarBot', '100 credits/month included', 'Branded store page', 'Priority support', 'Full estate tools'],
     register: 'estate',
     tierInterest: 'estate',
     sellerType: 'estate',
