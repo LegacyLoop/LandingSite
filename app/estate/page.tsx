@@ -21,7 +21,8 @@
 //   published privacy policy. They are gated behind INCLUDE_PII_FIELDS so they can be cleanly hidden at
 //   go-live if the CEO ruling lands that way — hiding them never breaks the flow or the submit.
 //
-// LAW #51: the callback window is the LITERAL placeholder "[X]" — never invent a duration or a date.
+// Callback window: CEO-ruled 2026-08-01 (Decision 2) = "within one business day" (was the LAW #51
+// "[X]" placeholder until the value was set). FIX 0 · CMD-LANDING-SHOWCASE-ARC.
 // Estate register: gold (#D4AF37), calm pacing, generous whitespace. Senior floors: 16px+, 44px targets.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -129,7 +130,7 @@ function Placeholder() {
         <div style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid rgba(212,175,55,0.3)`, borderRadius: 18, padding: 32, textAlign: 'center' }}>
           <p style={{ color: '#CBD5E1', lineHeight: 1.7, fontSize: 16, marginTop: 0 }}>
             We are onboarding estate families personally while the program is built out. Tell us about your
-            situation and Ryan will reach out to talk it through.
+            situation and Ryan will personally reach out — within one business day — to talk it through.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 24 }}>
             <a href="/landing#waitlist" style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '12px 24px', borderRadius: 12, fontWeight: 800, fontSize: 16, textDecoration: 'none', color: '#0B0B0F', background: GOLD }}>
@@ -263,10 +264,12 @@ export default function EstatePage() {
           <EstateHeader />
           <div style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid rgba(212,175,55,0.3)`, borderRadius: 18, padding: 32, textAlign: 'center' }}>
             <div style={{ fontFamily: 'var(--font-heading, inherit)', fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Thank you — this is in good hands.</div>
-            {/* LAW #51: [X] is a LITERAL placeholder — the real callback window is CEO-set, never invented here. */}
+            {/* CMD-LANDING-SHOWCASE-ARC (FIX 0 · D-1): the callback window is CEO-ruled as of
+                2026-08-01 (CEO Decision 2) = "within one business day". No longer the LAW #51
+                "[X]" placeholder — the value is now set, so it ships. */}
             <p style={{ color: '#CBD5E1', lineHeight: 1.7, fontSize: 16, maxWidth: 460, margin: '0 auto' }}>
-              Ryan will personally review what you shared and call you within [X]. There is nothing to pay and
-              nothing to sign — this is a conversation first.
+              Ryan will personally review what you shared and call you within one business day. There is
+              nothing to pay and nothing to sign — this is a conversation first.
             </p>
           </div>
         </div>
