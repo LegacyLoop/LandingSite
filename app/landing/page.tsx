@@ -1199,7 +1199,7 @@ function StickyNav({ isLoaded }: { isLoaded: boolean }) {
                   justifyContent: 'center',
                 }}
               >
-                {menuOpen ? '✕' : '☰'}
+                <Icon name={menuOpen ? 'close' : 'menu'} size={22} />
               </button>
             )}
           </div>
@@ -2827,7 +2827,7 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
           }}
         >
           {[
-            { label: 'AI pricing in under 30 seconds', icon: '⚡' },
+            { label: 'AI pricing in under 30 seconds', icon: 'bolt' },
             { label: '3 prices per item — list, sale, floor', icon: '◆' },
             { label: 'Local ZIP market — not NYC', icon: '◉' },
           ].map((p) => (
@@ -2854,9 +2854,11 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                   fontWeight: 700,
                   fontSize: 15,
                   flexShrink: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
                 }}
               >
-                {p.icon}
+                {p.icon === 'bolt' ? <Icon name="bolt" size={16} color="#00BCD4" /> : p.icon}
               </span>
               {p.label}
             </div>
@@ -3862,6 +3864,97 @@ function EngineMark({ mark, color, size = 26 }: { mark: string; color: string; s
   }
 }
 
+function Icon({ name, size = 22, color = 'currentColor' }: { name: string; size?: number; color?: string }) {
+  const common = { fill: 'none', stroke: color, strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  const svg = (children: React.ReactNode) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ display: 'block' }}>{children}</svg>
+  )
+  switch (name) {
+    case 'camera':
+      return svg(<><path {...common} d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2l1.2-1.6a1 1 0 0 1 .8-.4h3a1 1 0 0 1 .8.4L13.5 7h6A1.5 1.5 0 0 1 21 8.5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><circle {...common} cx="12" cy="13" r="3.2" /></>)
+    case 'brain':
+      return svg(<><path {...common} d="M9 4a2.5 2.5 0 0 0-2.5 2.5A2.5 2.5 0 0 0 5 11a2.5 2.5 0 0 0 1.5 4.5A2.5 2.5 0 0 0 9 19a2 2 0 0 0 2-2V5a1 1 0 0 0-1-1z" /><path {...common} d="M15 4a2.5 2.5 0 0 1 2.5 2.5A2.5 2.5 0 0 1 19 11a2.5 2.5 0 0 1-1.5 4.5A2.5 2.5 0 0 1 15 19a2 2 0 0 1-2-2V5a1 1 0 0 1 1-1z" /></>)
+    case 'megaphone':
+      return svg(<><path {...common} d="M3 11v2a1 1 0 0 0 1 1h2l7 4V6l-7 4H4a1 1 0 0 0-1 1z" /><path {...common} d="M17 8a5 5 0 0 1 0 8" /><path {...common} d="M7 14v3a1 1 0 0 0 1 1h1" /></>)
+    case 'box':
+      return svg(<><path {...common} d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" /><path {...common} d="M4 7.5l8 4.5 8-4.5" /><path {...common} d="M12 12v9" /></>)
+    case 'mailbox':
+      return svg(<><path {...common} d="M4 10a4 4 0 0 1 8 0v8H6a2 2 0 0 1-2-2z" /><path {...common} d="M12 10h6a2 2 0 0 1 2 2v6h-8" /><path {...common} d="M7 10v3" /><path {...common} d="M15 14v4" /></>)
+    case 'truck':
+      return svg(<><path {...common} d="M3 6h11v9H3z" /><path {...common} d="M14 9h4l3 3v3h-7z" /><circle {...common} cx="7" cy="18" r="1.6" /><circle {...common} cx="17" cy="18" r="1.6" /></>)
+    case 'robot':
+      return svg(<><rect {...common} x="5" y="8" width="14" height="10" rx="2" /><path {...common} d="M12 4v4" /><circle {...common} cx="12" cy="4" r="1" /><path {...common} d="M9 12v2M15 12v2" /><path {...common} d="M3 12v3M21 12v3" /></>)
+    case 'ruler':
+      return svg(<><path {...common} d="M4 14L14 4l6 6L10 20z" /><path {...common} d="M8 8l2 2M11 5l2 2M6 12l2 2M13 11l2 2" /></>)
+    case 'home':
+      return svg(<><path {...common} d="M4 11l8-7 8 7" /><path {...common} d="M6 10v9h12v-9" /><path {...common} d="M10 19v-5h4v5" /></>)
+    case 'tag':
+      return svg(<><path {...common} d="M3 12V4h8l9 9-7 7-9-9z" /><circle {...common} cx="7.5" cy="7.5" r="1.4" /></>)
+    case 'search':
+      return svg(<><circle {...common} cx="11" cy="11" r="7" /><path {...common} d="M16.5 16.5L21 21" /></>)
+    case 'chart':
+      return svg(<><path {...common} d="M4 4v16h16" /><path {...common} d="M8 15v-4M12 15V8M16 15v-6" /></>)
+    case 'note':
+      return svg(<><rect {...common} x="5" y="3" width="14" height="18" rx="2" /><path {...common} d="M9 8h6M9 12h6M9 16h4" /></>)
+    case 'target':
+      return svg(<><circle {...common} cx="12" cy="12" r="8" /><circle {...common} cx="12" cy="12" r="4" /><circle cx="12" cy="12" r="1.2" fill={color} stroke="none" /></>)
+    case 'satellite':
+      return svg(<><path {...common} d="M5 15l4-4 4 4-4 4-4-4z" /><path {...common} d="M7 9l3-3M11 13l3-3" /><path {...common} d="M13 5a6 6 0 0 1 6 6" /><path {...common} d="M13 8a3 3 0 0 1 3 3" /></>)
+    case 'star':
+      return svg(<path {...common} d="M12 3l2.5 5.5 6 .5-4.5 4 1.4 6-5.4-3.2L6.1 19l1.4-6L3 9l6-.5z" />)
+    case 'film':
+      return svg(<><rect {...common} x="3" y="5" width="18" height="14" rx="2" /><path {...common} d="M7 5v14M17 5v14M3 10h4M17 10h4M3 14h4M17 14h4" /></>)
+    case 'car':
+      return svg(<><path {...common} d="M4 15l1.5-5a2 2 0 0 1 2-1.5h9a2 2 0 0 1 2 1.5L20 15" /><path {...common} d="M3 15h18v3H3z" /><circle {...common} cx="7.5" cy="18" r="1.4" /><circle {...common} cx="16.5" cy="18" r="1.4" /></>)
+    case 'broadcast':
+      return svg(<><circle {...common} cx="12" cy="12" r="2" /><path {...common} d="M8 8a5.5 5.5 0 0 0 0 8M16 8a5.5 5.5 0 0 1 0 8" /><path {...common} d="M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14" /></>)
+    case 'chat':
+      return svg(<><path {...common} d="M4 5h16v11H9l-4 4v-4H4z" /><path {...common} d="M8 9h8M8 12h5" /></>)
+    case 'bolt':
+      return svg(<path {...common} d="M13 3L5 13h5l-1 8 8-11h-5z" />)
+    case 'bell':
+      return svg(<><path {...common} d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z" /><path {...common} d="M10 20a2 2 0 0 0 4 0" /></>)
+    case 'vase':
+      return svg(<><path {...common} d="M8 3h8M9 3c0 2-2 3-2 6a5 5 0 0 0 10 0c0-3-2-4-2-6" /><path {...common} d="M9 12h6" /></>)
+    case 'globe':
+      return svg(<><circle {...common} cx="12" cy="12" r="8" /><path {...common} d="M4 12h16M12 4a13 13 0 0 1 0 16M12 4a13 13 0 0 0 0 16" /></>)
+    case 'medal':
+      return svg(<><circle {...common} cx="12" cy="14" r="5" /><path {...common} d="M9 9L6 3M15 9l3-6M10 3l2 4 2-4" /><path {...common} d="M12 12l.8 1.6 1.7.2-1.2 1.2.3 1.7-1.6-.9-1.6.9.3-1.7-1.2-1.2 1.7-.2z" /></>)
+    case 'sparkle':
+      return svg(<><path {...common} d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z" /><path {...common} d="M18 15l.7 1.8L20.5 18l-1.8.7L18 20.5l-.7-1.8L15.5 18l1.8-.7z" /></>)
+    case 'tree':
+      return svg(<><path {...common} d="M12 3l5 7h-3l3 5H7l3-5H7z" /><path {...common} d="M12 15v5" /></>)
+    case 'faith':
+      return svg(<path {...common} d="M12 3v18M8 8h8" />)
+    case 'heart':
+      return svg(<path {...common} d="M12 20s-7-4.5-7-9.5A3.5 3.5 0 0 1 12 7a3.5 3.5 0 0 1 7 3.5c0 5-7 9.5-7 9.5z" />)
+    case 'handshake':
+      return svg(<><path {...common} d="M12 8l3-2 5 4-2 2" /><path {...common} d="M12 8L9 6 4 10l2 2" /><path {...common} d="M6 12l3 3 2-2 2 2 2-2 3 2" /></>)
+    case 'apple':
+      return svg(<><path {...common} d="M16 13c0 3-2 6-4 6-1 0-1.5-.6-2.5-.6S8 19 7 19c-2 0-4-3-4-6s2-5 4-5c1 0 1.7.6 2.5.6S11 8 12 8s4 2 4 5z" /><path {...common} d="M12 8c0-2 1.5-3.5 3-3.5" /></>)
+    case 'laptop':
+      return svg(<><rect {...common} x="5" y="5" width="14" height="10" rx="1.5" /><path {...common} d="M3 19h18" /></>)
+    case 'lock':
+      return svg(<><rect {...common} x="5" y="10" width="14" height="10" rx="2" /><path {...common} d="M8 10V8a4 4 0 0 1 8 0v2" /></>)
+    case 'shield':
+      return svg(<><path {...common} d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z" /><path {...common} d="M9 12l2 2 4-4" /></>)
+    case 'book':
+      return svg(<><path {...common} d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2z" /><path {...common} d="M20 5a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 1 2 2z" /></>)
+    case 'mail':
+      return svg(<><rect {...common} x="3" y="5" width="18" height="14" rx="2" /><path {...common} d="M3 7l9 6 9-6" /></>)
+    case 'check':
+      return svg(<path {...common} d="M4 12l5 5L20 6" />)
+    case 'close':
+      return svg(<path {...common} d="M6 6l12 12M18 6L6 18" />)
+    case 'menu':
+      return svg(<path {...common} d="M4 7h16M4 12h16M4 17h16" />)
+    case 'clock':
+      return svg(<><circle {...common} cx="12" cy="12" r="9" /><path {...common} d="M12 7v5l3 2" /></>)
+    default:
+      return svg(<circle {...common} cx="12" cy="12" r="7" />)
+  }
+}
+
 function MegaBotSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
@@ -4299,25 +4392,25 @@ function HowItWorksSection() {
     // Step 3 carries the CEO-ratified handoff line verbatim (never "publishes everywhere").
     {
       num: 1,
-      emoji: '📷',
+      emoji: 'camera',
       title: 'Upload a Photo',
       desc: 'Snap a photo. Our AI identifies and prices it.',
     },
     {
       num: 2,
-      emoji: '🧠',
+      emoji: 'brain',
       title: 'AI Analysis & Pricing',
       desc: 'Our AI reads your item in seconds. MegaBot confirms the price.',
     },
     {
       num: 3,
-      emoji: '📣',
+      emoji: 'megaphone',
       title: 'List & Find Buyers',
       desc: 'We write the listing, price it, and prep the photos. You post it in one tap.',
     },
     {
       num: 4,
-      emoji: '📦',
+      emoji: 'box',
       title: 'Ship & Get Paid',
       desc: 'Compare real carrier rates, print the label, get paid.',
     },
@@ -4422,9 +4515,12 @@ function HowItWorksSection() {
                         fontWeight: 600,
                         fontSize: 18,
                         color: '#F1F5F9',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
                       }}
                     >
-                      {step.emoji} {step.title}
+                      <Icon name={step.emoji} size={20} color="#00BCD4" /> {step.title}
                     </div>
                     <p
                       style={{
@@ -4458,16 +4554,16 @@ function ShippingCenterSection() {
   // FIX 5: carriers limited to the ones we actually integrate (USPS/UPS/FedEx);
   // DHL and Arta removed (not integrated — CANONICAL_FACTS §6, disposition §3).
   const carriers = [
-    { name: 'USPS', emoji: '📬' },
-    { name: 'UPS', emoji: '📦' },
-    { name: 'FedEx', emoji: '🚚' },
+    { name: 'USPS', emoji: 'mailbox' },
+    { name: 'UPS', emoji: 'box' },
+    { name: 'FedEx', emoji: 'truck' },
   ]
 
   const features = [
-    { emoji: '🤖', title: 'AI Rate Comparison', desc: 'Compares live rates from real carriers and surfaces the cheapest, fastest option for every shipment.' },
-    { emoji: '📐', title: 'Parcel + LTL Freight', desc: 'From a vintage watch to a full dining set — small parcels and large freight, side by side.' },
-    { emoji: '🏠', title: 'Local Pickup', desc: 'Coordinate local buyer pickup with built-in scheduling. No shipping needed.' },
-    { emoji: '🏷️', title: 'Label + Tracking', desc: 'Print the label, share tracking, hand it off. You stay in control the whole way.' },
+    { emoji: 'robot', title: 'AI Rate Comparison', desc: 'Compares live rates from real carriers and surfaces the cheapest, fastest option for every shipment.' },
+    { emoji: 'ruler', title: 'Parcel + LTL Freight', desc: 'From a vintage watch to a full dining set — small parcels and large freight, side by side.' },
+    { emoji: 'home', title: 'Local Pickup', desc: 'Coordinate local buyer pickup with built-in scheduling. No shipping needed.' },
+    { emoji: 'tag', title: 'Label + Tracking', desc: 'Print the label, share tracking, hand it off. You stay in control the whole way.' },
   ]
 
   return (
@@ -4525,7 +4621,7 @@ function ShippingCenterSection() {
                 backdropFilter: 'blur(8px)',
               }}
             >
-              <span style={{ fontSize: 20 }}>{c.emoji}</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', color: '#00BCD4' }}><Icon name={c.emoji} size={20} /></span>
               <span
                 style={{
                   fontFamily: 'var(--font-data)',
@@ -4552,7 +4648,7 @@ function ShippingCenterSection() {
           {features.map((f, i) => (
             <GlowCard key={f.title} delay={i * 80}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                <span style={{ fontSize: 24, flexShrink: 0 }}>{f.emoji}</span>
+                <span style={{ flexShrink: 0, display: 'inline-flex', color: '#00BCD4' }}><Icon name={f.emoji} size={24} /></span>
                 <div>
                   <div
                     style={{
@@ -4746,7 +4842,7 @@ function AIAgentsSection() {
 
   const bots = [
     {
-      emoji: '🔍',
+      emoji: 'search',
       name: 'AI AnalysisBot',
       desc: 'Dozens of details from one photo',
       tier: 'ALL TIERS',
@@ -4754,7 +4850,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(0,188,212,0.15)',
     },
     {
-      emoji: '📊',
+      emoji: 'chart',
       name: 'PriceBot',
       desc: 'Fair market value, regional intelligence',
       tier: 'DIY+',
@@ -4762,7 +4858,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(34,197,94,0.15)',
     },
     {
-      emoji: '📷',
+      emoji: 'camera',
       name: 'PhotoBot',
       desc: 'Photo quality scoring and tips',
       tier: 'DIY+',
@@ -4770,7 +4866,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(34,197,94,0.15)',
     },
     {
-      emoji: '📝',
+      emoji: 'note',
       name: 'ListingBot',
       desc: 'Listings prepped for every marketplace',
       tier: 'DIY+',
@@ -4778,7 +4874,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(34,197,94,0.15)',
     },
     {
-      emoji: '🎯',
+      emoji: 'target',
       name: 'BuyerBot',
       desc: 'Finds real interested buyers — you approve every contact',
       tier: 'DIY+',
@@ -4786,7 +4882,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(34,197,94,0.15)',
     },
     {
-      emoji: '🛰️',
+      emoji: 'satellite',
       name: 'ReconBot',
       desc: 'Real-time market monitoring',
       tier: 'POWER+',
@@ -4794,7 +4890,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(139,92,246,0.15)',
     },
     {
-      emoji: '⏳',
+      emoji: 'clock',
       name: 'AntiqueBot',
       // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): "Never undersell" outcome guarantee softened.
       desc: 'Flags likely antiques so a valuable heirloom is not missed',
@@ -4803,7 +4899,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(139,92,246,0.15)',
     },
     {
-      emoji: '⭐',
+      emoji: 'star',
       name: 'CollectiblesBot',
       desc: 'Expert-level collectible analysis',
       tier: 'POWER+',
@@ -4811,7 +4907,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(139,92,246,0.15)',
     },
     {
-      emoji: '🎬',
+      emoji: 'film',
       name: 'VideoBot Standard',
       desc: 'AI video ads for TikTok, Reels, Shorts (8cr)',
       tier: 'DIY+',
@@ -4819,7 +4915,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(34,197,94,0.15)',
     },
     {
-      emoji: '🎬',
+      emoji: 'film',
       name: 'VideoBot Pro',
       desc: 'Advanced video with custom branding (15cr)',
       tier: 'POWER+',
@@ -4827,7 +4923,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(139,92,246,0.15)',
     },
     {
-      emoji: '🎬',
+      emoji: 'film',
       name: 'VideoBot MegaBot',
       desc: 'Full MegaBot-powered video production (25cr)',
       tier: 'ESTATE',
@@ -4835,7 +4931,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(251,191,36,0.15)',
     },
     {
-      emoji: '🚗',
+      emoji: 'car',
       name: 'CarBot',
       desc: 'VIN decoding + vehicle specialist',
       tier: 'ESTATE',
@@ -4843,7 +4939,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(251,191,36,0.15)',
     },
     {
-      emoji: '📡',
+      emoji: 'broadcast',
       name: 'Intel Market + Ready',
       desc: 'Market intelligence and listing readiness',
       tier: 'DIY+',
@@ -4851,7 +4947,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(34,197,94,0.15)',
     },
     {
-      emoji: '📡',
+      emoji: 'broadcast',
       name: 'Intel Sell + Alerts + Action',
       desc: 'Sell signals, price alerts, and action triggers',
       tier: 'POWER+',
@@ -4859,7 +4955,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(139,92,246,0.15)',
     },
     {
-      emoji: '💬',
+      emoji: 'chat',
       name: 'Ask Claude',
       desc: 'AI assistant for any question (0.25cr/q)',
       tier: 'DIY+',
@@ -4867,7 +4963,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(34,197,94,0.15)',
     },
     {
-      emoji: '⚡',
+      emoji: 'bolt',
       name: 'Priority Bot Queue',
       desc: 'Skip the line — bots process your items first',
       tier: 'ESTATE',
@@ -4875,7 +4971,7 @@ function AIAgentsSection() {
       tierBg: 'rgba(251,191,36,0.15)',
     },
     {
-      emoji: '🔔',
+      emoji: 'bell',
       name: 'High Value Alert',
       desc: 'Flags potentially valuable items for a closer look',
       tier: 'ALL TIERS',
@@ -4933,7 +5029,7 @@ function AIAgentsSection() {
         >
           {bots.map((bot, i) => (
             <GlowCard key={bot.name} delay={i * 60}>
-              <div style={{ fontSize: 28, marginBottom: 8 }}>{bot.emoji}</div>
+              <div style={{ marginBottom: 8, color: '#00BCD4', display: 'flex' }}><Icon name={bot.emoji} size={28} /></div>
               <div
                 style={{
                   fontFamily: 'var(--font-heading)',
@@ -4988,9 +5084,12 @@ function AIAgentsSection() {
               fontWeight: 600,
               fontSize: 18,
               color: '#F1F5F9',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
             }}
           >
-            🧠 MegaBot — Master Consensus Engine
+            <Icon name="brain" size={20} color="#8B5CF6" /> MegaBot — Master Consensus Engine
           </div>
           <p
             style={{
@@ -5349,10 +5448,10 @@ function EstateSection() {
 
   // What we lift off the family's shoulders — honest, live capabilities (CANONICAL_FACTS §6).
   const features = [
-    { emoji: '🏺', text: 'Antique detection that helps you spot a valuable heirloom before it sells' },
-    { emoji: '🌐', text: 'Listing copy prepared for every major marketplace, ready to post' },
-    { emoji: '💬', text: 'AI Messaging Agent handles buyer conversations for you' },
-    { emoji: '🚚', text: 'AI Shipping Center — live rates from USPS, UPS, and FedEx. Parcel, LTL freight, or local pickup' },
+    { emoji: 'vase', text: 'Antique detection that helps you spot a valuable heirloom before it sells' },
+    { emoji: 'globe', text: 'Listing copy prepared for every major marketplace, ready to post' },
+    { emoji: 'chat', text: 'AI Messaging Agent handles buyer conversations for you' },
+    { emoji: 'truck', text: 'AI Shipping Center — live rates from USPS, UPS, and FedEx. Parcel, LTL freight, or local pickup' },
   ]
 
   // The three ways families work with us — EDUCATION, not pricing. No buttons, no badges.
@@ -5557,7 +5656,7 @@ function EstateSection() {
                 defaultBorderColor="rgba(212,160,23,0.2)"
                 hoverBorderColor="rgba(212,160,23,0.4)"
               >
-                <div style={{ fontSize: 24, marginBottom: 8 }}>{f.emoji}</div>
+                <div style={{ marginBottom: 8, color: '#D4A017', display: 'flex' }}><Icon name={f.emoji} size={24} /></div>
                 <p
                   style={{
                     fontFamily: 'var(--font-body)',
@@ -5930,7 +6029,7 @@ function SocialProofSection() {
               color: '#F1F5F9',
             }}
           >
-            🎖️ Veterans &amp; First Responders: 25% off subscriptions &bull; 20% off white-glove services &bull; 25% reduced commissions
+            <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: 6, color: '#22C55E' }}><Icon name="medal" size={18} /></span>Veterans &amp; First Responders: 25% off subscriptions &bull; 20% off white-glove services &bull; 25% reduced commissions
           </p>
         </GlowCard>
       </div>
@@ -5954,23 +6053,23 @@ function TechSection() {
   // the 4th card is a COMING marker (Rule 4) with CEO-ruling-G8 wording, verbatim.
   const items: { emoji: string; title: string; desc: string; muted?: boolean }[] = [
     {
-      emoji: '🎯',
+      emoji: 'target',
       title: 'BuyerBot',
       desc: 'Surfaces likely buyers and the marketplaces that fit each item, so your listing reaches the right audience.',
     },
     {
-      emoji: '💬',
+      emoji: 'chat',
       title: 'Messaging Center',
       desc: 'Every buyer conversation — offers, questions, negotiations — in one organized place.',
     },
     {
-      emoji: '📦',
+      emoji: 'box',
       title: 'AI Shipping Center',
       desc: 'Live rates from USPS, UPS, and FedEx. Parcel, LTL freight, or local pickup — you choose, we print the label.',
     },
     {
       // CEO ruling G8 — VERBATIM, visible future marker, no regulated words, no date.
-      emoji: '✨',
+      emoji: 'sparkle',
       title: 'Hands-free selling — coming soon',
       desc: 'AI runs the busywork; you approve every sale.',
       muted: true,
@@ -6049,7 +6148,7 @@ function TechSection() {
         >
           {items.map((item, i) => (
             <GlowCard key={item.title} delay={i * 80} style={item.muted ? { opacity: 0.82 } : undefined}>
-              <span style={{ fontSize: 24 }}>{item.emoji}</span>
+              <span style={{ display: 'inline-flex', color: '#00BCD4' }}><Icon name={item.emoji} size={24} /></span>
               <div
                 style={{
                   fontFamily: 'var(--font-heading)',
@@ -6244,24 +6343,24 @@ function VideoShowcaseSection() {
           >
             {[
               {
-                emoji: '🏺',
+                emoji: 'vase',
                 title: 'Estate Sales with Dignity',
                 desc: 'Walk alongside families during life\u2019s biggest transitions. AI handles the complexity so they don\u2019t have to.',
               },
               {
-                emoji: '🤖',
+                emoji: 'robot',
                 title: '10 AI Bots + MegaBot',
                 desc: 'From photo analysis to buyer matching to video ads. One platform replaces a dozen tools.',
               },
               {
-                emoji: '🌲',
+                emoji: 'tree',
                 title: 'Built in Maine. Serving America.',
                 desc: 'Founded with faith, grit, and a calling to serve families, seniors, veterans, and communities in need.',
               },
             ].map((item, i) => (
               <GlowCard key={item.title} delay={i * 100}>
-                <span style={{ fontSize: 28, display: 'block', marginBottom: 12 }}>
-                  {item.emoji}
+                <span style={{ display: 'flex', marginBottom: 12, color: '#00BCD4' }}>
+                  <Icon name={item.emoji} size={28} />
                 </span>
                 <div
                   style={{
@@ -6340,10 +6439,10 @@ function VideoShowcaseSection() {
               }}
             >
               {[
-                { icon: '✝️', title: 'Faith-Driven', desc: 'Guided by purpose and conviction in every decision we make.' },
-                { icon: '💛', title: 'Compassion', desc: 'Serving seniors, families, veterans, and communities with empathy.' },
-                { icon: '🤝', title: 'Integrity', desc: 'Honest, ethical, and transparent in every interaction.' },
-                { icon: '🎖️', title: 'Veterans First', desc: '25% off subscriptions, 20% off white-glove, 25% reduced commissions.' },
+                { icon: 'faith', title: 'Faith-Driven', desc: 'Guided by purpose and conviction in every decision we make.' },
+                { icon: 'heart', title: 'Compassion', desc: 'Serving seniors, families, veterans, and communities with empathy.' },
+                { icon: 'handshake', title: 'Integrity', desc: 'Honest, ethical, and transparent in every interaction.' },
+                { icon: 'medal', title: 'Veterans First', desc: '25% off subscriptions, 20% off white-glove, 25% reduced commissions.' },
               ].map((value, i) => (
                 <GlowCard
                   key={value.title}
@@ -6353,7 +6452,7 @@ function VideoShowcaseSection() {
                   style={{ textAlign: 'left' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                    <span style={{ fontSize: 24, flexShrink: 0 }}>{value.icon}</span>
+                    <span style={{ flexShrink: 0, display: 'inline-flex', color: '#D4A017' }}><Icon name={value.icon} size={24} /></span>
                     <div>
                       <div
                         style={{
@@ -6525,14 +6624,14 @@ function AppDownloadSection() {
   const installCards = [
     {
       platform: 'iOS',
-      emoji: '🍎',
+      emoji: 'apple',
       title: 'iPhone & iPad',
       subtitle: 'iOS Safari',
       steps: ['Open in Safari', 'Tap Share ⬆', 'Add to Home Screen', 'Tap "Add"'],
     },
     {
       platform: 'Android',
-      emoji: '🤖',
+      emoji: 'robot',
       title: 'Android',
       subtitle: 'Chrome Browser',
       steps: ['Open in Chrome', 'Tap menu ⋮', 'Add to Home Screen', 'Tap "Install"'],
@@ -6540,14 +6639,14 @@ function AppDownloadSection() {
     },
     {
       platform: 'Desktop',
-      emoji: '💻',
+      emoji: 'laptop',
       title: 'Mac & Windows',
       subtitle: 'Chrome or Edge',
       steps: ['Open in Chrome/Edge', 'Click ⊕ in address bar', 'Click "Install"', 'App opens standalone'],
     },
     {
       platform: 'WebApp',
-      emoji: '🌐',
+      emoji: 'globe',
       title: 'Any Browser',
       subtitle: 'Zero install',
       steps: ['Open any browser', 'Visit app.legacy-loop.com', 'Log in — start selling', 'Works offline once loaded'],
@@ -6781,11 +6880,11 @@ function AppDownloadSection() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: 24,
+                      color: '#00BCD4',
                       flexShrink: 0,
                     }}
                   >
-                    {card.emoji}
+                    <Icon name={card.emoji} size={24} />
                   </div>
 
                   {card.featured ? (
@@ -7909,9 +8008,9 @@ function WaitlistSection({
             }}
           >
             {[
-              { icon: '🔒', text: 'No credit card required' },
-              { icon: '🛡️', text: 'Your data is never sold' },
-              { icon: '🏷️', text: 'Pre-launch pricing locked forever' },
+              { icon: 'lock', text: 'No credit card required' },
+              { icon: 'shield', text: 'Your data is never sold' },
+              { icon: 'tag', text: 'Pre-launch pricing locked forever' },
             ].map((signal) => (
               <div
                 key={signal.text}
@@ -7921,7 +8020,7 @@ function WaitlistSection({
                   gap: 6,
                 }}
               >
-                <span style={{ fontSize: 14 }}>{signal.icon}</span>
+                <span style={{ display: 'inline-flex', color: '#00BCD4' }}><Icon name={signal.icon} size={14} /></span>
                 <span
                   style={{
                     fontFamily: 'var(--font-body)',
@@ -7965,14 +8064,12 @@ function WaitlistSection({
               >
                 <span
                   style={{
-                    fontFamily: 'var(--font-data)',
-                    fontWeight: 700,
-                    fontSize: 12,
                     color: '#00BCD4',
                     flexShrink: 0,
+                    display: 'inline-flex',
                   }}
                 >
-                  ✓
+                  <Icon name="check" size={14} color="#00BCD4" />
                 </span>
                 <span
                   style={{
@@ -8416,7 +8513,7 @@ function Footer() {
                 color: '#4B5563',
               }}
             >
-              Built with heart in Maine. 🌲
+              Built with heart in Maine. <span style={{ display: 'inline-flex', verticalAlign: 'middle' }}><Icon name="tree" size={13} color="#4B5563" /></span>
             </span>
           </div>
         </div>
@@ -8466,21 +8563,21 @@ function HelpCenter() {
 
   const actions = [
     {
-      icon: '💬',
+      icon: 'chat',
       title: 'Chat with our AI',
       desc: 'Get instant answers, any time of day',
       href: 'https://app.legacy-loop.com/help?chat=1',
       accent: '#00BCD4',
     },
     {
-      icon: '📖',
+      icon: 'book',
       title: 'Browse Help Center',
       desc: 'Guides, tutorials, and FAQs',
       href: 'https://app.legacy-loop.com/help',
       accent: '#22D3EE',
     },
     {
-      icon: '✉️',
+      icon: 'mail',
       title: 'Email our team',
       desc: 'We reply within 4 hours',
       href: 'mailto:support@legacy-loop.com',
@@ -8776,11 +8873,11 @@ function HelpCenter() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: 22,
+                      color: action.accent,
                       flexShrink: 0,
                     }}
                   >
-                    {action.icon}
+                    <Icon name={action.icon} size={22} color={action.accent} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
