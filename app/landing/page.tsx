@@ -3251,10 +3251,11 @@ function MarketOpportunitySection() {
 
   const stats = [
     {
-      target: 4,
+      // FIX 7 (R-3) coherence: six engines power the platform; four form the MegaBot council.
+      target: 6,
       heroLabel: 'AI Engines',
-      line: 'OpenAI · Claude · Gemini · Grok',
-      sub: 'One fair price, voted by 4-way consensus',
+      line: 'OpenAI · Claude · Gemini · Grok · DeepSeek · Perplexity',
+      sub: 'Four vote on every price — the MegaBot council',
     },
     {
       target: 12,
@@ -3838,11 +3839,34 @@ function MessageCenterSection() {
 }
 
 // ---------- MEGABOT SECTION ----------
+// Per-provider SVG marks (WAVE 6 / FIX 7 · R-3/R-4): custom glyphs, zero emoji. One distinct
+// mark per engine, drawn in the provider's canon color. Single-weight 1.5px stroke, 26px grid.
+function EngineMark({ mark, color, size = 26 }: { mark: string; color: string; size?: number }) {
+  const s = { width: size, height: size, display: 'block' as const }
+  const common = { fill: 'none', stroke: color, strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  switch (mark) {
+    case 'openai': // hexagon knot
+      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} d="M12 3l7 4v10l-7 4-7-4V7l7-4z" /><path {...common} d="M12 8.5l3.5 2v3l-3.5 2-3.5-2v-3l3.5-2z" /></svg>
+    case 'claude': // spark burst
+      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13" /></svg>
+    case 'gemini': // twin circles
+      return <svg viewBox="0 0 24 24" style={s} aria-hidden><circle {...common} cx="9" cy="12" r="6" /><circle {...common} cx="15" cy="12" r="6" /></svg>
+    case 'grok': // bold slash-cross
+      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} strokeWidth={2.2} d="M6 6l12 12M18 6L6 18" /></svg>
+    case 'deepseek': // nested diamonds
+      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} d="M12 2l10 10-10 10L2 12 12 2z" /><path {...common} d="M12 7l5 5-5 5-5-5 5-5z" /></svg>
+    case 'perplexity': // concentric search rings
+      return <svg viewBox="0 0 24 24" style={s} aria-hidden><circle {...common} cx="11" cy="11" r="7.5" /><circle {...common} cx="11" cy="11" r="3.5" /><path {...common} d="M16.5 16.5L21 21" /></svg>
+    default:
+      return <svg viewBox="0 0 24 24" style={s} aria-hidden><circle {...common} cx="12" cy="12" r="8" /></svg>
+  }
+}
+
 function MegaBotSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
-  const cols = width < 768 ? '1fr' : 'repeat(2, 1fr)'
+  const cols = width < 640 ? '1fr' : width < 1024 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)'
   const [fillActive, setFillActive] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
 
@@ -3876,35 +3900,18 @@ function MegaBotSection() {
     return () => observer.disconnect()
   }, [])
 
+  // FIX 7 (R-3): the SIX engines powering the app + Sylvia-AI. Verified at source (read-only):
+  // OpenAI/Claude/Gemini/Grok in lib/adapters/multi-ai.ts (207/262/361/448); DeepSeek in
+  // lib/sylvia/triage-router.ts:71 + litellm_config.yaml; Perplexity in litellm_config.yaml +
+  // app/api/bots/*/route.ts. `council` = the four that vote on the MegaBot consensus price.
+  // Canon per-provider colors; DeepSeek/Perplexity on-system tints recorded in the beat sheet.
   const engines = [
-    {
-      emoji: '🔍',
-      name: 'OpenAI',
-      role: 'Vision & Identification',
-      detail: 'Reads dozens of details from a single photo',
-      color: '#00BCD4',
-    },
-    {
-      emoji: '💎',
-      name: 'Claude',
-      role: 'Craftsmanship & Detail',
-      detail: 'Evaluates quality, materials, and hidden value',
-      color: '#8B5CF6',
-    },
-    {
-      emoji: '📊',
-      name: 'Gemini',
-      role: 'Market Intelligence',
-      detail: 'Real-time market conditions across platforms',
-      color: '#F59E0B',
-    },
-    {
-      emoji: '⚡',
-      name: 'Grok',
-      role: 'Speed & Patterns',
-      detail: 'Detects pricing anomalies in milliseconds',
-      color: '#94A3B8',
-    },
+    { mark: 'openai', name: 'OpenAI', role: 'Vision & Identification', detail: 'Reads dozens of details from a single photo', color: '#22c55e', council: true },
+    { mark: 'claude', name: 'Claude', role: 'Craftsmanship & Detail', detail: 'Evaluates quality, materials, and hidden value', color: '#a78bfa', council: true },
+    { mark: 'gemini', name: 'Gemini', role: 'Market Intelligence', detail: 'Reads market conditions across platforms', color: '#3b82f6', council: true },
+    { mark: 'grok', name: 'Grok', role: 'Speed & Patterns', detail: 'Catches pricing anomalies fast', color: '#f97316', council: true },
+    { mark: 'deepseek', name: 'DeepSeek', role: 'Reasoning & Research', detail: 'Deep reasoning for the harder calls', color: '#818cf8', council: false },
+    { mark: 'perplexity', name: 'Perplexity', role: 'Live Market Search', detail: 'Pulls live, cited market signals', color: '#2dd4bf', council: false },
   ]
 
   return (
@@ -4030,11 +4037,11 @@ function MegaBotSection() {
                   animation: 'pulse 1.4s ease-in-out infinite',
                 }}
               />
-              4 AIs · Consensus active
+              Six engines · Four-AI council
             </span>
           </div>
 
-          <SectionEyebrow text="THE CROWN JEWEL" color="#8B5CF6" />
+          <SectionEyebrow text="THE INTELLIGENCE LAYER" color="#8B5CF6" />
           <h2
             style={{
               fontFamily: 'var(--font-heading)',
@@ -4047,8 +4054,8 @@ function MegaBotSection() {
               margin: '0 0 24px',
             }}
           >
-            Four AI Engines.{' '}
-            <GlitchWord text="One Fair Price." tintA="#8B5CF6" tintB="#00BCD4" />
+            Six AI Engines.{' '}
+            <GlitchWord text="One Intelligence Layer." tintA="#8B5CF6" tintB="#00BCD4" />
           </h2>
           <p
             style={{
@@ -4056,15 +4063,15 @@ function MegaBotSection() {
               fontWeight: 400,
               fontSize: 17,
               color: '#CBD5E1',
-              maxWidth: 640,
+              maxWidth: 660,
               margin: '0 auto 48px',
               textAlign: 'center',
               lineHeight: 1.65,
             }}
           >
-            Our proprietary MegaBot runs OpenAI, Claude, Gemini, and Grok
-            simultaneously. When 4 AIs agree on your item&apos;s value, you can
-            trust the number.
+            The same intelligence layer powers the app and Sylvia-AI — OpenAI, Claude, Gemini, Grok,
+            DeepSeek, and Perplexity. Four of them form the MegaBot council that votes on your
+            item&apos;s price. When those four agree, you can trust the number.
           </p>
         </div>
 
@@ -4094,44 +4101,58 @@ function MegaBotSection() {
         >
           {engines.map((engine, i) => (
             <GlowCard key={engine.name} delay={i * 80}>
-              <div
-                style={{
-                  borderLeft: `3px solid ${engine.color}`,
-                  paddingLeft: 16,
-                }}
-              >
-                <span style={{ fontSize: 24 }}>{engine.emoji}</span>
+              <div style={{ borderLeft: `3px solid ${engine.color}`, paddingLeft: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                  <span
+                    aria-hidden
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 12,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: `${engine.color}14`,
+                      border: `1px solid ${engine.color}44`,
+                    }}
+                  >
+                    <EngineMark mark={engine.mark} color={engine.color} />
+                  </span>
+                  {engine.council && (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-data)',
+                        fontWeight: 700,
+                        fontSize: 10,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase' as const,
+                        color: '#C4B5FD',
+                        background: 'rgba(139,92,246,0.12)',
+                        border: '1px solid rgba(139,92,246,0.3)',
+                        borderRadius: 999,
+                        padding: '3px 8px',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      MegaBot council
+                    </span>
+                  )}
+                </div>
                 <div
                   style={{
                     fontFamily: 'var(--font-heading)',
                     fontWeight: 600,
                     fontSize: 17,
                     color: '#F1F5F9',
-                    marginTop: 8,
+                    marginTop: 12,
                   }}
                 >
                   {engine.name}
                 </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontWeight: 500,
-                    fontSize: 14,
-                    color: engine.color,
-                    marginTop: 2,
-                  }}
-                >
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: engine.color, marginTop: 2 }}>
                   {engine.role}
                 </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontWeight: 400,
-                    fontSize: 14,
-                    color: '#CBD5E1',
-                    marginTop: 4,
-                  }}
-                >
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', marginTop: 4 }}>
                   {engine.detail}
                 </div>
               </div>
@@ -4139,8 +4160,13 @@ function MegaBotSection() {
           ))}
         </div>
 
+        {/* THE MEGABOT COUNCIL — the four voting engines, presented as its own distinct feature */}
+        <div style={{ textAlign: 'center', marginTop: 56 }}>
+          <SectionEyebrow text="THE MEGABOT COUNCIL" color="#8B5CF6" />
+        </div>
+
         {/* Consensus Bar */}
-        <div ref={barRef} style={{ marginTop: 48, textAlign: 'center' }}>
+        <div ref={barRef} style={{ marginTop: 8, textAlign: 'center' }}>
           <div
             style={{
               fontFamily: 'var(--font-data)',
@@ -4976,8 +5002,8 @@ function AIAgentsSection() {
               lineHeight: 1.55,
             }}
           >
-            The 11th bot. Runs all 10 bots together through OpenAI, Claude, Gemini, and
-            Grok simultaneously. When 4 AI engines agree, you can trust the number.
+            The 11th bot. Runs your item through the MegaBot council — OpenAI, Claude, Gemini,
+            and Grok — at once. When those four agree, you can trust the number.
           </p>
         </GlowCard>
       </div>
