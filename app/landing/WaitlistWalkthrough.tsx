@@ -96,7 +96,8 @@ export const OFFERINGS: Record<string, Offering> = {
     name: 'DIY Seller',
     price: '$10',
     priceSuffix: '/mo',
-    wasPrice: '$20',
+    // CMD-LANDING-SHOWCASE-ARC (FIX 5): deceptive "was $20" strikethrough removed — a former price
+    // that never existed (pre-revenue, zero customers), same class as the estateManager "was $99" kill.
     commission: '8% commission',
     tagline: 'AI pricing and core bots for the hands-on seller.',
     features: ['Enhanced AI pricing', '5 core bots included', '20 credits/month included', 'BuyerBot matching', 'Priority email support'],
@@ -111,7 +112,7 @@ export const OFFERINGS: Record<string, Offering> = {
     name: 'Power Seller',
     price: '$25',
     priceSuffix: '/mo',
-    wasPrice: '$49',
+    // CMD-LANDING-SHOWCASE-ARC (FIX 5): deceptive "was $49" strikethrough removed (never a real price).
     commission: '5% commission',
     tagline: 'MegaBot and every specialty bot for serious volume.',
     features: ['MegaBot (credit-based)', 'All specialty bots', '50 credits/month included', 'Advanced analytics', 'Phone support'],

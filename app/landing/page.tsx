@@ -3077,10 +3077,11 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
 // ---------- MARKETPLACE TICKER ----------
 function MarketplaceTicker() {
   const width = useWindowWidth()
+  // CMD-LANDING-SHOWCASE-ARC (FIX 5 · D-2): the resale-market universe — where buyers
+  // already are. Mercari US, Poshmark, and Depop removed (D-2 fence: they appear NOWHERE).
+  // This is market context, never a claim that we auto-post to each.
   const platforms = [
     'eBay',
-    'Mercari',
-    'Poshmark',
     'OfferUp',
     'Etsy',
     'Facebook Marketplace',
@@ -3090,7 +3091,6 @@ function MarketplaceTicker() {
     'TikTok Shop',
     'Reverb',
     'Pinterest',
-    'Depop',
   ]
   const doubled = [...platforms, ...platforms]
 
@@ -3257,16 +3257,18 @@ function MarketOpportunitySection() {
       sub: 'One fair price, voted by 4-way consensus',
     },
     {
-      target: 10,
+      target: 12,
       heroLabel: 'Specialized Bots',
       line: 'Pricing · Listing · Shipping · Intel',
       sub: 'Plus MegaBot consensus powering them all',
     },
     {
-      target: 13,
+      // FIX 5 · D-2: banned names removed; "cross-listed everywhere" implied auto-posting
+      // we do not do — we prep the listing, the seller posts it. Handoff framing, CEO-ratified.
+      target: 12,
       heroLabel: 'Marketplaces',
-      line: 'eBay · Mercari · FB · Poshmark · Etsy',
-      sub: 'One click. Cross-listed everywhere.',
+      line: 'eBay · Etsy · Facebook · and more',
+      sub: 'We prep every listing — you post in one tap.',
     },
     {
       target: 3,
@@ -3479,12 +3481,12 @@ function MarketOpportunitySection() {
               margin: '64px auto 0',
             }}
           >
-            Every price is a consensus. Every listing is one click. You keep
-            the wheel.
+            Every price is a consensus. Every listing is prepped for you. You
+            keep the wheel.
           </p>
         ) : (
           <ScrollRevealText
-            text="Every price is a consensus. Every listing is one click. You keep the wheel."
+            text="Every price is a consensus. Every listing is prepped for you. You keep the wheel."
             style={{
               fontFamily: 'var(--font-heading)',
               fontWeight: 600,
@@ -3546,7 +3548,7 @@ function MegaBotSection() {
       emoji: '🔍',
       name: 'OpenAI',
       role: 'Vision & Identification',
-      detail: 'Sees 48+ attributes from a single photo',
+      detail: 'Reads dozens of details from a single photo',
       color: '#00BCD4',
     },
     {
@@ -3864,29 +3866,31 @@ function HowItWorksSection() {
   const sp = useSectionPadding(width)
   const isTouch = useIsTouch()
   const steps = [
+    // FIX 5 · D-2 truth fences: honest capability language on every step.
+    // Step 3 carries the CEO-ratified handoff line verbatim (never "publishes everywhere").
     {
       num: 1,
       emoji: '📷',
       title: 'Upload a Photo',
-      desc: 'Snap a pic. Our AI handles the rest.',
+      desc: 'Snap a photo. Our AI identifies and prices it.',
     },
     {
       num: 2,
       emoji: '🧠',
       title: 'AI Analysis & Pricing',
-      desc: '10 AI bots analyze your item. MegaBot confirms the price.',
+      desc: 'Our AI reads your item in seconds. MegaBot confirms the price.',
     },
     {
       num: 3,
       emoji: '📣',
-      title: 'List & Match Buyers',
-      desc: 'One click. 13 platforms. AI finds your buyers.',
+      title: 'List & Find Buyers',
+      desc: 'We write the listing, price it, and prep the photos. You post it in one tap.',
     },
     {
       num: 4,
       emoji: '📦',
       title: 'Ship & Get Paid',
-      desc: 'AI Shipping Center picks the best carrier. Print a label. Get paid.',
+      desc: 'Compare real carrier rates, print the label, get paid.',
     },
   ]
 
@@ -4013,19 +4017,19 @@ function ShippingCenterSection() {
   const sp = useSectionPadding(width)
   const isMobile = width < 768
 
+  // FIX 5: carriers limited to the ones we actually integrate (USPS/UPS/FedEx);
+  // DHL and Arta removed (not integrated — CANONICAL_FACTS §6, disposition §3).
   const carriers = [
     { name: 'USPS', emoji: '📬' },
     { name: 'UPS', emoji: '📦' },
     { name: 'FedEx', emoji: '🚚' },
-    { name: 'DHL', emoji: '✈️' },
-    { name: 'Arta', emoji: '🎨' },
   ]
 
   const features = [
-    { emoji: '🤖', title: 'AI Rate Optimization', desc: 'Instantly compares carriers and selects the cheapest, fastest option for every shipment.' },
-    { emoji: '📐', title: 'Parcel + LTL Freight', desc: 'From a vintage watch to a full dining set — small parcels and large freight handled seamlessly.' },
+    { emoji: '🤖', title: 'AI Rate Comparison', desc: 'Compares live rates from real carriers and surfaces the cheapest, fastest option for every shipment.' },
+    { emoji: '📐', title: 'Parcel + LTL Freight', desc: 'From a vintage watch to a full dining set — small parcels and large freight, side by side.' },
     { emoji: '🏠', title: 'Local Pickup', desc: 'Coordinate local buyer pickup with built-in scheduling. No shipping needed.' },
-    { emoji: '🎩', title: 'White-Glove Delivery', desc: 'Arta fine art and specialty logistics for high-value antiques and collectibles.' },
+    { emoji: '🏷️', title: 'Label + Tracking', desc: 'Print the label, share tracking, hand it off. You stay in control the whole way.' },
   ]
 
   return (
@@ -4041,7 +4045,7 @@ function ShippingCenterSection() {
         <SectionEyebrow text="BUILT-IN LOGISTICS" />
         <SectionHeading>
           <StaggeredWords text="AI Shipping Center." />{' '}
-          <GradientText>Every Carrier. One Click.</GradientText>
+          <GradientText>Real Carrier Rates. One Click.</GradientText>
         </SectionHeading>
         <p
           style={{
@@ -4055,8 +4059,8 @@ function ShippingCenterSection() {
             lineHeight: 1.65,
           }}
         >
-          A full Transportation Management System built right into the platform.
-          Compare rates, print labels, and track shipments — without leaving Legacy-Loop.
+          Shipping tools built right into the platform. Compare live carrier rates,
+          print labels, and track shipments — without leaving Legacy-Loop.
         </p>
 
         {/* Carrier badges */}
@@ -4306,7 +4310,7 @@ function AIAgentsSection() {
     {
       emoji: '🔍',
       name: 'AI AnalysisBot',
-      desc: '48+ attributes from one photo',
+      desc: 'Dozens of details from one photo',
       tier: 'ALL TIERS',
       tierColor: '#00BCD4',
       tierBg: 'rgba(0,188,212,0.15)',
@@ -4330,7 +4334,7 @@ function AIAgentsSection() {
     {
       emoji: '📝',
       name: 'ListingBot',
-      desc: 'Listings for 13 platforms',
+      desc: 'Listings prepped for every marketplace',
       tier: 'DIY+',
       tierColor: '#22C55E',
       tierBg: 'rgba(34,197,94,0.15)',
@@ -4338,7 +4342,7 @@ function AIAgentsSection() {
     {
       emoji: '🎯',
       name: 'BuyerBot',
-      desc: '6-12 buyer profiles before you list',
+      desc: 'Finds real interested buyers — you approve every contact',
       tier: 'DIY+',
       tierColor: '#22C55E',
       tierBg: 'rgba(34,197,94,0.15)',
@@ -4435,7 +4439,7 @@ function AIAgentsSection() {
     {
       emoji: '🔔',
       name: 'High Value Alert',
-      desc: 'Instant alerts for items worth $500+',
+      desc: 'Flags potentially valuable items for a closer look',
       tier: 'ALL TIERS',
       tierColor: '#00BCD4',
       tierBg: 'rgba(0,188,212,0.15)',
@@ -4462,7 +4466,7 @@ function AIAgentsSection() {
         >
           <SectionEyebrow text="YOUR AI TEAM" />
           <SectionHeading>
-            Ten Specialized AI Bots + MegaBot.{' '}
+            A Specialist For Every Step. Plus MegaBot.{' '}
             <GradientText>All Working For You.</GradientText>
           </SectionHeading>
           <p
@@ -4569,61 +4573,40 @@ function AIAgentsSection() {
   )
 }
 
-// ---------- PRICING ----------
+// ---------- PRICING (STRUCTURE-ONLY · NUMBERS GATED) ----------
+// CMD-LANDING-SHOWCASE-ARC V21 (FIX 4 · D-5): the priced tier grid ($10/$25/$75 monthly, the
+// oldMonthly strikethroughs, commission percentages, the credit packs, and "3.5% processing")
+// is removed. No price value ships until it is costed per cost-per-action and CEO-ratified
+// (Rule 4: a COMING price is never a number we cannot yet hold). This section shows the SHAPE
+// of pricing — three pillars, each with a reserved drop-in slot that reads a plain-language
+// marker today and accepts a real number later with ZERO redesign (slots, not rewrites).
 function PricingSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
-  const [isAnnual, setIsAnnual] = useState(false)
-  const cols =
-    width >= 1200
-      ? 'repeat(4, 1fr)'
-      : width >= 640
-        ? 'repeat(2, 1fr)'
-        : '1fr'
+  const isMobile = width < 768
 
-  const tiers = [
+  // Each pillar carries a `slot` — the reserved place a real number drops into at launch.
+  // Today it reads a truthful non-numeric marker. No currency, no percent, no "/mo" anywhere.
+  const pillars = [
     {
-      name: 'FREE',
-      slug: 'free',
-      monthlyPrice: 0,
-      annualPrice: 0,
-      oldMonthly: null as string | null,
-      commission: '12%',
-      features: ['Basic AI identification', 'Public store page', 'Email support'],
-      cta: 'Get Started Free',
+      emoji: '🔎',
+      name: 'Free Appraisal',
+      body: 'Your first AI appraisal is always free. See what an item is really worth before you decide anything.',
+      slot: 'Always free',
       highlight: false,
     },
     {
-      name: 'DIY SELLER',
-      slug: 'diy',
-      monthlyPrice: 10,
-      annualPrice: 100,
-      oldMonthly: '$20',
-      commission: '8%',
-      features: ['Enhanced AI pricing', '5 core bots included', '20 credits/month included', 'BuyerBot matching', 'Priority email support'],
-      cta: 'Start Selling',
-      highlight: false,
-    },
-    {
-      name: 'POWER SELLER',
-      slug: 'power',
-      monthlyPrice: 25,
-      annualPrice: 250,
-      oldMonthly: '$49',
-      commission: '5%',
-      features: ['MegaBot (credit-based)', 'All specialty bots', '50 credits/month included', 'Advanced analytics', 'Phone support'],
-      cta: 'Go Pro',
+      emoji: '🔄',
+      name: 'The Monthly Loop',
+      body: 'One simple plan unlocks the full AI team — identification, pricing, listings, and buyer matching, month after month.',
+      slot: 'Pricing at launch',
       highlight: true,
     },
     {
-      name: 'ESTATE MANAGER',
-      slug: 'estate',
-      monthlyPrice: 75,
-      annualPrice: 750,
-      oldMonthly: '$99',
-      commission: '4%',
-      features: ['All bots including CarBot', '100 credits/month included', 'White-label store', 'Dedicated account manager', 'API access'],
-      cta: 'Manage Estates',
+      emoji: '🤝',
+      name: 'Done-For-You',
+      body: 'Prefer we carry it? Our estate and white-glove service works on commission — you only pay when your items sell.',
+      slot: 'By consultation',
       highlight: false,
     },
   ]
@@ -4638,7 +4621,7 @@ function PricingSection() {
         overflow: 'hidden',
       }}
     >
-      {/* Corner crosshair markers — Lusion studio framing */}
+      {/* Corner crosshair markers — studio framing, consistent with the rest of the page */}
       {[
         { top: 20, left: 20 },
         { top: 20, right: 20 },
@@ -4654,24 +4637,15 @@ function PricingSection() {
           initial={{ opacity: 0, scale: 0.5 }}
           whileInView={{ opacity: 0.55, scale: 1 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{
-            delay: 0.2 + i * 0.08,
-            duration: 0.7,
-            ease: [0.23, 1, 0.32, 1],
-          }}
-          style={{
-            position: 'absolute',
-            ...pos,
-            pointerEvents: 'none',
-            zIndex: 2,
-          }}
+          transition={{ delay: 0.2 + i * 0.08, duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+          style={{ position: 'absolute', ...pos, pointerEvents: 'none', zIndex: 2 }}
         >
           <path d="M6 0v12M0 6h12" stroke="#00BCD4" strokeWidth="1" />
         </motion.svg>
       ))}
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
-        {/* Ghost oversized "VALUE" word — Resn/AT depth vocabulary */}
+      <div style={{ maxWidth: 1120, margin: '0 auto', position: 'relative' }}>
+        {/* Ghost oversized "VALUE" word — depth vocabulary, preserved */}
         <span
           aria-hidden
           style={{
@@ -4695,61 +4669,11 @@ function PricingSection() {
         </span>
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          {/* Live trust HUD — "3.5% total · no hidden fees" pulse pill */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: 14,
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '4px 10px',
-                borderRadius: 9999,
-                background: 'rgba(34,197,94,0.12)',
-                border: '1px solid rgba(34,197,94,0.35)',
-                fontFamily: 'var(--font-data)',
-                fontWeight: 700,
-                fontSize: 10,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase' as const,
-                color: '#22C55E',
-              }}
-            >
-              <span
-                aria-hidden
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: '#22C55E',
-                  boxShadow: '0 0 8px rgba(34,197,94,0.7)',
-                  animation: 'pulse 1.4s ease-in-out infinite',
-                }}
-              />
-              3.5% total · No hidden fees
-            </span>
-          </div>
-
-          <SectionEyebrow text="SIMPLE HONEST PRICING" />
-          <h2
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 700,
-              fontSize: 'clamp(36px, 5vw, 48px)',
-              lineHeight: 1.2,
-              letterSpacing: '-0.5px',
-              color: '#F1F5F9',
-              textAlign: 'center',
-              margin: '0 0 24px',
-            }}
-          >
-            Simple, Honest <GlitchWord text="Pricing." />
-          </h2>
+          <SectionEyebrow text="PRICING" />
+          <SectionHeading>
+            Straight Pricing.{' '}
+            <GradientText>Coming at Launch.</GradientText>
+          </SectionHeading>
           <p
             style={{
               fontFamily: 'var(--font-body)',
@@ -4757,446 +4681,115 @@ function PricingSection() {
               fontSize: 17,
               color: '#CBD5E1',
               textAlign: 'center',
-              maxWidth: 520,
-              margin: '0 auto 48px',
-              lineHeight: 1.65,
+              maxWidth: 620,
+              margin: '0 auto 56px',
+              lineHeight: 1.7,
             }}
           >
-            1.75% buyer + 1.75% seller ={' '}
-            <span style={{ color: '#F1F5F9', fontWeight: 600 }}>
-              3.5% total
-            </span>{' '}
-            on sales. Subscriptions = 0% processing. Always transparent.
+            We&rsquo;re setting pre-launch pricing with our founding members right now — no hidden
+            fees, no surprises. Here is the shape of it. The numbers land at launch.
           </p>
-        </div>
 
-        {/* Monthly / Annual Toggle — outside the ghost-VALUE z-layer */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 16,
-            marginBottom: 48,
-          }}
-        >
-          {/* Monthly label — tapping this forces isAnnual=false */}
-          <button
-            type="button"
-            onClick={() => setIsAnnual(false)}
-            aria-pressed={!isAnnual}
+          {/* The three pillars — structure with reserved drop-in slots */}
+          <div
             style={{
-              appearance: 'none',
-              background: 'transparent',
-              border: 'none',
-              padding: '10px 4px',
-              minHeight: 44,
-              cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-              fontWeight: isAnnual ? 400 : 600,
-              fontSize: 15,
-              color: isAnnual ? '#6B7280' : '#F1F5F9',
-              transition: 'all 0.3s ease',
+              display: isMobile ? 'flex' : 'grid',
+              flexDirection: 'column',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+              gap: 20,
+              alignItems: 'stretch',
             }}
           >
-            Monthly
-          </button>
-          {/* The visual switch — 44px min tap target (Apple HIG) without
-              changing the 56×30 visual pill. Padding expands the hit
-              area. role="switch" + aria-checked makes it accessible. */}
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isAnnual}
-            aria-label="Toggle monthly or annual billing"
-            onClick={() => setIsAnnual(!isAnnual)}
-            style={{
-              appearance: 'none',
-              padding: 7, // expands 56×30 pill to a 70×44 tap target
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span
-              style={{
-                width: 56,
-                height: 30,
-                borderRadius: 15,
-                background: isAnnual
-                  ? 'linear-gradient(135deg, #00BCD4, #009688)'
-                  : 'rgba(255,255,255,0.15)',
-                position: 'relative',
-                transition: 'background 0.3s ease',
-                border: isAnnual
-                  ? '1px solid rgba(0,188,212,0.5)'
-                  : '1px solid rgba(255,255,255,0.2)',
-                flexShrink: 0,
-                display: 'inline-block',
-              }}
-            >
-              <span
-                style={{
-                  position: 'absolute',
-                  top: 3,
-                  left: isAnnual ? 28 : 3,
-                  width: 22,
-                  height: 22,
-                  borderRadius: '50%',
-                  background: '#FFFFFF',
-                  transition: 'left 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                  display: 'inline-block',
-                }}
-              />
-            </span>
-          </button>
-          {/* Annual label — tapping this forces isAnnual=true */}
-          <button
-            type="button"
-            onClick={() => setIsAnnual(true)}
-            aria-pressed={isAnnual}
-            style={{
-              appearance: 'none',
-              background: 'transparent',
-              border: 'none',
-              padding: '10px 4px',
-              minHeight: 44,
-              cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-              fontWeight: isAnnual ? 600 : 400,
-              fontSize: 15,
-              color: isAnnual ? '#F1F5F9' : '#6B7280',
-              transition: 'all 0.3s ease',
-            }}
-          >
-            Annual
-          </button>
-          <span
-            style={{
-              fontFamily: 'var(--font-data)',
-              fontWeight: 600,
-              fontSize: 11,
-              background: 'rgba(0,188,212,0.15)',
-              color: '#00BCD4',
-              padding: '4px 10px',
-              borderRadius: 20,
-              letterSpacing: '0.05em',
-              opacity: isAnnual ? 1 : 0.5,
-              transition: 'opacity 0.3s ease',
-            }}
-          >
-            SAVE 20%
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: cols,
-            gap: 20,
-            alignItems: 'start',
-          }}
-        >
-          {tiers.map((tier, i) => (
-            <div
-              key={tier.name}
-              style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: `1px solid ${tier.highlight ? 'rgba(0,188,212,0.4)' : 'rgba(0,188,212,0.15)'}`,
-                borderRadius: 16,
-                backdropFilter: 'blur(12px)',
-                padding: '32px 24px 28px',
-                transform: tier.highlight && width >= 1200 ? 'scale(1.03)' : 'none',
-                position: 'relative',
-                transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16,
-              }}
-            >
-              {tier.highlight && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    fontFamily: 'var(--font-data)',
-                    fontWeight: 600,
-                    fontSize: 10,
-                    textTransform: 'uppercase' as const,
-                    letterSpacing: '0.05em',
-                    background: '#00BCD4',
-                    color: '#0D1117',
-                    padding: '4px 12px',
-                    borderRadius: '0 0 8px 8px',
-                  }}
-                >
-                  MOST POPULAR
-                </div>
-              )}
-
-              <div
-                style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 600,
-                  fontSize: 16,
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: '0.05em',
-                  color: '#F1F5F9',
-                }}
-              >
-                {tier.name}
-              </div>
-
-              <div>
-                {tier.monthlyPrice > 0 && (
-                  <s
-                    style={{
-                      color: '#6B7280',
-                      fontSize: 14,
-                      fontFamily: 'var(--font-body)',
-                      marginRight: 8,
-                    }}
-                  >
-                    {isAnnual ? `$${tier.monthlyPrice}` : tier.oldMonthly}
-                  </s>
-                )}
-                <span
-                  style={{
-                    fontFamily: 'var(--font-data)',
-                    fontWeight: 700,
-                    fontSize: 36,
-                    background: 'linear-gradient(135deg, #00BCD4, #FFFFFF)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  ${isAnnual ? Math.round(tier.annualPrice / 12) : tier.monthlyPrice}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 14,
-                    color: '#94A3B8',
-                  }}
-                >
-                  /mo
-                </span>
-                {isAnnual && tier.annualPrice > 0 && (
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 12,
-                      color: '#6B7280',
-                      marginTop: 4,
-                    }}
-                  >
-                    ${tier.annualPrice}/yr billed annually
-                  </div>
-                )}
-              </div>
-
-              <span
-                style={{
-                  display: 'inline-block',
-                  fontFamily: 'var(--font-data)',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  background: 'rgba(0,188,212,0.1)',
-                  color: '#00BCD4',
-                  padding: '4px 10px',
-                  borderRadius: 6,
-                  alignSelf: 'flex-start',
-                }}
-              >
-                {tier.commission} commission
-              </span>
-
-              <div
+            {pillars.map((p, i) => (
+              <GlowCard
+                key={p.name}
+                delay={i * 80}
+                defaultBorderColor={p.highlight ? 'rgba(0,188,212,0.4)' : 'rgba(0,188,212,0.15)'}
+                hoverBorderColor="rgba(0,188,212,0.5)"
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 6,
-                  flex: 1,
+                  padding: '32px 28px',
+                  // PR-gate fix: do NOT pass transform here — GlowCard spreads style last and it
+                  // would clobber its own scroll-reveal + hover-lift animation (preserve what works).
+                  // The highlighted pillar is differentiated by its brighter border instead.
                 }}
               >
-                {tier.features.map((feature) => (
+                <div style={{ fontSize: 30, marginBottom: 14 }}>{p.emoji}</div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 700,
+                    fontSize: 20,
+                    color: '#F1F5F9',
+                    marginBottom: 10,
+                  }}
+                >
+                  {p.name}
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    fontSize: 15,
+                    color: '#CBD5E1',
+                    lineHeight: 1.65,
+                    margin: '0 0 24px',
+                    flex: 1,
+                  }}
+                >
+                  {p.body}
+                </p>
+
+                {/* DROP-IN SLOT — the reserved place a real number lands at launch.
+                    Swapping the marker text for a price requires NO layout change. */}
+                <div
+                  style={{
+                    marginTop: 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 52,
+                    borderRadius: 12,
+                    border: '1px dashed rgba(0,188,212,0.35)',
+                    background: 'rgba(0,188,212,0.05)',
+                  }}
+                >
                   <span
-                    key={feature}
                     style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 13,
-                      color: '#CBD5E1',
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      fontSize: 16,
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase' as const,
+                      color: '#22D3EE',
                     }}
                   >
-                    <span style={{ color: '#00BCD4', marginRight: 6 }}>✓</span>
-                    {feature}
+                    {p.slot}
                   </span>
-                ))}
-              </div>
-
-              <a
-                href="#waitlist"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: 44,
-                  borderRadius: 12,
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  textDecoration: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  ...(tier.name === 'FREE'
-                    ? {
-                        background: 'transparent',
-                        border: '1px solid rgba(0,188,212,0.4)',
-                        color: '#00BCD4',
-                      }
-                    : {
-                        background: 'linear-gradient(135deg, #00bcd4, #009688)',
-                        border: '1px solid transparent',
-                        color: '#fff',
-                        boxShadow:
-                          '0 0 20px rgba(0,188,212,0.2), 0 2px 8px rgba(0,188,212,0.15)',
-                      }),
-                }}
-              >
-                {tier.cta}
-              </a>
-            </div>
-          ))}
-        </div>
-
-        {/* Feature Comparison Table — horizontally scrollable on mobile */}
-        <div
-          style={{
-            marginTop: 64,
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(0,188,212,0.15)',
-            borderRadius: 16,
-            backdropFilter: 'blur(12px)',
-            overflow: 'hidden',
-          }}
-        >
-          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-            <div style={{ minWidth: width < 640 ? 580 : 'auto' }}>
-              {/* Table Header */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1.8fr 1fr 1fr 1fr 1fr',
-                  padding: width < 480 ? '12px 14px' : '16px 20px',
-                  borderBottom: '1px solid rgba(0,188,212,0.15)',
-                  background: 'rgba(0,188,212,0.05)',
-                }}
-              >
-                <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>Feature</span>
-                {['Free', 'DIY Seller', 'Power Seller', 'Estate Manager'].map((h) => (
-                  <span key={h} style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: width < 480 ? 10 : 11, color: '#00BCD4', textTransform: 'uppercase' as const, letterSpacing: '0.1em', textAlign: 'center' }}>{h}</span>
-                ))}
-              </div>
-              {/* Table Rows */}
-              {[
-                { feature: 'AI Item Analysis', free: 'Limited', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'PriceBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'PhotoBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'DescriptionBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'BuyerBot', free: '—', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'ShippingBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'ReconBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'AntiqueBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'CollectiblesBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'NegotiationBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'CrossListBot', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'CarBot', free: '—', diy: '—', power: '—', estate: '✓' },
-                { feature: 'MegaBot (All-in-One)', free: '—', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'Monthly Credits', free: '—', diy: '20/mo', power: '50/mo', estate: '100/mo' },
-                { feature: 'Active Items', free: '3', diy: '25', power: '100', estate: 'Unlimited' },
-                { feature: 'Photos Per Item', free: '2', diy: '5', power: '8', estate: '15' },
-                { feature: 'Commission', free: '12%', diy: '8%', power: '5%', estate: '4%' },
-                { feature: 'Public Store Page', free: '✓', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'Custom Store Branding', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'White-Label Store', free: '—', diy: '—', power: '—', estate: '✓' },
-                { feature: 'Advanced Analytics', free: '—', diy: '—', power: '✓', estate: '✓' },
-                { feature: 'Garage Sale Network', free: 'Browse', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'Neighborhood Sale Events', free: '—', diy: '✓', power: '✓', estate: '✓' },
-                { feature: 'Estate Sale Events', free: '—', diy: '—', power: '—', estate: '✓' },
-                { feature: 'API Access', free: '—', diy: '—', power: '—', estate: '✓' },
-                { feature: 'Dedicated Account Manager', free: '—', diy: '—', power: '—', estate: '✓' },
-              ].map((row, i) => (
-                <div
-                  key={row.feature}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1.8fr 1fr 1fr 1fr 1fr',
-                    padding: width < 480 ? '10px 14px' : '12px 20px',
-                    borderBottom: i < 25 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                    transition: 'background 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,188,212,0.04)' }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
-                >
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: width < 480 ? 12 : 14, color: '#CBD5E1', fontWeight: 500, whiteSpace: 'nowrap' }}>{row.feature}</span>
-                  {[row.free, row.diy, row.power, row.estate].map((val, j) => (
-                    <span
-                      key={j}
-                      style={{
-                        fontFamily: 'var(--font-body)',
-                        fontSize: width < 480 ? 12 : 14,
-                        textAlign: 'center',
-                        color: val === '✓' ? '#00BCD4' : val === '—' ? '#4B5563' : '#CBD5E1',
-                        fontWeight: val === '✓' ? 600 : 400,
-                      }}
-                    >
-                      {val}
-                    </span>
-                  ))}
                 </div>
-              ))}
-            </div>
+              </GlowCard>
+            ))}
           </div>
-          {/* Scroll hint on mobile */}
-          {width < 640 && (
-            <div style={{ padding: '8px 20px', textAlign: 'center' }}>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#6B7280' }}>← Swipe to see all tiers →</span>
-            </div>
-          )}
-        </div>
 
-        {/* Credit Packs */}
-        <div
-          style={{
-            textAlign: 'center',
-            marginTop: 40,
-            fontFamily: 'var(--font-body)',
-            fontSize: 14,
-            color: '#94A3B8',
-          }}
-        >
-          <span style={{ fontWeight: 500 }}>AI Credit Packs:</span> $25 / 30
-          credits &bull; $50 / 65 credits &bull; $100 / 140 credits &bull; $200
-          / 300 credits
+          {/* Founding note + one door to the waitlist (no price) */}
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 500,
+              fontSize: 15,
+              color: '#94A3B8',
+              textAlign: 'center',
+              margin: '48px 0 28px',
+              lineHeight: 1.6,
+            }}
+          >
+            Founding members lock in pre-launch pricing. Join the first 100.
+          </p>
+          <div style={{ textAlign: 'center' }}>
+            <MagneticButton href="#waitlist">Get Founding Access</MagneticButton>
+          </div>
         </div>
-        <p
-          style={{
-            textAlign: 'center',
-            marginTop: 16,
-            fontFamily: 'var(--font-body)',
-            fontSize: 14,
-            color: '#94A3B8',
-          }}
-        >
-          First AI analysis is always free. 10 free credits when you sign up. Credits &amp; add-ons: 3.5% processing.
-        </p>
       </div>
     </section>
   )
@@ -5229,7 +4822,7 @@ function EstateSection() {
     { emoji: '🏺', text: 'Antique detection that helps you spot a valuable heirloom before it sells' },
     { emoji: '🌐', text: 'Listing copy prepared for every major marketplace, ready to post' },
     { emoji: '💬', text: 'AI Messaging Agent handles buyer conversations for you' },
-    { emoji: '🚚', text: 'AI Shipping Center — live rates from USPS, UPS, FedEx, DHL and Arta. Parcel, LTL freight, or local pickup' },
+    { emoji: '🚚', text: 'AI Shipping Center — live rates from USPS, UPS, and FedEx. Parcel, LTL freight, or local pickup' },
   ]
 
   // The three ways families work with us — EDUCATION, not pricing. No buttons, no badges.
@@ -5794,7 +5387,7 @@ function TechSection() {
     {
       emoji: '📦',
       title: 'AI Shipping Center',
-      desc: 'Live rates from USPS, UPS, FedEx, DHL and Arta. Parcel, LTL freight, or local pickup — you choose, we print the label.',
+      desc: 'Live rates from USPS, UPS, and FedEx. Parcel, LTL freight, or local pickup — you choose, we print the label.',
     },
     {
       // CEO ruling G8 — VERBATIM, visible future marker, no regulated words, no date.
@@ -5906,7 +5499,7 @@ function TechSection() {
         </div>
 
         <ScrollRevealText
-          text="10 AI bots + MegaBot. 4 consensus engines. One AI Shipping Center. Every tool you need — in one platform."
+          text="A full AI team + MegaBot. 4 consensus engines. One AI Shipping Center. Every tool you need — in one platform."
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 600,
@@ -7969,7 +7562,7 @@ function FinalCTASection() {
             }}
           >
             Your Items Have Value.{' '}
-            <GlitchWord text="We Help You Prove It." />
+            <GlitchWord text="We Help You Find It." />
           </h2>
           <p
             style={{
@@ -8664,7 +8257,7 @@ function HelpCenter() {
               }}
             >
               Prefer the phone? Leave a message at our help line and we&apos;ll
-              call you back the same business day.
+              call you back within one business day.
             </p>
           </div>
         </div>
