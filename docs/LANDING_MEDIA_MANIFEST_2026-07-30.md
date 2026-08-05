@@ -284,3 +284,151 @@ same D-2 / shipping-overclaim risk as V3 — review before any use.
 
 ### SUMMARY (arc-called set): USE 5 · USABLE-WITH-EDIT 1 · DO-NOT-USE 1 · (root live 3, implicit USE)
 The video spine (WAVE 4) wires only USE / USABLE-WITH-EDIT clips, each with honest adjacent copy.
+
+---
+
+## W0 (PASS 3) VERDICT SWEEP  (2026-08-05 · CMD-LANDING-PASS3 · Agent A)
+
+Method: ffmpeg 8.1.2 · per clip `ffprobe` duration + 3 frames at 15/50/85 pct extracted to a
+scratch dir `/tmp/w0frames` (NEVER staged; deleted at end), scaled 480 wide, viewed, then
+verdicted against `docs/CANONICAL_FACTS.md` (read-only D-2 truth fence). Provenance: `[WATCHED]` =
+frames viewed this pass · `[KNOWN]` = verdict carried from a prior pass / byte-identical dup / not
+re-extracted. Audio is NEVER reviewed in a filesystem pass — every voiceover/subtitle claim is a
+caption-pending flag for the CEO. NOT re-verdicted here (WAVE-2 already did): CLIP 1-4, V3, V4, V6,
+V7. Root live videos (hero-loop, vintage-item-valuation, Connecting_Generations pair) stay implicit
+USE. Eleven fields per asset are carried in the tables below (path · purpose · verdict · beat ·
+desktop crop · mobile crop · poster frame · caption/transcript · fallback image · alt text ·
+rights/likeness/music).
+
+### CLIP TABLE — New Videos Ready to Use (priority folder)
+
+| File (rel to media root) | Purpose / what it shows | Verdict | Beat | Desktop crop | Mobile crop | Poster ts | Caption / transcript (audio NOT reviewed) | Fallback image | Alt text | Rights / likeness / music | Prov |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Video Campaign/New Videos Ready to Use/V1 — AI Analyzer (found money).mp4 | Man in kitchen scans a coin/disc with phone; teal AI beam; wide-eyed reaction; teal logo bumper | USABLE-WITH-EDIT | B1 AI analyzer | center 16:9 on the scan | 9:16 face+phone | ~4.0s (scan lit) | overlay implies "snap → AI identifies value" (LIVE-true, HowItWorks step 1). Filename "found money" is fine. audio not reviewed; caption pending | senior-tablet.png | Person scanning an item with a phone, teal AI light revealing value | Synthetic person (Veo) — no real-likeness release needed; music not audio-reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/V2 — Social Media Engine (works while you rest).mp4 | Phone lying on a coffee table EMITS a beam of light while a person reclines feet-up; teal energy ribbons swirl the room | DO-NOT-USE (as-is) | none | — | — | n/a | RULE-4: "Social Media Engine / works while you rest" = autonomous auto-posting metaphor. VIOLATES D-2 §6 (Facebook/IG posting is env-gated DARK; 11/12 destinations are guided copy-paste). Same class as V3. audio not reviewed; caption pending | — | — | Synthetic; music not reviewed. FLAG: implied-capability we do not have | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/V5 — Shipping, Handled (TMS).mp4 | Two hands tape a glowing cardboard box on a teal-lit pedestal | USABLE-WITH-EDIT | B7 shipping (options only) | box center | box center 9:16 | ~1.2s | RULE-4: title "Shipping, Handled" echoes banned "we handle the shipping." Visual (taping a box) is neutral and reusable ONLY beside approved copy "Live shipping options — you choose, we print the label." Never wire with the "handled" title card. audio not reviewed; caption pending | — | Hands taping a shipping box under teal light | Synthetic; music not reviewed. FLAG: title-card overclaim | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/CLIP — Cast iron skillet (VEO).mp4 | Cast-iron skillet beauty shot, teal edge-glow, dark studio; sparkle mark | USE | B5 item b-roll | skillet center | skillet 9:16 | ~5.0s | none (pure item b-roll) | — | Cast-iron skillet under teal studio light | Synthetic object; no trademark; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/CLIP — Power tools (VEO).mp4 | Cordless drill + hand tools flat-lay, teal glow. Drill wears a fictional garbled brand ("BOADI/PS") | USABLE-WITH-EDIT | B5 item b-roll | drill center; avoid readable logo | tighten to drill | ~5.0s | AI-tell: garbled brand text on the drill/battery. Use in motion only or crop the battery label. none spoken | — | Cordless drill and hand tools under teal light | Synthetic; garbled fake brand — verify no real-mark resemblance; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/CLIP — Stand mixer (VEO).mp4 | Stand mixer with a teal wireframe-scan overlay morphing over it; dark studio | USE | B1/B5 scan b-roll | mixer center | mixer 9:16 | ~5.0s | wireframe overlay reads as "AI scan" (LIVE-true). none spoken | — | Stand mixer with a teal AI wireframe scan overlay | Synthetic; generic (not a readable real brand); music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/SHORT 01 — Snap to Sold.mp4 | 3D motion: an item drops into an open box; teal-lidded; vase b-roll; brand outro | USE | social / loop teaser | boxed item center | native 9:16 | ~4.0s | none on this frame | — | Item dropping into a box, teal accents | Motion-graphics; no likeness; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/SHORT 02 — Found Money.mp4 | Vertical short; ends on teal logo + "CONNECTING GENERATIONS / legacy-loop.com" (spelled correctly on this frame) | USE | social | — | native 9:16 | end card | outro copy correct here. audio not reviewed; caption pending | — | Legacy-Loop logo, Connecting Generations, vertical short | Music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/SHORT 03 — Know Its Worth.mp4 | Man holds a watch orbited by teal rings; big "$1,250" HUD; comic-book value reveal | DO-NOT-USE (as-is) | none | — | — | n/a | TWO AI-tells + RULE-4: (1) fabricated "$1,250" HUD = a confidence/value number the system did not compute (D-2 §6 "display only measured confidence"). (2) garbled subtitle "That draıger may e worth more than you thiink." (3) comic cover is AI-gibberish "COGNLLERTS-ALIS SPELVIS". Reshoot or heavy-edit. audio not reviewed; caption pending | — | — | Synthetic; fabricated price HUD — truth defect; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/SHORT 04 — Sell Everywhere.mp4 | Vertical short; ends on logo card MISSPELLED "GENERRATIONS" and "leegacy-loop.com" | DO-NOT-USE (as-is) | none | — | — | n/a | BRAND DEFECT + RULE-4: outro double-typo ("GENERRATIONS", "leegacy-loop.com"); title "Sell Everywhere" = banned broadcast metaphor (D-2 §6 banned "publishes everywhere"). Same class as V3. audio not reviewed; caption pending | — | — | Synthetic; brand-spelling defect (WCS §9) + capability overclaim; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/SHORT 05 — Shipping, Any Size.mp4 | Senior + clerk at a conveyor of boxes in a warehouse; subtitle "Any size. We handle the shipping." | DO-NOT-USE (as-is) | none | — | — | n/a | RULE-4 (direct): subtitle is the BANNED line verbatim — "we handle the shipping" (D-2 §6). Also implies a staffed LL warehouse (no such op). Reshoot with approved shipping line. audio not reviewed; caption pending | — | — | Synthetic people; capability overclaim; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/SHORT 06 — First 100 (the ask).mp4 | App dashboard glass cards (garbled numbers) → "The first 100. A deep lifetime discount." | USABLE-WITH-EDIT | B10 waitlist | end-card copy | native 9:16 | end card | dashboard numbers are AI-garbled ($4.37, $114/$197/$465, "Valung Items $31.90") — do NOT let them read as real metrics (D-2 §5). Copy "first 100" is on-brand. Use the end card only, or blur the fake dashboard. audio not reviewed; caption pending | — | Legacy-Loop app dashboard, "The first 100" pre-launch card | Synthetic UI; fabricated stat risk on the dashboard cards; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/V1..V7 (see WAVE-2 for V3/V4/V6/V7) | — | see rows | — | — | — | — | — | — | — | — | [KNOWN] |
+| Video Campaign/New Videos Ready to Use/X_V2 (Snap & Sell).mp4  ·  X_V2 Snap and Sell.mp4 (BYTE-IDENTICAL dup) | Phone photographs a vintage SLR; app shows the shot + a teal price tag "$150" | USE | B1 snap→list | phone center | phone 9:16 | ~5.0s | "$150" is a plausible listing price, not a HUD confidence claim — OK. Dedupe the two identical files (keep one). audio not reviewed; caption pending | — | Phone photographing a vintage camera, app tags it $150 | Synthetic; generic camera; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/X_V3 (Shipping).mp4  ·  X_V3 Shipping.mp4 (BYTE-IDENTICAL dup) | White robotic arm auto-palletizing boxes in a lights-out automated warehouse | DO-NOT-USE (as-is) | none | — | — | n/a | RULE-4: depicts an autonomous robotic fulfillment operation LL does not run (D-2 §6 "we provide options; we do not ship"). Same shipping-overclaim class. Dedupe. audio not reviewed; caption pending | — | — | Synthetic; capability overclaim (owned fulfillment); music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/Generated Video ... 6_08PM.mp4 | Phone photographs a vintage SLR on a warm wood table; teal camera-flash | USE | B1 snap b-roll | phone+item | 9:16 phone | ~4.0s | none spoken | — | Phone photographing a vintage camera on a table | Synthetic; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/Generated Video ... 6_10PM.mp4 | Watch + leather handbag beauty shot on wood, single spotlight | USE | B5 item b-roll | items center | 9:16 | ~4.0s | none | — | Vintage watch and leather handbag under a spotlight | Synthetic; generic goods; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/Generated Video ... 6_13PM.mp4 | Two hands exchange a card/cash over a box in warm window light (handoff/payment) | USE | B8 handoff | hands center | 9:16 crop | ~4.0s | reads as an in-person handoff/payment — consistent with "payment collected before handoff." none spoken | — | Two people exchanging payment over a box at a table | Synthetic hands; music not reviewed | [WATCHED] |
+| Video Campaign/New Videos Ready to Use/Extra X Video.mp4  ·  EXTRAX~1.MP4 (BYTE-IDENTICAL dup) | Middle-aged woman photographs an ornate jewelry/music box; teal AI sparkle rises | USE | B1/B9 estate scan | woman+box | 9:16 | ~5.0s | on-brand senior + AI-scan. Dedupe the two identical files. audio not reviewed; caption pending | senior-tablet.png | Woman photographing an ornate jewelry box, teal AI light rising | Synthetic person; music not reviewed | [WATCHED] |
+
+### CLIP TABLE — Final Drafts (real live-action)
+
+| File | Purpose / what it shows | Verdict | Beat | Poster ts | Caption / transcript (audio NOT reviewed) | Alt text | Rights / likeness / music | Prov |
+|---|---|---|---|---|---|---|---|---|
+| Video Campaign/Final Drafts/Video_01_What_is_Legacy-Loop_v2_SOUND.mp4 | Explainer: watch beauty shot "Know what it's really worth." → clean logo/Connecting Generations outro | USE | B1 / explainer | ~11s | subtitle "Know what it's really worth." (true framing). HAS SOUND — voiceover NOT reviewed; caption pending | Vintage watch, "Know what it's really worth" explainer | Synthetic b-roll; VOICEOVER present — CEO must audio-review claims | [WATCHED] |
+| Video Campaign/Final Drafts/Video_A_Snap_Know_Its_Worth.mp4 | REAL live-action: hands photograph a blue-and-white vase at a yard sale; "Snap a photo. Know what it's worth." | USE | B1 hero/social | ~9s | on-brand, honest. audio not reviewed; caption pending | Person photographing a vase at a yard sale | REAL PEOPLE ON CAMERA (hands) — likeness release should be on file; music not reviewed. FLAG: confirm talent release | [WATCHED] |
+| Video Campaign/Final Drafts/Video_B_Youre_Sitting_On_A_Goldmine.mp4 | REAL live-action: woman selfie-style in a garage full of goods; "You're sitting on a goldmine." | USE | B0/B9 social | ~10s | on-brand. audio not reviewed; caption pending | Woman in a garage of goods, "sitting on a goldmine" | REAL PERSON ON CAMERA — likeness release should be on file; music not reviewed. FLAG: confirm talent release | [WATCHED] |
+
+### CLIP TABLE — Legacy-Loop 30s Ads (Peg Code) — high-craft, honest copy
+
+| File | Purpose / what it shows | Verdict | Beat | Poster ts | Caption / transcript (audio NOT reviewed) | Rights / likeness / music | Prov |
+|---|---|---|---|---|---|---|---|
+| .../LegacyLoop_30s_Ad_LiveAction.mp4 | Hands seal a cardboard box; caption "Shipping, handled." → brand outro | USABLE-WITH-EDIT | B7 | ~15s | RULE-4: "Shipping, handled." leans on banned "we handle the shipping." Re-caption to approved shipping line before use. VOICEOVER present — not reviewed | Real hands on camera; VO present — CEO audio-review + release. FLAG | [WATCHED] |
+| .../LegacyLoop_30s_Ad_MotionGraphics.mp4 | Kinetic-type ad; headline card "Sell everywhere." | DO-NOT-USE (as-is) | none | n/a | RULE-4: "Sell everywhere." is a banned line (D-2 §6). Reframe to "Publishes your storefront + prepares every listing." VO not reviewed | Motion-graphics; VO present — CEO audio-review. FLAG capability overclaim | [WATCHED] |
+| .../LegacyLoop_Anthem_Meet_44s.mp4 | Brand anthem; logo on a gold node-mesh; "Meet real buyers." (44s, 35M) | USABLE-WITH-EDIT | B2/B12 | ~22s | "Meet real buyers." aligns with BuyerBot fence. Heavy file — transcode before any inline use. VOICEOVER present — not reviewed | Motion + VO; CEO audio-review; music not reviewed. FLAG size + VO | [WATCHED] |
+| .../LegacyLoop_DontGiveItAway_30s.mp4 | Antique-alert ad; dark card-deck b-roll → correct "Legacy-Loop / Connecting Generations" logo card | USE | B9 antique alert | end card | outro spelling correct. VOICEOVER present — not reviewed | Synthetic b-roll; VO present — CEO audio-review. FLAG VO | [WATCHED] |
+| .../LegacyLoop_MeetLegacyLoop_Items_42s.mp4 | Items ad; fanned illustrated cards; "Even the small stuff adds up." (42s, 34M) | USE | B5 | ~21s | honest, no claim. Heavy file — transcode. VO present — not reviewed | Synthetic; VO — CEO audio-review. FLAG size | [WATCHED] |
+| .../LegacyLoop_SittingOnMoney_30s.mp4 | Card-deck b-roll ad (dark) → brand | USE | B5/B9 | ~15s | no visible false claim on frames. VO present — not reviewed | Synthetic; VO — CEO audio-review | [WATCHED] |
+| .../LegacyLoop_SittingOnMoney_Everyday_42s.mp4 | Cast-iron skillet spotlight; "Just an old skillet?" (42s) | USE | B5 | ~21s | honest tease. VO present — not reviewed | Synthetic; VO — CEO audio-review. FLAG size | [WATCHED] |
+| .../LegacyLoop_ThatsMe_37s.mp4 | Vintage turntable spotlight; "That drawer might be a paycheck." | USE | B5/B9 | ~18s | honest, no metric. VO present — not reviewed | Synthetic; VO — CEO audio-review | [WATCHED] |
+| .../LegacyLoop_TheFirst100_30s.mp4 | Elderly hand + child hand touching over an antique compass (Sistine motif); "First access as we grow." | USE | B10/B12 | ~24s | best-in-set Connecting Generations + honest pre-revenue framing. VO present — not reviewed | Real/■synthetic hands (close-up); VO — CEO audio-review + release if real. FLAG | [WATCHED] |
+| .../LegacyLoop_WhatIsLegacyLoop_50s.mp4 | Explainer; logo node-mesh; "We find your buyer — pickup or shipped." + "From 'what is this?' to 'it sold.'" | USE | B2/B12 | ~25s | honest: "pickup OR shipped" avoids the ship-overclaim; correct framing. Heavy (37M) — transcode. VO present — not reviewed | Synthetic; VO — CEO audio-review. FLAG size | [WATCHED] |
+
+### CLIP TABLE — Original Veo Videos / Veo Video Creations / Work In Progress
+
+NOTE: `Veo Video Creations/` is BYTE-IDENTICAL to the five `Original Veo Videos/` 5_07–5_15 gens
+(cmp confirmed on 5_07; same sizes across the set) — treat as a pure duplicate folder, dedupe.
+
+| File | Purpose / what it shows | Verdict | Beat | Poster ts | Caption / notes (audio NOT reviewed) | Rights / likeness / music | Prov |
+|---|---|---|---|---|---|---|---|
+| Original Veo Videos/Generated Video ... 5_07PM.mp4 (+ Veo Creations dup) | Antique desk, open drawer with a pocket watch inside; brass bust; leather books | USE | B9 estate b-roll | ~4s | none spoken | Synthetic; music n/a | [WATCHED] |
+| Original Veo Videos/... 5_09PM.mp4 (+ dup) | Sunlit stack of old books on a table by a window | USE | B9 b-roll | ~4s | none | Synthetic; music n/a | [WATCHED] |
+| Original Veo Videos/... 5_11PM.mp4 (+ dup) | Hand photographs a watch on a phone; teal sound-wave rings; garbled UI text "00BCD4" | USABLE-WITH-EDIT | B1 | ~4s | AI-tell: garbled camera-UI text. Motion/bg use only or crop UI. none spoken | Synthetic; music n/a | [WATCHED] |
+| Original Veo Videos/... 5_13PM.mp4 (+ dup) | Watch macro beauty shot, teal rim-light, dust motes | USE | B5 | ~4s | none | Synthetic; music n/a | [WATCHED] |
+| Original Veo Videos/... 5_15PM.mp4 (+ dup) | Stack of cardboard delivery boxes in a doorway at sunset | USABLE-WITH-EDIT | B7 (shipping-adjacent) | ~4s | mild: "delivery" read — pair only with "you choose, we print the label" copy, never "we deliver". none spoken | Synthetic; music n/a | [WATCHED] |
+| Original Veo Videos/LegacyLoop - Logo - Animation Video - Web Ready (1).mp4 | Teal neon logo sting; visible "Veo" watermark bottom-right | USABLE-WITH-EDIT | bumper | ~4s | remove the Veo watermark before any use (logo assets are Ryan-owned). none spoken | Logo — Ryan-owned; strip Veo watermark. FLAG | [WATCHED] |
+| Original Veo Videos/TicTok-3.mp4 | REAL live-action yard-sale; hands photograph a blue-white vase; "YARD SALE" sign (source of Final Draft A) (24s, 30M) | USE | social | ~12s | on-brand, honest. Heavy — transcode. audio not reviewed | REAL PEOPLE (hands) — likeness release; music not reviewed. FLAG release + size | [WATCHED] |
+| Original Veo Videos/TikToc-2.mp4 | REAL live-action; young man in a garage; shirt shows AI-garbled text "JAARGG" (32s, 40M — largest file) | USABLE-WITH-EDIT | social | ~16s | AI-tell: garbled shirt graphic — avoid a readable close-up. Heavy — transcode. audio not reviewed | REAL PERSON — likeness release; music not reviewed. FLAG release + size + garble | [WATCHED] |
+| Original Veo Videos/LegacyLoop - Vintage Item Valuation- Web Ready (2).mp4 | Web-ready source of the shipped vintage-item-valuation clip | USE (already-live twin) | B6 | n/a | root vintage-item-valuation is already truth-swept + live | Source of a live asset | [KNOWN] |
+| Original Veo Videos/LegacyLoop_Landing_GS_Hero.mp4 (39M master) · Legacy_Loop_Hero_..._Generations.mp4 · Legacyloop Gs Subsection Girl_Web.mp4 · Vintage_Item_Valuation_Video.mp4 | Full-res / twin masters of already-shipped root hero + subsection + valuation assets | USE (masters of live) | B0/B6/B12 | n/a | root cuts are live + truth-swept; these are the source masters | Masters of live assets; keep for re-encode | [KNOWN] |
+| Work In Progress/Antique_Alert_Dont_Give_It_Away_v1.mp4 | Silver candlestick beauty shot, letterboxed, "Veo" watermark (superseded by 30s Ads DontGiveItAway) | USABLE-WITH-EDIT | B9 | ~8s | strip Veo watermark; superseded — prefer the 30s Ads cut. audio not reviewed | Synthetic; Veo watermark. FLAG superseded | [WATCHED] |
+| Work In Progress/Video_01_What_is_Legacy-Loop_v1_SOUND.mp4 (+ v1.mp4 silent) | Watch "Know what it's really worth." — v1, superseded by Final Drafts v2 | USABLE-WITH-EDIT | explainer | ~11s | superseded — prefer Final Drafts v2. VO present — not reviewed | Synthetic; VO — CEO audio-review. FLAG superseded | [WATCHED] |
+| Work In Progress/What_is_Legacy-Loop_v1.mp4 | Type card "AI-powered resale, made simple. Snap a photo. We do the rest." | USABLE-WITH-EDIT | explainer intro | ~10s | "We do the rest" is broad but not a banned line (matches the true snap→AI flow); OK to keep, watch that it isn't read as auto-post/auto-ship. audio not reviewed | Motion-graphics; music not reviewed | [WATCHED] |
+| Work In Progress/*_poster.jpg (Antique_Alert_poster, Video_01_poster, poster.jpg) | Poster still frames | USABLE-WITH-EDIT | n/a | — | posters for the WIP videos; carried from prior pass | Stills of the above | [KNOWN] |
+
+### STATIC GRAPHIC SWEEP — claim-bearing stills wired into app/landing/page.tsx
+
+Only three claim-bearing (non-logo) statics are actually rendered in the landing tree; logos are
+UNTOUCHABLE (CLAUDE.md §3, Ryan-owned) and not re-verdicted.
+
+| File (wired at) | What it shows | Verdict | Count / claim mismatch | Fix | Alt text (current) | Prov |
+|---|---|---|---|---|---|---|
+| public/Pictures & Videos for Landing Page/_Four_identical_translucent_202603311353-Trans.png  (page.tsx:4175, under the "Six AI Engines" H2) | FOUR translucent orbs (teal · purple · gold · white/silver) in a diamond, connected by light beams | **DO-NOT-USE-AS-IS** | **TRUTH DEFECT: image shows 4 orbs directly under a headline that reads "Six AI Engines." Body copy names SIX (OpenAI, Claude, Gemini, Grok, DeepSeek, Perplexity) and the alt text says "Four AI engines." Image count (4) != headline count (6).** The "four form the MegaBot council" sentence does not repair what the eye sees. | Two options: (A) regenerate as SIX orbs to match the headline + copy; (B) replace with the W3 original constellation graphic; OR (C, minimal) move this image under a MegaBot-specific "Four-AI council" subhead, not the "Six AI Engines" header. | "Four AI engines connected by light beams — MegaBot consensus visualization" | [WATCHED] |
+| public/images/estate/senior-tablet.png  (page.tsx:5686) | Elderly woman at a table with a device showing charts; floating teal AI valuation-graph overlays; antiques around her | USE | none — no numeric/claim mismatch; on-brand senior + AI-valuation scene | none | (verify alt present at 5686) | [WATCHED] |
+| public/images/hero/story-hero-poster.jpg  (page.tsx:6237, `<video poster>`) | Teal neon Legacy-Loop logo mark on black; visible "Veo" watermark bottom-right | USABLE-WITH-EDIT | no claim mismatch, but a third-party "Veo" watermark is baked into a brand poster | strip the Veo watermark (re-export a clean logo poster) | (poster attr) | [WATCHED] |
+
+### W0 PASS 3 COUNTS (clips verdicted this pass — excludes WAVE-2 arc set + root-live)
+
+| Verdict | Count | Assets |
+|---|---|---|
+| USE | 20 | V-set: CLIP skillet, CLIP mixer, SHORT 01, SHORT 02, Gen 6_08/6_10/6_13, ExtraX(≡EXTRAX~1), X_V2(≡dup); Final Drafts V01/A/B; Ads DontGiveItAway, Meet, SittingOnMoney30, SittingEveryday, ThatsMe, TheFirst100, WhatIsLegacyLoop50; Veo 5_07, 5_09, 5_13, TicTok-3. (Byte-dups counted once; masters-of-live tallied under KNOWN) |
+| USABLE-WITH-EDIT | 12 | V1, V5, CLIP power-tools, SHORT 06; Ads LiveAction, Anthem; Veo 5_11, 5_15, Logo-Animation, TikToc-2; WIP Antique_Alert, WIP Video_01_v1, WIP What_is_v1 |
+| DO-NOT-USE (as-is) | 5 | V2 (Social Media Engine), SHORT 03 (fabricated $ HUD + garble), SHORT 04 (brand typo + Sell-Everywhere), SHORT 05 ("we handle the shipping"), X_V3 (robotic fulfillment) + Ad MotionGraphics ("Sell everywhere.") = 6 counting the ad |
+| (KNOWN / not re-extracted) | — | WAVE-2 arc set (CLIP 1-4, V3, V4, V6, V7); root-live pair/valuation; Veo Creations dup folder; masters-of-live; poster stills |
+
+Static graphics: USE 1 (senior-tablet) · USABLE-WITH-EDIT 1 (story-hero-poster, Veo watermark) · DO-NOT-USE-AS-IS 1 (four-orb under Six-Engines headline).
+
+### THE FOUR-ORB FINDING (headline)
+
+The graphic wired at `app/landing/page.tsx:4175` under the **"Six AI Engines"** H2 shows exactly
+**FOUR** orbs. This is a truth/coherence defect: **image count (4) != headline count (6)**, and the
+`alt` text even says "Four AI engines" beneath a six-engine header. The adjacent "four of them form
+the MegaBot council" copy explains the four but does not stop a scanning reader/investor from seeing
+a four-orb picture under a "Six" claim. **Verdict: DO-NOT-USE-AS-IS.** Fix: regenerate as six orbs
+to match, OR swap in the W3 original constellation, OR relocate the four-orb image beneath a
+MegaBot-council subhead (not the "Six AI Engines" header).
+
+### RESHOOT / DO-NOT-USE FLAGS (the honest asset-production risk)
+
+Rule-4 / D-2 capability-overclaim clips (echo V3's "Sell Everywhere" / "Social Media Engine" /
+"Shipping Any Size" risk) — do NOT wire without CEO sign-off and reframed copy:
+- **V2 — Social Media Engine ("works while you rest")** — autonomous auto-posting metaphor. Meta posting is env-gated DARK.
+- **V3 — Sell Everywhere** — (WAVE-2 already DO-NOT-USE) broadcast-to-everywhere.
+- **SHORT 04 — Sell Everywhere** — banned metaphor + brand typos ("GENERRATIONS", "leegacy-loop.com").
+- **SHORT 05 — Shipping, Any Size** — subtitle is the BANNED line verbatim: "We handle the shipping."
+- **X_V3 — Shipping (robotic warehouse)** — depicts an owned autonomous fulfillment op we do not run.
+- **Ad MotionGraphics — "Sell everywhere."** — banned headline.
+- **Ad LiveAction / V5 — "Shipping, handled" / "Shipping, Handled (TMS)"** — leans on banned "we handle the shipping"; usable only with reframed copy.
+
+Fabricated-metric / AI-garble defects (truth + craft):
+- **SHORT 03** — fabricated "$1,250" value HUD (D-2 §6 measured-confidence rule) + garbled subtitle + gibberish comic cover. Reshoot.
+- **SHORT 06** — AI-garbled dashboard numbers ($4.37 / $114 / $197 / $465 / $31.90) risk reading as real metrics; use end card only or blur.
+- **SHORT 04 outro** — brand-spelling defect (WCS §9 canonical "Connecting Generations" / "legacy-loop.com").
+- **CLIP power-tools · Veo 5_11 · TikToc-2 (shirt)** — garbled fake text/brand; crop or motion-only.
+
+Real-likeness release flags (people on camera — confirm talent releases on file before publishing):
+- Final Drafts A (yard-sale hands), Final Drafts B (garage woman), TicTok-3 (yard-sale hands), TikToc-2 (garage man), and any Peg-Code ad with real hands/VO.
+
+Voiceover flag (audio NEVER reviewed in this pass): every Final Draft + every Peg-Code 30s Ad + the
+WIP _SOUND cuts carry a voiceover. Spoken claims are unverified — CEO/Devin must audio-review before
+any of these ship (a clean visual can still carry a banned spoken line).
+
+Watermark flag: LegacyLoop Logo-Animation, WIP Antique_Alert, and story-hero-poster.jpg carry a
+visible "Veo" watermark — strip before use.
+
+Dedupe flag (byte-identical pairs confirmed via cmp): Extra X Video ≡ EXTRAX~1 · X_V2 (Snap & Sell)
+≡ X_V2 Snap and Sell · X_V3 (Shipping) ≡ X_V3 Shipping · entire `Veo Video Creations/` folder ≡
+`Original Veo Videos/` 5_07–5_15.
