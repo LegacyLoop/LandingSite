@@ -252,3 +252,35 @@ X_V2 Snap and Sell, X_V3 (Shipping) / X_V3 Shipping.
 ### Rule 4 media truth fence
 
 CEO-VISUAL REQUIRED: every video row marked PENDING-CEO-VISUAL needs Ryan's eyes before it is wired (media truth fence: no clip showing a capability we do not have ships without a Rule 4 marker).
+
+---
+
+## WAVE 2 · FIX 2 · ffmpeg FRAME VERDICTS (2026-08-05 · Agent A)
+Method: ffmpeg 8.1.2 extracted 3 frames/clip (15/50/85 pct) to a scratch dir (NEVER staged), viewed
+each, checked against `/Users/ryanhallee/legacy-loop-mvp/docs/CANONICAL_FACTS.md` (read-only). Verdicts
+below SUPERSEDE the PENDING-CEO-VISUAL rows for these arc-called clips.
+
+### CLAIMS-vs-CANONICAL_FACTS TABLE (arc-called clips)
+| Clip | What the frames show | Implied capability claim | CANONICAL_FACTS check | VERDICT | Beat |
+|---|---|---|---|---|---|
+| CLIP 1 — Guitar -> listing | Vintage acoustic guitar on a dark auction stage; hand on neck; teal AI-glow outline. Item beauty shot. | None (pure item beauty + brand glow) | No claim to violate | USE | B0 hero / B3 loop step 1 |
+| CLIP 2 — Tea set -> antique alert | Ornate silver tea service, teal underglow, luxury antique register. | None (beauty shot) | Aligns with AntiqueBot review (real) | USE | B9 estate / antique alert |
+| CLIP 3 — Trading cards -> value reveal | Vintage card deck, teal sparkle rising. Card face text is AI-garbled gibberish. | None; but gibberish card face is an AI-tell | No claim; quality nit | USABLE-WITH-EDIT (use in motion/background only; avoid a readable close-up; or crop the card face) | B3 loop |
+| CLIP 4 — Console -> declutter to cash | Stylized retro game console, teal/amber lighting. Generic (not a branded console). | None (beauty shot) | No claim / no trademark | USE | B3 / B9 declutter |
+| V4 — Buyer Matching (real buyers, safe) | Abstract Legacy-Loop logo mark + gold network-node mesh + energy burst. No text. | Abstract "network/matching" — no false specifics | Aligns with BuyerBot fence ("finds real interested buyers") | USE | B2 BuyerBot moat / transitions |
+| V6 — Connecting Generations (legacy) | Elderly + younger hands passing a pocket watch, teal ribbon weaving. Dignified heirloom-passing. | None (brand emotion) | On-mission, no claim | USE | B12 mission |
+| V7 — Declutter to Cash (transformation) | Person photographing an item with a glowing phone; teal particles; books. Stylized "scan reveals value." | Implies "snap a photo, AI identifies" (LIVE capability) | Matches HowItWorks step 1 (true) | USE | B3 / B9 |
+| V3 — Sell Everywhere (max reach) | An item on a pedestal radiating teal lines OUTWARD to many little houses across a plane. Broadcast-to-everywhere metaphor. | "Sell everywhere / broadcast to all destinations" | VIOLATES D-2: we do NOT auto-post everywhere (11 of 12 are guided handoff; "You post it in one tap") | DO-NOT-USE (as-is). Reframe-only, and only with a Rule 4 / handoff copy adjacent, at CEO direction. | none |
+
+### ROOT VIDEOS (already shipped + live — implicit USE, unchanged)
+hero-loop.webm/mp4 (B0) · vintage-item-valuation.webm/mp4 (B6) · Legacy_Loop_Hero_Video_Connecting_Generations.webm/mp4 (B12) — already on the page and truth-swept; no re-verdict needed.
+
+### STILL PENDING (NO-SILENT-CAPS)
+The remaining campaign clips (SHORT 01-06, X_V2/X_V3, V1/V2/V5, the VEO CLIP set, Original/Veo folders,
+Final Drafts, Work In Progress) + the Gemini hash stills are NOT arc-called this pass and stay
+PENDING-CEO-VISUAL until the wave that needs them calls them for ffmpeg review (same method). A named
+watch item: V2 "Social Media Engine" and SHORT 04/05 "Sell Everywhere"/"Shipping Any Size" carry the
+same D-2 / shipping-overclaim risk as V3 — review before any use.
+
+### SUMMARY (arc-called set): USE 5 · USABLE-WITH-EDIT 1 · DO-NOT-USE 1 · (root live 3, implicit USE)
+The video spine (WAVE 4) wires only USE / USABLE-WITH-EDIT clips, each with honest adjacent copy.
