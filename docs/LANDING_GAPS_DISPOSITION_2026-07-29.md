@@ -99,4 +99,46 @@ RIDES/CEO-RULING rather than rushing bad copy onto the flagship surface." This p
 core (estate de-price + fabricated-stat kills + fabricated-story kills) that removes the outright FALSE live
 claims; the half-true capability rewrites are banked for a dedicated designed pass so they land at the WCS bar.
 
-# END · LANDING GAPS DISPOSITION · every row placed · the L1 designed-rewrite pass is the next lane.
+## CLOSURE LOG — CMD-LANDING-SHOWCASE-ARC V21 (2026-08-05 · Agent A)
+The RIDES-L1 / D-2 rows shipped this wave (truth fences + designed rewrites). Each below = CLOSED
+(status SHIPPED) in commit(s) of CMD-LANDING-SHOWCASE-ARC. Closure count this pass: **23 rows**.
+
+| # | Row (was) | Now | Fix |
+|---|---|---|---|
+| 1 | Ticker: Mercari · Poshmark · Depop | removed (D-2 banned/phantom) | FIX 5 |
+| 2 | Stat card "Cross-listed everywhere" + "eBay · Mercari · FB · Poshmark · Etsy" | "We prep every listing — you post in one tap." + de-banned line | FIX 5/D-2 |
+| 3 | Stat card "10 Specialized Bots" | 12 (CANONICAL_FACTS §6) | FIX 5 |
+| 4 | MegaBot "Every listing is one click." | "Every listing is prepped for you." | FIX 5 |
+| 5 | MegaBot OpenAI "Sees 48+ attributes" | "Reads dozens of details" | FIX 5 |
+| 6 | HowItWorks 1 "Snap a pic. Our AI handles the rest." | "Snap a photo. Our AI identifies and prices it." | FIX 5 |
+| 7 | HowItWorks 2 "10 AI bots analyze your item." | "Our AI reads your item in seconds." | FIX 5 |
+| 8 | HowItWorks 3 "One click. 13 platforms. AI finds your buyers." | "We write the listing, price it, and prep the photos. You post it in one tap." | FIX 5/D-2 verbatim |
+| 9 | HowItWorks 4 "picks the best carrier" | "Compare real carrier rates, print the label, get paid." | FIX 5 |
+| 10 | HowItWorks step title "List & Match Buyers" | "List & Find Buyers" | FIX 5 |
+| 11 | Shipping carriers include DHL, Arta | removed (not integrated) | FIX 5 |
+| 12 | Shipping "Every Carrier. One Click." | "Real Carrier Rates. One Click." | FIX 5 |
+| 13 | Shipping "full Transportation Management System" | "Shipping tools built right into the platform" | FIX 5 |
+| 14 | Shipping feature "White-Glove Delivery / Arta" | "Label + Tracking" | FIX 5 |
+| 15 | AIAgents AnalysisBot "48+ attributes from one photo" | "Dozens of details from one photo" | FIX 5 |
+| 16 | AIAgents ListingBot "Listings for 13 platforms" | "Listings prepped for every marketplace" | FIX 5 |
+| 17 | AIAgents BuyerBot "6-12 buyer profiles before you list" | "Finds real interested buyers — you approve every contact" | FIX 5/fence |
+| 18 | AIAgents heading "Ten Specialized AI Bots + MegaBot." | "A Specialist For Every Step. Plus MegaBot." | FIX 5 |
+| 19 | AIAgents "Instant alerts for items worth $500+" | "Flags potentially valuable items for a closer look" | FIX 5 |
+| 20 | TechSection "10 AI bots + MegaBot..." | "A full AI team + MegaBot..." | FIX 5 |
+| 21 | Estate + product-card carrier copy "USPS, UPS, FedEx, DHL and Arta" | "USPS, UPS, and FedEx" | FIX 5 |
+| 22 | Hero-adjacent "We Help You Prove It." | "We Help You Find It." (no authentication implied) | FIX 5 |
+| 23 | PricingSection full priced tier grid + credit packs + "3.5% processing" | structure-only, zero numbers, drop-in slots | FIX 4/D-5 |
+| + | WaitlistWalkthrough deceptive strikethroughs "was $20" / "was $49" | removed | FIX 5 |
+| FIX 0 | Estate callback "[X]" placeholder + "same business day" help line | "within one business day" (CEO Decision 2) | FIX 0/D-1 |
+
+REMAINING RIDES-L1 (banked to the design pass / CEO-RULING — NOT rushed onto the flagship):
+- Hero repositioning to BuyerBot -> loop -> Message Center (FIX 2) — needs the designlang/frontend-design/
+  huashu cycle + CEO direction; proposed as BUILD-1-DESIGN. Loop-video spine (FIX 3) — the 4 campaign clips
+  are PENDING-CEO-VISUAL (media truth fence): cannot wire blind.
+- WaitlistWalkthrough SaaS display prices ($10/$25/$75 + "/mo" + commission %) — D-5 ratification call for CEO
+  (prior ruling kept them as "real SaaS tier"); consistency with the new "numbers at launch" pricing section
+  is a CEO decision, not a unilateral edit.
+- "Real screenshots… every feature built and working", ProductPreview attribute copy, annual "SAVE 20%",
+  "locked-for-life" pre-launch framing — banked (HARDEN/CEO-RULING).
+
+# END · LANDING GAPS DISPOSITION · every row placed · L1 core shipped by CMD-LANDING-SHOWCASE-ARC; hero+video design pass is the next lane.
