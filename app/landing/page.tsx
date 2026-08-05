@@ -4198,7 +4198,7 @@ function MegaBotSection() {
 // crossfades in once it can play. Reduced-motion = static poster, no video mounted. LCP-safe:
 // lazy poster + preload="none" + video only rendered below the fold in view. Ambient loop (beauty
 // shot) is the allowed loop exception. Muted, playsInline, never autoplay-with-sound.
-function CinematicClip({ base, alt, caption }: { base: string; alt: string; caption?: string }) {
+function CinematicClip({ base, alt, caption, accentBorder = 'rgba(0,188,212,0.25)', accentGlow = 'rgba(0,188,212,0.1)' }: { base: string; alt: string; caption?: string; accentBorder?: string; accentGlow?: string }) {
   const reduced = useReducedMotion()
   const ref = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -4214,8 +4214,8 @@ function CinematicClip({ base, alt, caption }: { base: string; alt: string; capt
           position: 'relative',
           borderRadius: 28,
           overflow: 'hidden',
-          border: '1px solid rgba(0,188,212,0.25)',
-          boxShadow: '0 30px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,188,212,0.1)',
+          border: `1px solid ${accentBorder}`,
+          boxShadow: `0 30px 60px rgba(0,0,0,0.4), 0 0 40px ${accentGlow}`,
           aspectRatio: '9 / 16',
           background: '#0B0B0F',
         }}
@@ -5331,18 +5331,35 @@ function EstateSection() {
 
   // The three ways families work with us — EDUCATION, not pricing. No buttons, no badges.
   // Anchored to the Estate Stewardship Program source (what each service is, in plain words).
+  // FIX 6 (R-2): each offering is a small STORY — who comes, what happens, what the family
+  // experiences — before any CTA. Estate-warm gold, scroll-revealed. Consult-first, zero prices.
   const ways = [
     {
       name: 'White-Glove Estate Service',
-      body: 'Our team comes to you. We catalogue, photograph, price, list, and sell every item — then handle the buyer conversations, shipping, and final coordination. You just say yes. Maine-first while we grow.',
+      lead: 'You just say yes. We do the rest.',
+      beats: [
+        { label: 'Who comes', text: 'Our team arrives at the home — Maine-first while we grow.' },
+        { label: 'What happens', text: 'We catalogue, photograph, and price every item, then list, sell, ship, and coordinate donations.' },
+        { label: 'What you feel', text: 'The weight lifts. You make the calls that matter; we carry the rest.' },
+      ],
     },
     {
       name: 'Estate Care',
-      body: 'Prefer to stay hands-on? We start with a real conversation, then put AI identification and pricing behind every item — with one person you can call at each step.',
+      lead: 'Stay hands-on, with a hand where it counts.',
+      beats: [
+        { label: 'Who comes', text: 'One person you can call — with the full AI toolset behind you.' },
+        { label: 'What happens', text: 'We start with a real conversation, then put AI identification and pricing behind every item.' },
+        { label: 'What you feel', text: 'In control, never alone. Help arrives exactly where the process gets hard.' },
+      ],
     },
     {
       name: 'Neighborhood Bundle',
-      body: 'Several families on one street, selling together. One coordinated sale, shared photography and marketing, and an individual report for every home. Two to eight families.',
+      lead: 'A whole street, selling together.',
+      beats: [
+        { label: 'Who comes', text: 'Two to eight families, one coordinated plan.' },
+        { label: 'What happens', text: 'Shared photography and marketing, one sale day, an individual report for every home.' },
+        { label: 'What you feel', text: 'A neighborhood event instead of a lonely chore — and better results together.' },
+      ],
     },
   ]
 
@@ -5454,10 +5471,11 @@ function EstateSection() {
           LEGACY
         </span>
 
-        {/* FIX 3 — grief section reframed service-first: lead with what we lift, dignity intact. */}
+        {/* FIX 6 (R-2) — downsizing/retirement leads; bereavement is one compassionate clause, never
+            the headline. Dignity intact, service-first. */}
         <div style={{ position: 'relative', zIndex: 1 }}>
           <SectionEyebrow text="FOR FAMILIES & COMMUNITIES" color="#D4A017" />
-          <SectionHeading>Selling Should Not Add to the Grief.</SectionHeading>
+          <SectionHeading>Downsizing, Retiring, or Settling an Estate.</SectionHeading>
           <p
             style={{
               fontFamily: 'var(--font-body)',
@@ -5470,11 +5488,23 @@ function EstateSection() {
               lineHeight: 1.75,
             }}
           >
-            When a loved one passes — or a home simply needs to change hands — the task can feel
-            impossible: hundreds of items, real emotional weight, and no idea what anything is worth.
-            You do not have to carry it alone. We come to you, identify and price every item, prepare
-            the listings, handle the buyers, and coordinate shipping and donations. You just say yes.
+            Moving into a smaller place. Helping a parent retire. And — when the time comes — settling a
+            loved one&rsquo;s estate. A lifetime under one roof is a lot to sort, price, and let go of.
+            You do not have to carry it alone. We come to you, identify and price every item, prepare the
+            listings, handle the buyers, and coordinate shipping and donations. You just say yes.
           </p>
+        </div>
+
+        {/* Estate cinematic anchor (WAVE 5 / FIX 6): a treasured piece, seen for what it is worth.
+            Estate-warm gold accent. Verdicted USE clip (CLIP 2 tea set -> antique alert). */}
+        <div style={{ marginBottom: 8 }}>
+          <CinematicClip
+            base="estate-tea"
+            alt="A silver tea service, the kind of heirloom Legacy-Loop helps a family value before it sells"
+            caption="A treasured piece, seen for what it is worth."
+            accentBorder="rgba(212,160,23,0.3)"
+            accentGlow="rgba(212,160,23,0.12)"
+          />
         </div>
 
         {/* What we lift off your shoulders — honest capability cards + the senior-on-tablet photo */}
@@ -5593,24 +5623,43 @@ function EstateSection() {
                     fontWeight: 700,
                     fontSize: 18,
                     color: '#D4A017',
-                    marginBottom: 12,
+                    marginBottom: 6,
                     lineHeight: 1.25,
                   }}
                 >
                   {w.name}
                 </div>
-                <p
+                <div
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontWeight: 400,
+                    fontWeight: 600,
                     fontSize: 15,
-                    color: '#CBD5E1',
-                    lineHeight: 1.65,
-                    margin: 0,
+                    color: '#F1F5F9',
+                    marginBottom: 20,
+                    lineHeight: 1.5,
                   }}
                 >
-                  {w.body}
-                </p>
+                  {w.lead}
+                </div>
+                {/* The story: who comes / what happens / what you feel — an estate-gold mini-timeline */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {w.beats.map((b, bi) => (
+                    <div key={b.label} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, paddingTop: 3 }}>
+                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#D4A017', boxShadow: '0 0 8px rgba(212,160,23,0.5)' }} />
+                        {bi < w.beats.length - 1 && <span style={{ width: 1, flex: 1, minHeight: 22, background: 'rgba(212,160,23,0.25)', marginTop: 4 }} />}
+                      </div>
+                      <div>
+                        <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#D4A017', marginBottom: 3 }}>
+                          {b.label}
+                        </div>
+                        <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', lineHeight: 1.55, margin: 0 }}>
+                          {b.text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </GlowCard>
             ))}
           </div>
