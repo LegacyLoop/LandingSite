@@ -1896,7 +1896,7 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
             marginTop: 24,
           }}
         >
-          The platform that makes selling{' '}
+          The AI that finds your buyer — and makes selling{' '}
           <KineticHeadline
             words={['Simple.', 'Fair.', 'Dignified.', 'Smarter.', 'Faster.']}
             style={{ fontWeight: 600 }}
@@ -3499,6 +3499,339 @@ function MarketOpportunitySection() {
             }}
           />
         )}
+      </div>
+    </section>
+  )
+}
+
+// ---------- THE MOAT — BUYERBOT (the promise) ----------
+// CMD-LANDING-MASTER-ARC V21 · WAVE 3 / FIX 3 · beat B2. The differentiator, led hardest:
+// a free AI tool writes a listing; we find the buyer. Honest BuyerBot fence copy
+// ("finds real interested buyers - you approve every contact"). Zero emoji (inline SVG).
+function MoatSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
+  const isMobile = width < 768
+
+  const steps = [
+    {
+      title: 'It reads your item',
+      body: 'BuyerBot identifies what you have and who tends to want it — the make, the era, the details that matter to a buyer.',
+      icon: (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <circle cx="11" cy="11" r="6.5" stroke="#22D3EE" strokeWidth="1.6" />
+          <path d="M20 20l-4-4" stroke="#22D3EE" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      title: 'It finds the buyers',
+      body: 'It surfaces real, interested buyers for that item and points you to the marketplaces where they already are — not a shot in the dark.',
+      icon: (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <circle cx="12" cy="12" r="8" stroke="#22D3EE" strokeWidth="1.6" />
+          <circle cx="12" cy="12" r="3.2" stroke="#22D3EE" strokeWidth="1.6" />
+          <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke="#22D3EE" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      title: 'You approve every contact',
+      body: 'Nothing goes out without you. You stay in control the whole way — BuyerBot brings the buyer, you say yes.',
+      icon: (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M12 2.5l7.5 3v5.5c0 4.6-3.2 7.6-7.5 9-4.3-1.4-7.5-4.4-7.5-9V5.5L12 2.5z" stroke="#22D3EE" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M8.5 12l2.4 2.4 4.6-5" stroke="#22D3EE" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+  ]
+
+  return (
+    <section id="buyerbot" style={{ ...sp, position: 'relative', zIndex: 5, overflow: 'hidden' }}>
+      {/* T3 ambient glow field — time-based, reduced-motion gated */}
+      <motion.div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: 'none',
+          background:
+            'radial-gradient(55% 45% at 50% 18%, rgba(0,188,212,0.12), transparent 70%),' +
+            'radial-gradient(45% 40% at 82% 70%, rgba(0,150,136,0.07), transparent 70%)',
+          filter: 'blur(40px)',
+        }}
+        animate={reduced ? undefined : { opacity: [0.8, 1, 0.8], scale: [1, 1.04, 1] }}
+        transition={reduced ? undefined : { duration: 14, ease: 'easeInOut', repeat: Infinity }}
+      />
+
+      <div style={{ maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <SectionEyebrow text="THE MOAT" />
+        <SectionHeading>
+          <StaggeredWords text="Anyone Can List." />{' '}
+          <GradientText>We Find the Buyer.</GradientText>
+        </SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 18,
+            color: '#CBD5E1',
+            textAlign: 'center',
+            maxWidth: 640,
+            margin: '0 auto 20px',
+            lineHeight: 1.7,
+          }}
+        >
+          A free AI tool writes you a listing and leaves you there. BuyerBot goes further: it finds
+          real, interested buyers for each item and points you to them. You approve every contact.
+          That is the difference between a listing and a sale.
+        </p>
+
+        {/* The three-step promise */}
+        <div
+          style={{
+            display: isMobile ? 'flex' : 'grid',
+            flexDirection: 'column',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: 20,
+            marginTop: 48,
+          }}
+        >
+          {steps.map((s, i) => (
+            <GlowCard
+              key={s.title}
+              delay={i * 80}
+              defaultBorderColor={i === 1 ? 'rgba(0,188,212,0.4)' : 'rgba(0,188,212,0.15)'}
+              hoverBorderColor="rgba(0,188,212,0.55)"
+              style={{ padding: '30px 26px' }}
+            >
+              <div
+                style={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(0,188,212,0.08)',
+                  border: '1px solid rgba(0,188,212,0.2)',
+                  marginBottom: 18,
+                }}
+              >
+                {s.icon}
+              </div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 700,
+                  fontSize: 18,
+                  color: '#F1F5F9',
+                  marginBottom: 10,
+                }}
+              >
+                {s.title}
+              </div>
+              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 15, color: '#CBD5E1', lineHeight: 1.6, margin: 0 }}>
+                {s.body}
+              </p>
+            </GlowCard>
+          ))}
+        </div>
+
+        {/* The contrast — free AI vs Legacy-Loop (the Dr. Kersten test, made explicit) */}
+        <div
+          style={{
+            display: isMobile ? 'flex' : 'grid',
+            flexDirection: 'column',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr auto 1fr',
+            alignItems: 'center',
+            gap: 16,
+            marginTop: 24,
+          }}
+        >
+          <div
+            style={{
+              padding: '22px 24px',
+              borderRadius: 16,
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B7280', marginBottom: 8 }}>
+              A free AI tool
+            </div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 19, color: '#94A3B8' }}>
+              Hands you a listing.
+            </div>
+          </div>
+          <div
+            aria-hidden
+            style={{
+              fontFamily: 'var(--font-data)',
+              fontWeight: 700,
+              fontSize: 13,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#6B7280',
+              textAlign: 'center',
+              padding: isMobile ? '4px 0' : '0 4px',
+            }}
+          >
+            vs
+          </div>
+          <div
+            style={{
+              padding: '22px 24px',
+              borderRadius: 16,
+              background: 'rgba(0,188,212,0.06)',
+              border: '1px solid rgba(0,188,212,0.28)',
+            }}
+          >
+            <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 8 }}>
+              Legacy-Loop
+            </div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 19, color: '#F1F5F9' }}>
+              Brings you the buyer.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 44 }}>
+          <MagneticButton href="#waitlist">See BuyerBot in Early Access</MagneticButton>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------- THE MESSAGE CENTER (the trust) ----------
+// CMD-LANDING-MASTER-ARC V21 · WAVE 3 / FIX 3 · beat B5. Every buyer conversation in one place.
+// Honest capability (CANONICAL_FACTS: Message Center is a real surface). Designed inbox mockup.
+function MessageCenterSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const isMobile = width < 768
+
+  const thread = [
+    { who: 'buyer', text: 'Is the guitar still available? Would you take $340?' },
+    { who: 'you', text: 'It is. I can do $360 — it just had a fresh setup.' },
+    { who: 'buyer', text: 'Deal. Sending payment now.' },
+  ]
+
+  return (
+    <section id="message-center" style={{ ...sp, position: 'relative', zIndex: 5, overflow: 'hidden' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <SectionEyebrow text="THE MESSAGE CENTER" />
+        <SectionHeading>
+          <StaggeredWords text="Every Conversation." />{' '}
+          <GradientText>One Place.</GradientText>
+        </SectionHeading>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 400,
+            fontSize: 18,
+            color: '#CBD5E1',
+            textAlign: 'center',
+            maxWidth: 620,
+            margin: '0 auto 48px',
+            lineHeight: 1.7,
+          }}
+        >
+          Offers, questions, the back-and-forth of a sale — every buyer message in one organized
+          inbox, with memory. You never lose track of a deal, and no message slips through.
+        </p>
+
+        {/* Designed inbox mockup: conversation rail + active thread */}
+        <div
+          style={{
+            display: isMobile ? 'flex' : 'grid',
+            flexDirection: 'column',
+            gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
+            gap: 0,
+            maxWidth: 880,
+            margin: '0 auto',
+            borderRadius: 20,
+            overflow: 'hidden',
+            border: '1px solid rgba(0,188,212,0.18)',
+            background: 'rgba(255,255,255,0.02)',
+            boxShadow: '0 30px 60px rgba(0,0,0,0.35)',
+          }}
+        >
+          {/* Conversation rail */}
+          <div style={{ borderRight: isMobile ? 'none' : '1px solid rgba(255,255,255,0.06)', borderBottom: isMobile ? '1px solid rgba(255,255,255,0.06)' : 'none', padding: 14, background: 'rgba(255,255,255,0.015)' }}>
+            {[
+              { name: 'Marcus R.', item: '1974 Martin D-28', active: true, unread: 0 },
+              { name: 'Dana P.', item: 'Silver tea service', active: false, unread: 2 },
+              { name: 'Theo K.', item: 'Trading card lot', active: false, unread: 0 },
+            ].map((c) => (
+              <div
+                key={c.name}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '12px 12px',
+                  borderRadius: 12,
+                  marginBottom: 4,
+                  background: c.active ? 'rgba(0,188,212,0.1)' : 'transparent',
+                  border: c.active ? '1px solid rgba(0,188,212,0.25)' : '1px solid transparent',
+                }}
+              >
+                <div style={{ width: 38, height: 38, borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, rgba(0,188,212,0.35), rgba(0,150,136,0.35))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, color: '#0D1117' }}>
+                  {c.name.charAt(0)}
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14, color: '#F1F5F9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#94A3B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.item}</div>
+                </div>
+                {c.unread > 0 && (
+                  <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 11, color: '#0D1117', background: '#22D3EE', borderRadius: 999, minWidth: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px' }}>{c.unread}</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Active thread */}
+          <div style={{ display: 'flex', flexDirection: 'column', padding: 20, minHeight: 280 }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 15, color: '#F1F5F9', paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              Marcus R. <span style={{ color: '#94A3B8', fontWeight: 400 }}>&middot; 1974 Martin D-28</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+              {thread.map((m, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: m.who === 'you' ? 'flex-end' : 'flex-start' }}>
+                  <div
+                    style={{
+                      maxWidth: '78%',
+                      padding: '11px 15px',
+                      borderRadius: m.who === 'you' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 14,
+                      lineHeight: 1.5,
+                      color: m.who === 'you' ? '#0D1117' : '#E2E8F0',
+                      background: m.who === 'you' ? 'linear-gradient(135deg, #22D3EE, #00BCD4)' : 'rgba(255,255,255,0.05)',
+                      border: m.who === 'you' ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {m.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Accepted-offer chip */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16, padding: '12px 14px', borderRadius: 12, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M5 13l4 4L19 7" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#CBD5E1' }}>Offer accepted — <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#F1F5F9' }}>$360</span>. Payment on the way.</span>
+            </div>
+          </div>
+        </div>
+
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280', textAlign: 'center', marginTop: 20 }}>
+          Illustrative preview of the Message Center experience.
+        </p>
       </div>
     </section>
   )
@@ -8462,8 +8795,10 @@ export default function LandingPage() {
         <GarageSaleSection isLoaded={isLoaded} />
         <MarketplaceTicker />
         <MarketOpportunitySection />
+        <MoatSection />
         <MegaBotSection />
         <HowItWorksSection />
+        <MessageCenterSection />
         <ShippingCenterSection />
         <ProductPreviewSection />
         <AIAgentsSection />
