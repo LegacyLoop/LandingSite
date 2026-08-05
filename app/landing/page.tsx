@@ -4193,6 +4193,76 @@ function MegaBotSection() {
   )
 }
 
+// ---------- CINEMATIC PHONE-FRAMED CLIP (WAVE 4 / FIX 4) ----------
+// Poster-first crossfade (T5): the poster paints instantly; the video mounts only when in view and
+// crossfades in once it can play. Reduced-motion = static poster, no video mounted. LCP-safe:
+// lazy poster + preload="none" + video only rendered below the fold in view. Ambient loop (beauty
+// shot) is the allowed loop exception. Muted, playsInline, never autoplay-with-sound.
+function CinematicClip({ base, alt, caption }: { base: string; alt: string; caption?: string }) {
+  const reduced = useReducedMotion()
+  const ref = useRef<HTMLElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.4 })
+  const [playing, setPlaying] = useState(false)
+  useEffect(() => {
+    if (inView && !reduced && videoRef.current) videoRef.current.play().catch(() => {})
+  }, [inView, reduced])
+  return (
+    <figure ref={ref} style={{ margin: '0 auto', maxWidth: 300, width: '100%' }}>
+      <div
+        style={{
+          position: 'relative',
+          borderRadius: 28,
+          overflow: 'hidden',
+          border: '1px solid rgba(0,188,212,0.25)',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,188,212,0.1)',
+          aspectRatio: '9 / 16',
+          background: '#0B0B0F',
+        }}
+      >
+        <img
+          src={`/videos/${base}-poster.jpg`}
+          alt={alt}
+          loading="lazy"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: playing ? 0 : 1,
+            transition: 'opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+          }}
+        />
+        {!reduced && inView && (
+          <video
+            ref={videoRef}
+            muted
+            playsInline
+            loop
+            preload="none"
+            aria-hidden
+            onPlaying={() => setPlaying(true)}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          >
+            <source src={`/videos/${base}.webm`} type="video/webm" />
+            <source src={`/videos/${base}.mp4`} type="video/mp4" />
+          </video>
+        )}
+        <div
+          aria-hidden
+          style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 60%, rgba(11,11,15,0.55))', pointerEvents: 'none' }}
+        />
+      </div>
+      {caption && (
+        <figcaption style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#94A3B8', textAlign: 'center', marginTop: 14 }}>
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  )
+}
+
 // ---------- HOW IT WORKS ----------
 function HowItWorksSection() {
   const width = useWindowWidth()
@@ -4252,6 +4322,15 @@ function HowItWorksSection() {
             <StaggeredWords text="From Photo to Sold in Four Steps" />
           </SectionHeading>
         </motion.div>
+
+        {/* Cinematic loop spine (WAVE 4 / FIX 4): a real item, photographed and prepared for sale. */}
+        <div style={{ marginTop: 40 }}>
+          <CinematicClip
+            base="loop-guitar"
+            alt="A vintage guitar photographed and prepared for sale on Legacy-Loop"
+            caption="A photo becomes a ready-to-post listing."
+          />
+        </div>
 
         <div
           style={{
