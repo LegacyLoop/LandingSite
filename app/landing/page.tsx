@@ -4170,21 +4170,60 @@ function MegaBotSection() {
           </p>
         </div>
 
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <img
-            src="/Pictures & Videos for Landing Page/_Four_identical_translucent_202603311353-Trans.png"
-            alt="Four AI engines connected by light beams — MegaBot consensus visualization"
-            loading="lazy"
-            style={{
-              maxWidth: 560,
-              width: '100%',
-              borderRadius: 0,
-              mixBlendMode: 'screen' as const,
-            }}
-            onError={(e) => {
-              ;(e.target as HTMLImageElement).style.display = 'none'
-            }}
-          />
+        {/* WAVE-8.5 INTERIM MICRO-FIX (Devin ruling): the four-orb PNG under a "Six AI Engines"
+            headline was a D-2 truth defect (image count 4 != headline 6). Replaced with an honest
+            six-node inline-SVG constellation driven by the verified `engines` array — six engines
+            power the platform, the four MegaBot-council engines (purple ring) connect to the hub with
+            a solid vote line, the two non-council with a dashed power line. Clean interim; the full
+            Option-C craft constellation lands in W3. Zero emoji. */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 48 }}>
+          {(() => {
+            const cx = 300, cy = 165, R = 120
+            const nodes = engines.map((e, i) => {
+              const a = (-90 + i * 60) * (Math.PI / 180)
+              return { ...e, x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) }
+            })
+            return (
+              <svg
+                viewBox="0 0 600 330"
+                role="img"
+                aria-label="Six AI engines power the platform; the four MegaBot council engines vote on your item's price"
+                style={{ width: '100%', maxWidth: 560, height: 'auto' }}
+              >
+                {/* connection lines: solid purple = council vote · dashed teal = powers the platform */}
+                {nodes.map((n, i) => (
+                  <line
+                    key={`l${i}`}
+                    x1={cx}
+                    y1={cy}
+                    x2={n.x}
+                    y2={n.y}
+                    stroke={n.council ? 'rgba(139,92,246,0.5)' : 'rgba(0,188,212,0.28)'}
+                    strokeWidth={n.council ? 1.5 : 1}
+                    strokeDasharray={n.council ? undefined : '3 5'}
+                  />
+                ))}
+                {/* MegaBot hub */}
+                <circle cx={cx} cy={cy} r={26} fill="rgba(139,92,246,0.12)" stroke="rgba(139,92,246,0.55)" strokeWidth="1.4" />
+                <text x={cx} y={cy + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.04em', fill: '#C4B5FD' }}>MegaBot</text>
+                {/* six engine nodes */}
+                {nodes.map((n, i) => (
+                  <g key={`n${i}`}>
+                    {n.council && <circle cx={n.x} cy={n.y} r={17} fill="none" stroke="rgba(139,92,246,0.6)" strokeWidth="1.2" />}
+                    <circle cx={n.x} cy={n.y} r={12} fill={`${n.color}22`} stroke={n.color} strokeWidth="1.6" />
+                    <text
+                      x={n.x}
+                      y={n.y > cy ? n.y + 30 : n.y - 22}
+                      textAnchor="middle"
+                      style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 12.5, fill: '#F1F5F9' }}
+                    >
+                      {n.name}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            )
+          })()}
         </div>
 
         <div
