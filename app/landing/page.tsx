@@ -1268,17 +1268,19 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
   const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
 
   const sections = [
+    // WAVE 8 / FIX 9: dot order MUST match the new vertical section order (scroll-tracking drift-safe).
     { id: 'hero', label: 'Home', icon: '◆' },
     { id: 'garage-sale', label: 'Weekend', icon: '◆' },
-    { id: 'megabot', label: 'MegaBot', icon: '◆' },
+    { id: 'buyerbot', label: 'BuyerBot', icon: '◆' },
     { id: 'how-it-works', label: 'How It Works', icon: '◆' },
-    { id: 'shipping', label: 'Shipping', icon: '◆' },
+    { id: 'megabot', label: 'MegaBot', icon: '◆' },
     { id: 'bots', label: 'AI Bots', icon: '◆' },
+    { id: 'shipping', label: 'Shipping', icon: '◆' },
     { id: 'pricing', label: 'Pricing', icon: '◆' },
     { id: 'estate', label: 'Estates', icon: '◆' },
-    { id: 'mission', label: 'Mission', icon: '◆' },
-    { id: 'download', label: 'Download', icon: '◆' },
     { id: 'waitlist', label: 'Join', icon: '◆' },
+    { id: 'download', label: 'Download', icon: '◆' },
+    { id: 'mission', label: 'Mission', icon: '◆' },
   ]
 
   // Measure each section's "mid-active" scroll position as a percentage of
@@ -9042,28 +9044,33 @@ export default function LandingPage() {
       <SectionNavigator isLoaded={isLoaded} />
       <HelpCenter />
       <main style={{ position: 'relative', zIndex: 5, background: 'transparent' }}>
+        {/* CMD-LANDING-MASTER-ARC WAVE 8 / FIX 9 (R-7 + R-8): section order follows the narrative arc,
+            with the ruled tail ESTATE -> JOIN -> DOWNLOAD -> MISSION -> FOOTER. Reorder only — every
+            section keeps its own animations. Arc: arrive -> stakes -> moat -> loop -> message -> the
+            intelligence (hexa-AI) -> capability + proof -> the offer -> the estate close -> join. */}
         <HeroSection isLoaded={isLoaded} />
         <GarageSaleSection isLoaded={isLoaded} />
         <MarketplaceTicker />
         <MarketOpportunitySection />
         <MoatSection />
-        <MegaBotSection />
         <HowItWorksSection />
         <MessageCenterSection />
+        <MegaBotSection />
+        <AIAgentsSection />
         <ShippingCenterSection />
         <ProductPreviewSection />
-        <AIAgentsSection />
+        <TechSection />
+        <SocialProofSection />
         <PricingSection setOfferingIntent={setOfferingIntent} />
         <EstateSection />
-        <SocialProofSection />
-        <TechSection />
-        <AppDownloadSection />
-        <VideoShowcaseSection />
+        {/* ---- R-8 tail: read everything, then the join door is right here ---- */}
         <WaitlistSection
           activeSection={activeSection}
           offeringIntent={offeringIntent}
           setOfferingIntent={setOfferingIntent}
         />
+        <AppDownloadSection />
+        <VideoShowcaseSection />
         <FinalCTASection />
         <Footer />
       </main>
