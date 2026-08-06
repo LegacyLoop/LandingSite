@@ -3143,7 +3143,7 @@ function MarketplaceTicker() {
               fontFamily: 'var(--font-data)',
               fontWeight: 500,
               fontSize: 13,
-              color: '#6B7280',
+              color: '#94A3B8',
               letterSpacing: '0.1em',
               textTransform: 'uppercase' as const,
               whiteSpace: 'nowrap',
@@ -3708,14 +3708,14 @@ function MoatSection() {
               }}
             >
               <div style={{ padding: '20px 22px', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B7280', marginBottom: 8 }}>
+                <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#94A3B8', marginBottom: 8 }}>
                   A free AI tool
                 </div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 19, color: '#94A3B8' }}>
                   Hands you a listing.
                 </div>
               </div>
-              <div aria-hidden style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B7280', textAlign: 'center', padding: isMobile ? '4px 0' : '0 4px' }}>
+              <div aria-hidden style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#94A3B8', textAlign: 'center', padding: isMobile ? '4px 0' : '0 4px' }}>
                 vs
               </div>
               <div style={{ padding: '20px 22px', borderRadius: 16, background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.35)', boxShadow: '0 0 34px rgba(0,188,212,0.12)' }}>
@@ -3883,7 +3883,7 @@ function MessageCenterSection() {
           </div>
         </div>
 
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280', textAlign: 'center', marginTop: 20 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#94A3B8', textAlign: 'center', marginTop: 20 }}>
           Illustrative preview of the Message Center experience.
         </p>
       </div>
@@ -4751,7 +4751,7 @@ function ProductPreviewSection() {
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <SectionEyebrow text="THE PRODUCT" />
         <SectionHeading>
-          <StaggeredWords text="See It In Action" />
+          <StaggeredWords text="Inside the Live Product" />
         </SectionHeading>
         <p
           style={{
@@ -4808,41 +4808,9 @@ function ProductPreviewSection() {
           ))}
         </div>
 
-        {/* Valuation Video */}
-        <div style={{ textAlign: 'center', marginTop: 64 }}>
-          <GlowCard
-            style={{
-              padding: 0,
-              overflow: 'hidden',
-              maxWidth: 680,
-              margin: '0 auto',
-              display: 'inline-block',
-            }}
-          >
-            <AutoPlayVideo
-              style={{
-                width: '100%',
-                display: 'block',
-                borderRadius: 16,
-              }}
-              sources={[
-                { src: '/vintage-item-valuation.webm', type: 'video/webm' },
-                { src: '/vintage-item-valuation.mp4', type: 'video/mp4' },
-              ]}
-            />
-          </GlowCard>
-          <p
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontWeight: 400,
-              fontSize: 14,
-              color: '#94A3B8',
-              marginTop: 16,
-            }}
-          >
-            Watch our AI analyze and price a vintage item in real time.
-          </p>
-        </div>
+        {/* End-to-end eval (F-1 dedup): the valuation video here was the SAME footage as
+            the B03 pinned AI-evaluation beat (its frame source) — a duplicate. Removed;
+            the live-product screenshots above carry this section on their own. */}
       </div>
     </section>
   )
@@ -5980,7 +5948,7 @@ function SocialProofSection() {
               </motion.div>
             ))}
           </dl>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#6B7280', textAlign: 'center', marginTop: 16 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', textAlign: 'center', marginTop: 16 }}>
             Full detail lives in our{' '}
             <a href="/privacy" style={{ color: '#22D3EE', textDecoration: 'none' }}>Privacy Policy</a>.
           </p>
@@ -7174,6 +7142,8 @@ function AppDownloadSection() {
                 Nintendo 64 · Good
                 <br />
                 Garage sale w/ online backup
+                <br />
+                <span style={{ color: '#94A3B8', fontSize: 9 }}>Example pricing</span>
               </div>
             </motion.div>
           </div>
@@ -7726,7 +7696,7 @@ function WaitlistSection({
                   fontSize: 12,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase' as const,
-                  color: '#6B7280',
+                  color: '#94A3B8',
                 }}
               >
                 or join quickly
@@ -7941,7 +7911,7 @@ function WaitlistSection({
               </p>
             )}
 
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', margin: '4px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#94A3B8', margin: '4px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
               We&apos;ll email you from hello@legacy-loop.com — check your inbox (the first email may land in Promotions).
             </p>
             </form>
@@ -7979,7 +7949,7 @@ function WaitlistSection({
                     fontFamily: 'var(--font-body)',
                     fontWeight: 400,
                     fontSize: 12,
-                    color: '#6B7280',
+                    color: '#94A3B8',
                   }}
                 >
                   {signal.text}
@@ -8240,7 +8210,7 @@ function Footer() {
     fontFamily: 'var(--font-body)',
     fontWeight: 400,
     fontSize: 14,
-    color: '#6B7280',
+    color: '#94A3B8',
     textDecoration: 'none',
     cursor: 'pointer',
     transition: 'color 0.3s ease',
@@ -8879,7 +8849,7 @@ function HelpCenter() {
                 fontFamily: 'var(--font-body)',
                 fontWeight: 400,
                 fontSize: 13,
-                color: '#6B7280',
+                color: '#94A3B8',
                 textAlign: 'center',
                 margin: '24px 0 0',
                 lineHeight: 1.55,

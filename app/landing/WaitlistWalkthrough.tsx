@@ -831,7 +831,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
             <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#94A3B8' }}>{offering.priceSuffix}</span>
           )}
           {offering.wasPrice && (
-            <s style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#6B7280' }}>{offering.wasPrice}</s>
+            <s style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#94A3B8' }}>{offering.wasPrice}</s>
           )}
           <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13, color: p.accent, letterSpacing: '0.02em' }}>
             {offering.commission}
@@ -1023,7 +1023,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
                   <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: pal.accent }}>{FAMILY_LABEL[answers.family]}</span>
                   {answers.family === 'f2'
                     ? ' fit the base bundle — one coordinated sale, one flyer, one buyer list.'
-                    : ' — the base bundle covers the first two, additional families join at $89 each (was $149).'}
+                    : ' — the base bundle covers the first two, additional families join at $89 each.'}
                 </p>
               </div>
             )}
@@ -1065,7 +1065,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
                 </div>
                 {(answers.appraisal ?? []).length > 0 && (
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: pal.accent, margin: '12px 0 0', lineHeight: 1.55 }}>
-                    We’ll flag potentially valuable items for a deeper AI review so nothing is undersold.
+                    We’ll flag potentially valuable items for a deeper AI review, so you can price them with more confidence.
                   </p>
                 )}
               </div>
@@ -1211,7 +1211,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
                 onFocus={focusInput}
                 onBlur={blurInput}
               />
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', margin: '-2px 0 4px', lineHeight: 1.5 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#94A3B8', margin: '-2px 0 4px', lineHeight: 1.5 }}>
                 Adding your ZIP lets us tune pricing to your regional market.
               </p>
 
@@ -1266,7 +1266,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
                 </p>
               )}
 
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', margin: '4px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#94A3B8', margin: '4px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
                 No account needed. We&apos;ll email you from hello@legacy-loop.com — check your inbox (the first email may land in Promotions).
               </p>
             </form>

@@ -28,7 +28,7 @@ interface PinnedEvalBeatProps {
 const PHASES = [
   { key: 'analyzing', label: 'Analyzing the item', sub: 'Reading the photo — shape, material, markings.' },
   { key: 'identified', label: 'Identified', sub: 'The AI knows what it is.' },
-  { key: 'scoring', label: 'Scoring a fair price', sub: 'MegaBot puts four AI engines on the number.' },
+  { key: 'scoring', label: 'Handing to MegaBot', sub: 'The four-engine council takes it from here.' },
 ]
 
 export default function PinnedEvalBeat({ reduced, isTouch, width }: PinnedEvalBeatProps) {

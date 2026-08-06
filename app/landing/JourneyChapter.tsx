@@ -142,7 +142,7 @@ function StepStage({ step }: { step: string }) {
       <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#22C55E' }}>
         <Icon name="check" size={15} color="#22C55E" /> Label printed &middot; parcel or freight, straight out of the sale.
       </div>
-      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#6B7280', textAlign: 'right' }}>example rates &middot; live rates at checkout</div>
+      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#94A3B8', textAlign: 'right' }}>example rates &middot; live rates at checkout</div>
     </div>
   )
 }
