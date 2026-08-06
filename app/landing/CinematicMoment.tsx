@@ -18,15 +18,17 @@ interface CinematicMomentProps {
   base: string // asset stem under /videos (e.g. 'loop-guitar' -> loop-guitar.mp4/.webm/-poster.jpg)
   alt: string
   isTouch: boolean
+  accent?: 'teal' | 'gold' // frame glow register — gold for the estate/dignified beats
 }
 
-export default function CinematicMoment({ base, alt, isTouch }: CinematicMomentProps) {
+export default function CinematicMoment({ base, alt, isTouch, accent = 'teal' }: CinematicMomentProps) {
   const reduced = useReducedMotion()
   const ref = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.5 })
   const [playing, setPlaying] = useState(false)
   const canPlay = inView && !reduced && !isTouch
+  const glow = accent === 'gold' ? 'rgba(212,175,55,0.14)' : 'rgba(0,188,212,0.1)'
 
   useEffect(() => {
     if (canPlay && videoRef.current) videoRef.current.play().catch(() => {})
@@ -45,7 +47,7 @@ export default function CinematicMoment({ base, alt, isTouch }: CinematicMomentP
         borderRadius: 44,
         background: 'linear-gradient(150deg, #1c2230 0%, #0b0d13 60%)',
         border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 40px 80px rgba(0,0,0,0.5), 0 0 50px rgba(0,188,212,0.1), inset 0 0 0 2px rgba(0,0,0,0.6)',
+        boxShadow: `0 40px 80px rgba(0,0,0,0.5), 0 0 50px ${glow}, inset 0 0 0 2px rgba(0,0,0,0.6)`,
         transform: 'translateZ(0)',
       }}
     >

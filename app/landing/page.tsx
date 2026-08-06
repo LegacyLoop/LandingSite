@@ -4311,76 +4311,6 @@ function MegaBotSection() {
   )
 }
 
-// ---------- CINEMATIC PHONE-FRAMED CLIP (WAVE 4 / FIX 4) ----------
-// Poster-first crossfade (T5): the poster paints instantly; the video mounts only when in view and
-// crossfades in once it can play. Reduced-motion = static poster, no video mounted. LCP-safe:
-// lazy poster + preload="none" + video only rendered below the fold in view. Ambient loop (beauty
-// shot) is the allowed loop exception. Muted, playsInline, never autoplay-with-sound.
-function CinematicClip({ base, alt, caption, accentBorder = 'rgba(0,188,212,0.25)', accentGlow = 'rgba(0,188,212,0.1)' }: { base: string; alt: string; caption?: string; accentBorder?: string; accentGlow?: string }) {
-  const reduced = useReducedMotion()
-  const ref = useRef<HTMLElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const inView = useInView(ref, { once: true, amount: 0.4 })
-  const [playing, setPlaying] = useState(false)
-  useEffect(() => {
-    if (inView && !reduced && videoRef.current) videoRef.current.play().catch(() => {})
-  }, [inView, reduced])
-  return (
-    <figure ref={ref} style={{ margin: '0 auto', maxWidth: 300, width: '100%' }}>
-      <div
-        style={{
-          position: 'relative',
-          borderRadius: 28,
-          overflow: 'hidden',
-          border: `1px solid ${accentBorder}`,
-          boxShadow: `0 30px 60px rgba(0,0,0,0.4), 0 0 40px ${accentGlow}`,
-          aspectRatio: '9 / 16',
-          background: '#0B0B0F',
-        }}
-      >
-        <img
-          src={`/videos/${base}-poster.jpg`}
-          alt={alt}
-          loading="lazy"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: playing ? 0 : 1,
-            transition: 'opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
-          }}
-        />
-        {!reduced && inView && (
-          <video
-            ref={videoRef}
-            muted
-            playsInline
-            loop
-            preload="none"
-            aria-hidden
-            onPlaying={() => setPlaying(true)}
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-          >
-            <source src={`/videos/${base}.webm`} type="video/webm" />
-            <source src={`/videos/${base}.mp4`} type="video/mp4" />
-          </video>
-        )}
-        <div
-          aria-hidden
-          style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 60%, rgba(11,11,15,0.55))', pointerEvents: 'none' }}
-        />
-      </div>
-      {caption && (
-        <figcaption style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#94A3B8', textAlign: 'center', marginTop: 14 }}>
-          {caption}
-        </figcaption>
-      )}
-    </figure>
-  )
-}
-
 // ---------- THE FOUR PROOF LABELS — the page's table of contents (W1, static) ----------
 // CMD-LANDING-PASS3 W1: high on the page, the four things the product does, each a door to its
 // beat. Reads only the label + sub + primary action (the senior-simplicity test). STATIC — zero
@@ -5463,6 +5393,7 @@ function EstateSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
   const isMobile = width < 768
   const isTablet = width >= 768 && width < 1024
 
@@ -5648,16 +5579,19 @@ function EstateSection() {
           </p>
         </div>
 
-        {/* Estate cinematic anchor (WAVE 5 / FIX 6): a treasured piece, seen for what it is worth.
-            Estate-warm gold accent. Verdicted USE clip (CLIP 2 tea set -> antique alert). */}
-        <div style={{ marginBottom: 8 }}>
-          <CinematicClip
-            base="estate-tea"
-            alt="A silver tea service, the kind of heirloom Legacy-Loop helps a family value before it sells"
-            caption="A treasured piece, seen for what it is worth."
-            accentBorder="rgba(212,160,23,0.3)"
-            accentGlow="rgba(212,160,23,0.12)"
+        {/* Estate cinematic anchor (W3-B F-5): elevated to the R-6 gold device register.
+            V6 "Connecting Generations" — one clip, one home (the tea set now lives only in the
+            Antique Alert beat). Dignified, warm-gold glow, poster-only on touch/reduced. */}
+        <div style={{ marginBottom: 20 }}>
+          <CinematicMoment
+            base="estate-legacy"
+            alt="Connecting generations — a family letting go with care, the way Legacy-Loop helps"
+            isTouch={isTouch}
+            accent="gold"
           />
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#94A3B8', textAlign: 'center', marginTop: 16 }}>
+            Connecting generations, one piece at a time.
+          </p>
         </div>
 
         {/* What we lift off your shoulders — honest capability cards + the senior-on-tablet photo */}
