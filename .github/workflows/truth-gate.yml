@@ -24,13 +24,14 @@ concurrency:
 
 jobs:
   truth-gate:
-    name: register truth gate — LANDING (Node 22)
+    name: register truth gate — LANDING
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # 10 min (not 5): during GitHub action-download outages the setup steps retry for
+    # minutes; a tight 5-min cap cancelled the (instant, zero-dep) gate as if it failed.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-        with:
-          node-version: '22'
+      # No setup-node action: the gate is pure Node builtins and ubuntu-latest ships a
+      # modern Node — dropping the action removes a flaky download from the critical path.
       - name: Truth gate — no removed LANDING claim may return
         run: node scripts/truth-gate.mjs --repo=LANDING
