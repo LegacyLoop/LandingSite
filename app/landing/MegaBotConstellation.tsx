@@ -22,7 +22,7 @@ interface Engine {
 const CX = 300
 const CY = 165
 const R = 120
-const ARIA = "Six AI engines power the platform; the four MegaBot council engines vote on your item's price"
+const ARIA = "Six AI engines power the platform; four form the MegaBot council built into every bot — run it on identifying, pricing, listing, or finding a buyer"
 
 function layout(engines: Engine[]) {
   return engines.map((e, i) => {

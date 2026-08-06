@@ -3130,7 +3130,7 @@ function MarketOpportunitySection() {
       target: 6,
       heroLabel: 'AI Engines',
       line: 'OpenAI · Claude · Gemini · Grok · DeepSeek · Perplexity',
-      sub: 'Four vote on every price — the MegaBot council',
+      sub: 'Four form MegaBot — the council built into every bot',
     },
     {
       target: 12,
@@ -3995,14 +3995,15 @@ function MegaBotSection() {
             }}
           >
             The same intelligence layer powers the app and Sylvia-AI — OpenAI, Claude, Gemini, Grok,
-            DeepSeek, and Perplexity. Four of them form the MegaBot council that votes on your
-            item&apos;s price. When those four agree, you can trust the number.
+            DeepSeek, and Perplexity. Four of them form MegaBot — the consensus council built into
+            every bot. Identify, price, list, or find a buyer: run it through all four at once, and
+            when they agree, you can trust the answer.
           </p>
         </div>
 
         {/* Option C (W3-B): the crafted six-node constellation — vote-lines draw in, nodes
             scale-in staggered, council rings pulse, the hub breathes. Six engines power the
-            platform; the four council engines vote on the price. Reduced-motion = static. */}
+            platform; the four council engines form MegaBot, run on any bot. Reduced-motion = static. */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 48 }}>
           <MegaBotConstellation engines={engines} reduced={reduced} />
         </div>
@@ -4075,7 +4076,7 @@ function MegaBotSection() {
           ))}
         </div>
 
-        {/* THE MEGABOT COUNCIL — the four voting engines, presented as its own distinct feature */}
+        {/* THE MEGABOT COUNCIL — the four council engines, the consensus layer built into every bot */}
         <div style={{ textAlign: 'center', marginTop: 56 }}>
           <SectionEyebrow text="THE MEGABOT COUNCIL" color="#8B5CF6" />
         </div>
@@ -4093,7 +4094,7 @@ function MegaBotSection() {
             }}
           >
             {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §6): "87% Average AI Agreement" removed — never measured. */}
-            Four AIs. One consensus price.
+            Four AIs. One consensus you can trust.
           </div>
           <div
             style={{
@@ -4126,7 +4127,7 @@ function MegaBotSection() {
             }}
           >
             {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §5): cost/coffee + "Margin: 85%+" financial claim removed. */}
-            Every price is the consensus of four independent AI engines.
+            Any decision — identify, price, list, find the buyer — can run through all four at once.
           </p>
         </div>
       </div>
@@ -4812,8 +4813,8 @@ function AIAgentsSection() {
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#a78bfa', marginBottom: 10 }}>
                 <Icon name="brain" size={17} color="#a78bfa" /> The crown
               </div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(22px, 3vw, 30px)', letterSpacing: '-0.01em', color: '#F1F5F9', marginBottom: 8 }}>MegaBot — the four-engine council.</div>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#CBD5E1', lineHeight: 1.6, maxWidth: 520, margin: 0 }}>Every price runs through OpenAI, Claude, Gemini, and Grok at once. When four independent engines agree, you can trust the number.</p>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(22px, 3vw, 30px)', letterSpacing: '-0.01em', color: '#F1F5F9', marginBottom: 8 }}>MegaBot — the four-engine council, on every bot.</div>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#CBD5E1', lineHeight: 1.6, maxWidth: 520, margin: 0 }}>Identify, price, list, or find a buyer — run any of it through OpenAI, Claude, Gemini, and Grok at once. When four independent engines agree, you can trust the answer.</p>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: isDesktop ? 'flex-end' : 'flex-start' }}>
               {engines.map((e) => (
