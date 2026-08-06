@@ -203,7 +203,10 @@ export default function JourneyChapter({ reduced, isTouch, width }: JourneyChapt
         const st = ScrollTrigger.create({
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=' + STEPS.length * 68 + '%',
+          // W3-POLISH target 4 (zone rhythm): 44vh/step (was 68). The old 68 held the pin
+          // ~4.4 screens for 5 steps — a static step lingered ~0.8 screen, reading as dead
+          // scroll. 44 keeps the scrub responsive (~2.2 screens total) without rushing a step.
+          end: '+=' + STEPS.length * 44 + '%',
           pin: true,
           pinSpacing: true,
           scrub: 0.5,
