@@ -3765,26 +3765,53 @@ function MessageCenterSection() {
 // ---------- MEGABOT SECTION ----------
 // Per-provider SVG marks (WAVE 6 / FIX 7 · R-3/R-4): custom glyphs, zero emoji. One distinct
 // mark per engine, drawn in the provider's canon color. Single-weight 1.5px stroke, 26px grid.
-function EngineMark({ mark, color, size = 26 }: { mark: string; color: string; size?: number }) {
-  const s = { width: size, height: size, display: 'block' as const }
-  const common = { fill: 'none', stroke: color, strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
-  switch (mark) {
-    case 'openai': // hexagon knot
-      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} d="M12 3l7 4v10l-7 4-7-4V7l7-4z" /><path {...common} d="M12 8.5l3.5 2v3l-3.5 2-3.5-2v-3l3.5-2z" /></svg>
-    case 'claude': // spark burst
-      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13" /></svg>
-    case 'gemini': // twin circles
-      return <svg viewBox="0 0 24 24" style={s} aria-hidden><circle {...common} cx="9" cy="12" r="6" /><circle {...common} cx="15" cy="12" r="6" /></svg>
-    case 'grok': // bold slash-cross
-      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} strokeWidth={2.2} d="M6 6l12 12M18 6L6 18" /></svg>
-    case 'deepseek': // nested diamonds
-      return <svg viewBox="0 0 24 24" style={s} aria-hidden><path {...common} d="M12 2l10 10-10 10L2 12 12 2z" /><path {...common} d="M12 7l5 5-5 5-5-5 5-5z" /></svg>
-    case 'perplexity': // concentric search rings
-      return <svg viewBox="0 0 24 24" style={s} aria-hidden><circle {...common} cx="11" cy="11" r="7.5" /><circle {...common} cx="11" cy="11" r="3.5" /><path {...common} d="M16.5 16.5L21 21" /></svg>
-    default:
-      return <svg viewBox="0 0 24 24" style={s} aria-hidden><circle {...common} cx="12" cy="12" r="8" /></svg>
-  }
+// Official model logos (CEO-supplied brand assets in /public/ai-logos). Shown to identify
+// the models Legacy-Loop runs — no affiliation/endorsement implied (see the disclaimer under
+// the engine grid). Each sits on a white tile so every mark reads on the dark theme (the
+// Grok and Perplexity marks are dark and would otherwise vanish). Marks are not recolored.
+const AI_LOGOS: Record<string, string> = {
+  openai: '/ai-logos/openai.png',
+  claude: '/ai-logos/claude.png',
+  gemini: '/ai-logos/gemini.png',
+  grok: '/ai-logos/grok.png',
+  deepseek: '/ai-logos/deepseek.png',
+  perplexity: '/ai-logos/perplexity.png',
 }
+
+function AiLogo({ id, name, tile = 44, pad = 7 }: { id: string; name: string; tile?: number; pad?: number }) {
+  const src = AI_LOGOS[id]
+  if (!src) return null
+  return (
+    <span
+      style={{
+        width: tile,
+        height: tile,
+        minWidth: tile,
+        borderRadius: Math.round(tile * 0.27),
+        background: '#FFFFFF',
+        border: '1px solid rgba(255,255,255,0.16)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        overflow: 'hidden',
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- small static brand asset, not a content image */}
+      <img
+        src={src}
+        alt={`${name} logo`}
+        width={tile - pad * 2}
+        height={tile - pad * 2}
+        loading="lazy"
+        decoding="async"
+        style={{ width: tile - pad * 2, height: tile - pad * 2, objectFit: 'contain', display: 'block' }}
+      />
+    </span>
+  )
+}
+
 
 
 function MegaBotSection() {
@@ -4019,21 +4046,7 @@ function MegaBotSection() {
             <GlowCard key={engine.name} delay={i * 80}>
               <div style={{ borderLeft: `3px solid ${engine.color}`, paddingLeft: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                  <span
-                    aria-hidden
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 12,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: `${engine.color}14`,
-                      border: `1px solid ${engine.color}44`,
-                    }}
-                  >
-                    <EngineMark mark={engine.mark} color={engine.color} />
-                  </span>
+                  <AiLogo id={engine.mark} name={engine.name} tile={44} />
                   {engine.council && (
                     <span
                       style={{
@@ -4075,6 +4088,13 @@ function MegaBotSection() {
             </GlowCard>
           ))}
         </div>
+
+        {/* Trademark / no-endorsement notice — nominative use of the model marks. */}
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, lineHeight: 1.5, color: '#64748B', textAlign: 'center', maxWidth: 720, margin: '20px auto 0' }}>
+          OpenAI, Claude, Gemini, Grok, DeepSeek, and Perplexity are trademarks of their respective
+          owners, shown to identify the models Legacy-Loop runs. No affiliation, partnership, or
+          endorsement is implied.
+        </p>
 
         {/* THE MEGABOT COUNCIL — the four council engines, the consensus layer built into every bot */}
         <div style={{ textAlign: 'center', marginTop: 56 }}>
@@ -4949,8 +4969,8 @@ function AIAgentsSection() {
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: isDesktop ? 'flex-end' : 'flex-start' }}>
               {engines.map((e) => (
-                <div key={e.n} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'rgba(13,17,23,0.5)', border: `1px solid ${e.c}55` }}>
-                  <span style={{ width: 9, height: 9, borderRadius: '50%', background: e.c }} />
+                <div key={e.n} style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '8px 14px 8px 8px', borderRadius: 10, background: 'rgba(13,17,23,0.5)', border: `1px solid ${e.c}55` }}>
+                  <AiLogo id={e.n.toLowerCase()} name={e.n} tile={26} pad={4} />
                   <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 13.5, color: '#F1F5F9' }}>{e.n}</span>
                 </div>
               ))}
