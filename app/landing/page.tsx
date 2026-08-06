@@ -18,6 +18,7 @@ import ScrollSequenceCanvas from './ScrollSequenceCanvas'
 import PinnedEvalBeat from './PinnedEvalBeat'
 import CinematicMoment from './CinematicMoment'
 import ConstellationField from './ConstellationField'
+import BuyerConversationDemo from './BuyerConversationDemo'
 import JourneyChapter from './JourneyChapter'
 import MegaBotConstellation from './MegaBotConstellation'
 import Icon from './Icon'
@@ -3381,7 +3382,7 @@ function MarketOpportunitySection() {
             }}
           >
             Built to{' '}
-            <GlitchWord text="sell for you." />
+            <GlitchWord text="do the hard part for you." />
           </h2>
           <p
             style={{
@@ -3523,57 +3524,10 @@ function MarketOpportunitySection() {
 // CMD-LANDING-MASTER-ARC V21 · WAVE 3 / FIX 3 · beat B2. The differentiator, led hardest:
 // a free AI tool writes a listing; we find the buyer. Honest BuyerBot fence copy
 // ("finds real interested buyers - you approve every contact"). Zero emoji (inline SVG).
-// The Moat's money shot: BuyerBot surfacing real interested buyers. Honest — each is an
-// INTEREST SIGNAL with a source, not a confirmed buyer, and every contact is yours to approve.
-const BUYER_MATCHES = [
-  { who: 'Collector', what: 'Vintage guitars, 60s–70s', src: 'Marketplace signal' },
-  { who: 'Local musician', what: 'Nearby, actively looking', src: 'Local match' },
-  { who: 'Specialty reseller', what: 'Watching this category', src: 'Category watch' },
-]
-
-function BuyerMatchDemo({ reduced, isTouch }: { reduced: boolean; isTouch: boolean }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, amount: 0.4 })
-  const on = reduced || isTouch || inView
-  return (
-    <div
-      ref={ref}
-      style={{ position: 'relative', padding: '22px 22px 18px', borderRadius: 20, background: 'rgba(13,17,23,0.55)', border: '1px solid rgba(0,188,212,0.28)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 24px 60px rgba(0,0,0,0.4)' }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-        <span aria-hidden style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: '#22C55E', flexShrink: 0 }}>
-          {!reduced && <motion.span style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: '1px solid #22C55E' }} animate={{ scale: [1, 2], opacity: [0.6, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }} />}
-        </span>
-        <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12.5, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#F1F5F9' }}>BuyerBot</span>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', marginLeft: 'auto' }}>finding interested buyers</span>
-      </div>
-      <div style={{ display: 'grid', gap: 10 }}>
-        {BUYER_MATCHES.map((m, i) => (
-          <motion.div
-            key={m.who}
-            initial={reduced ? false : { opacity: 0, x: -18 }}
-            animate={on ? { opacity: 1, x: 0 } : undefined}
-            transition={{ duration: 0.5, delay: 0.3 + i * 0.28, ease: [0.23, 1, 0.32, 1] }}
-            style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 12, background: 'rgba(0,188,212,0.06)', border: '1px solid rgba(0,188,212,0.2)' }}
-          >
-            <span aria-hidden style={{ width: 34, height: 34, minWidth: 34, borderRadius: '50%', background: 'rgba(0,188,212,0.14)', border: '1px solid rgba(0,188,212,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="target" size={16} color="#22D3EE" />
-            </span>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14, color: '#F1F5F9' }}>{m.who}</div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8' }}>{m.what}</div>
-            </div>
-            <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 10, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#22D3EE', background: 'rgba(0,188,212,0.1)', border: '1px solid rgba(0,188,212,0.25)', borderRadius: 6, padding: '4px 7px', whiteSpace: 'nowrap' }}>{m.src}</span>
-          </motion.div>
-        ))}
-      </div>
-      <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#CBD5E1' }}>
-        <Icon name="shield" size={14} color="#22C55E" />
-        A signal, not a sale &mdash; you approve every contact. Manual mode today.
-      </div>
-    </div>
-  )
-}
+// The Moat's money shot: BuyerBot surfacing real interested buyers, now shown as a LIVE,
+// self-typing conversation (BuyerConversationDemo — its own file). Honest — each buyer is
+// an INTEREST SIGNAL with a source, not a confirmed buyer, and every contact is yours to
+// approve. See BuyerConversationDemo.tsx for the per-line truth fence.
 
 function MoatSection() {
   const width = useWindowWidth()
@@ -3589,6 +3543,15 @@ function MoatSection() {
   const peakInView = useInView(peakRef, { once: true, amount: 0.5 })
   const { scrollYProgress: peakScroll } = useScroll({ target: peakRef, offset: ['start end', 'end start'] })
   const flyScale = useTransform(peakScroll, [0, 0.5, 1], [0.9, 1, 1.1])
+
+  // W3-POLISH scene depth (Amaterasu staging): the buyers "resolve out of the dark" —
+  // the point-cloud field lifts from dim to bright and settles from a wider scale as the
+  // section centers, so the constellation and the conversation read as ONE staged
+  // sequence rather than two parallel layers. Scroll-linked, desktop-motion only.
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress: secScroll } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
+  const fieldOpacity = useTransform(secScroll, [0, 0.32, 0.62, 1], [0.28, 1, 1, 0.5])
+  const fieldScale = useTransform(secScroll, [0, 0.5, 1], [1.09, 1, 0.98])
 
   const steps = [
     {
@@ -3625,10 +3588,23 @@ function MoatSection() {
   ]
 
   return (
-    <section id="buyerbot" style={{ ...sp, position: 'relative', zIndex: 5, overflow: 'hidden' }}>
+    <section ref={sectionRef} id="buyerbot" style={{ ...sp, position: 'relative', zIndex: 5, overflow: 'hidden' }}>
       {/* B05 point-cloud: buyers out there in the market; the highlighted nodes are the
-          ones BuyerBot found. Cursor-parallax on desktop, ambient drift on touch. */}
-      <ConstellationField reduced={reduced} isTouch={isTouch} />
+          ones BuyerBot found. Cursor-parallax on desktop, ambient drift on touch. The
+          wrapper resolves the field up from the dark on scroll (scene-depth staging). */}
+      <motion.div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: 'none',
+          opacity: reduced || isTouch ? 1 : fieldOpacity,
+          scale: reduced || isTouch ? 1 : fieldScale,
+        }}
+      >
+        <ConstellationField reduced={reduced} isTouch={isTouch} />
+      </motion.div>
       {/* T3 ambient glow field — time-based, reduced-motion gated */}
       <motion.div
         aria-hidden
@@ -3679,7 +3655,7 @@ function MoatSection() {
             alignItems: 'center',
           }}
         >
-          <BuyerMatchDemo reduced={reduced} isTouch={isTouch} />
+          <BuyerConversationDemo reduced={reduced} isTouch={isTouch} />
           <div style={{ display: 'grid', gap: 20 }}>
             {steps.map((s, i) => (
               <motion.div
@@ -6799,11 +6775,11 @@ function AppDownloadSection() {
                 margin: '0 auto',
               }}
             >
-              No App Store. No approval wait. Install in{' '}
+              No App Store. No approval wait.{' '}
               <span style={{ color: '#F1F5F9', fontWeight: 600 }}>
-                3 seconds
+                Add it to your home screen
               </span>{' '}
-              — iPhone, Android, desktop, or any browser.
+              — iPhone, Android, or desktop.
             </p>
           </div>
         </div>

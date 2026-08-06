@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# playwright MCP scratch (page snapshots + screenshots · never commit · not source)
+.playwright-mcp/
+
 # next.js
 /.next/
 /out/
