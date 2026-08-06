@@ -15,6 +15,8 @@ import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
 import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE } from './landing-content'
 import { reveal } from './motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
+import PinnedEvalBeat from './PinnedEvalBeat'
+import { setLenis } from './lenis-instance'
 
 // CMD-WAITLIST-INTAKE-ELEVATE — a captured "reserve this offering" intent,
 // lifted to the landing page so section CTAs (white-glove / estate care /
@@ -4500,6 +4502,15 @@ function ProofLabelsSection() {
       </div>
     </section>
   )
+}
+
+// ---------- B03 · AI EVALUATION (pinned scrub) ----------
+// Thin wrapper: feeds the page's motion/viewport hooks into the pure PinnedEvalBeat.
+function AIEvaluationBeat() {
+  const width = useWindowWidth()
+  const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
+  return <PinnedEvalBeat reduced={reduced} isTouch={isTouch} width={width} />
 }
 
 // ---------- HOW IT WORKS ----------
@@ -9257,6 +9268,7 @@ export default function LandingPage() {
           smoothWheel: true,
           autoRaf: false,
         })
+        setLenis(lenis) // expose to code-split beats (B03 pinned scrub bridges to it)
         const raf = (time: number) => {
           lenis.raf(time)
           rafId = requestAnimationFrame(raf)
@@ -9270,6 +9282,7 @@ export default function LandingPage() {
     })()
     return () => {
       if (lenis) lenis.destroy()
+      setLenis(null)
       if (rafId) cancelAnimationFrame(rafId)
       style.remove()
     }
@@ -9297,6 +9310,7 @@ export default function LandingPage() {
         <MoatSection />
         <HowItWorksSection />
         <MessageCenterSection />
+        <AIEvaluationBeat />
         <MegaBotSection />
         <AIAgentsSection />
         <ShippingCenterSection />
