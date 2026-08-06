@@ -4135,11 +4135,73 @@ function MegaBotSection() {
   )
 }
 
-// ---------- THE FOUR PROOF LABELS — the page's table of contents (W1, static) ----------
-// CMD-LANDING-PASS3 W1: high on the page, the four things the product does, each a door to its
-// beat. Reads only the label + sub + primary action (the senior-simplicity test). STATIC — zero
-// animation this wave; W2 lays the shared motion. Data from landing-content.ts.
+// ---------- THE FOUR PROOF LABELS — the page's table of contents / stitch ----------
+// CMD-LANDING-PASS3 W3-POLISH target 3: the four things the product does, elevated from flat
+// pills into an editorial numbered RAIL — a through-line threads the four numerals ("one
+// platform" made literal), each step carries a live micro-motif, hover lifts + brightens, and
+// a connective line drops into the process section (HowItWorks) below. Data from landing-content.
 const PROOF_ICONS: Record<string, string> = { identify: 'camera', price: 'chart', 'find-buyer': 'target', ship: 'box' }
+// MegaBot council colours — reused by the PRICE motif (echoes consensus, claims no number).
+const COUNCIL_COLORS = ['#22C55E', '#A78BFA', '#3B82F6', '#F97316']
+
+// Per-step live micro-motif. Decorative (aria-hidden); reduced-motion renders it static.
+function StepMotif({ id, reduced }: { id: string; reduced: boolean }) {
+  const box: React.CSSProperties = { position: 'relative', width: 40, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }
+  if (id === 'price') {
+    // four council engines pulsing in agreement
+    return (
+      <div aria-hidden style={{ ...box, gap: 6 }}>
+        {COUNCIL_COLORS.map((c, i) => (
+          <motion.span
+            key={c}
+            style={{ width: 7, height: 7, borderRadius: '50%', background: c }}
+            animate={reduced ? undefined : { opacity: [0.35, 1, 0.35], scale: [0.85, 1, 0.85] }}
+            transition={reduced ? undefined : { duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.18 }}
+          />
+        ))}
+      </div>
+    )
+  }
+  if (id === 'find-buyer') {
+    // a radar ping — an interest signal resolving (honest: not autonomous outreach)
+    return (
+      <div aria-hidden style={box}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22D3EE', zIndex: 1 }} />
+        {[0, 1].map((k) => (
+          <motion.span
+            key={k}
+            style={{ position: 'absolute', width: 6, height: 6, borderRadius: '50%', border: '1px solid #22D3EE' }}
+            animate={reduced ? undefined : { scale: [1, 3.4], opacity: [0.7, 0] }}
+            transition={reduced ? undefined : { duration: 1.8, repeat: Infinity, ease: 'easeOut', delay: k * 0.9 }}
+          />
+        ))}
+      </div>
+    )
+  }
+  if (id === 'ship') {
+    // a parcel travelling a dashed route
+    return (
+      <div aria-hidden style={box}>
+        <div style={{ position: 'absolute', left: 2, right: 2, top: '50%', height: 1, background: 'repeating-linear-gradient(90deg, rgba(0,188,212,0.5) 0 4px, transparent 4px 8px)' }} />
+        <motion.span
+          style={{ position: 'absolute', width: 8, height: 6, borderRadius: 1.5, background: '#22D3EE', top: '50%', marginTop: -3 }}
+          animate={reduced ? undefined : { left: [2, 30] }}
+          transition={reduced ? undefined : { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
+    )
+  }
+  // identify — a scan sweep across the frame
+  return (
+    <div aria-hidden style={{ ...box, overflow: 'hidden', borderRadius: 4, border: '1px solid rgba(0,188,212,0.25)' }}>
+      <motion.span
+        style={{ position: 'absolute', top: 0, bottom: 0, width: 2, background: 'linear-gradient(180deg, transparent, #22D3EE, transparent)', boxShadow: '0 0 8px #22D3EE' }}
+        animate={reduced ? undefined : { left: ['8%', '88%'] }}
+        transition={reduced ? undefined : { duration: 1.6, repeat: Infinity, ease: 'easeInOut', repeatType: 'reverse' }}
+      />
+    </div>
+  )
+}
 
 function ProofLabelsSection() {
   const width = useWindowWidth()
@@ -4147,6 +4209,7 @@ function ProofLabelsSection() {
   const isMobile = width < 768
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
+  const [hovered, setHovered] = useState<string | null>(null)
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   return (
     <section id="proof-labels" style={{ ...sp, position: 'relative', zIndex: 5 }}>
@@ -4157,35 +4220,103 @@ function ProofLabelsSection() {
           One photo starts it. We carry it from a snapshot to a sold, shipped item &mdash; and you
           approve the moments that matter.
         </p>
-        <div style={{ position: 'relative', marginTop: isMobile ? 40 : 56 }}>
-          {/* the flow line connecting the four icon nodes (desktop) */}
-          {!isMobile && (
-            <div aria-hidden style={{ position: 'absolute', top: 42, left: '13%', right: '13%', height: 2, background: 'linear-gradient(90deg, transparent, rgba(0,188,212,0.45) 20%, rgba(0,188,212,0.45) 80%, transparent)', zIndex: 0 }} />
-          )}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 20 : 16, position: 'relative', zIndex: 1 }}>
-            {PROOF_LABELS.map((p, i) => (
-              <motion.button
-                key={`${p.id}-${reduced || isTouch ? 's' : 'a'}`}
-                type="button"
-                variants={reveal(reduced, i, isTouch)}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.3 }}
-                whileHover={reduced || isTouch ? undefined : { y: -6 }}
-                transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-                onClick={() => scrollTo(p.target)}
-                aria-label={`${p.label}: ${p.sub}`}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 4, padding: '4px 8px', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', minHeight: 44 }}
-              >
-                {/* icon node */}
-                <div style={{ position: 'relative', width: 84, height: 84, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at 35% 30%, rgba(0,188,212,0.18), rgba(13,17,23,0.9))', border: '1px solid rgba(0,188,212,0.4)', boxShadow: '0 0 28px rgba(0,188,212,0.12)', marginBottom: 14 }}>
-                  <Icon name={PROOF_ICONS[p.id] ?? 'search'} size={32} color="#22D3EE" />
-                  <span style={{ position: 'absolute', top: -6, right: -2, width: 24, height: 24, borderRadius: '50%', background: '#00BCD4', color: '#0D1117', fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #0D1117' }}>{i + 1}</span>
-                </div>
-                <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 14, letterSpacing: '0.06em', color: '#F1F5F9' }}>{p.label}</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', lineHeight: 1.5, maxWidth: 220 }}>{p.sub}</div>
-              </motion.button>
-            ))}
+
+        {/* THE RAIL — a through-line threads the four numerals ("one platform" made literal). */}
+        <div style={{ position: 'relative', marginTop: isMobile ? 44 : 64 }}>
+          {/* connective spine — draws in on scroll (the stitch assembling). horizontal
+              (desktop) threads node centres · vertical (mobile). reduced-motion = static. */}
+          <motion.div
+            aria-hidden
+            initial={reduced ? false : (isMobile ? { scaleY: 0 } : { scaleX: 0 })}
+            whileInView={reduced ? undefined : (isMobile ? { scaleY: 1 } : { scaleX: 1 })}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
+            style={
+              isMobile
+                ? { position: 'absolute', top: 8, bottom: 8, left: 27, width: 2, transformOrigin: 'top', background: 'linear-gradient(180deg, transparent, rgba(0,188,212,0.4) 8%, rgba(0,188,212,0.4) 92%, transparent)', zIndex: 0 }
+                : { position: 'absolute', top: 31, left: '12.5%', right: '12.5%', height: 2, transformOrigin: 'left', background: 'linear-gradient(90deg, transparent, rgba(0,188,212,0.4) 12%, rgba(0,188,212,0.4) 88%, transparent)', zIndex: 0 }
+            }
+          />
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: isMobile ? 8 : 16, position: 'relative', zIndex: 1 }}>
+            {PROOF_LABELS.map((p, i) => {
+              const on = hovered === p.id
+              return (
+                <motion.button
+                  key={`${p.id}-${reduced || isTouch ? 's' : 'a'}`}
+                  type="button"
+                  variants={reveal(reduced, i, isTouch)}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.3 }}
+                  whileHover={reduced || isTouch ? undefined : { y: -6 }}
+                  transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                  onClick={() => scrollTo(p.target)}
+                  onMouseEnter={() => setHovered(p.id)}
+                  onMouseLeave={() => setHovered((h) => (h === p.id ? null : h))}
+                  onFocus={() => setHovered(p.id)}
+                  onBlur={() => setHovered((h) => (h === p.id ? null : h))}
+                  aria-label={`${p.label}: ${p.sub}`}
+                  style={{
+                    display: isMobile ? 'grid' : 'flex',
+                    gridTemplateColumns: isMobile ? '64px 1fr' : undefined,
+                    flexDirection: isMobile ? undefined : 'column',
+                    alignItems: isMobile ? 'center' : 'center',
+                    textAlign: isMobile ? 'left' : 'center',
+                    gap: isMobile ? 16 : 4,
+                    padding: isMobile ? '14px 8px' : '4px 8px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'inherit',
+                    minHeight: 44,
+                  }}
+                >
+                  {/* numbered node — the through-line threads its centre */}
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: 64,
+                      height: 64,
+                      minWidth: 64,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      justifySelf: isMobile ? 'center' : undefined,
+                      background: 'radial-gradient(circle at 35% 30%, rgba(0,188,212,0.16), rgba(13,17,23,0.95))',
+                      border: `1px solid ${on ? 'rgba(34,211,238,0.85)' : 'rgba(0,188,212,0.4)'}`,
+                      boxShadow: on ? '0 0 34px rgba(34,211,238,0.28)' : '0 0 22px rgba(0,188,212,0.1)',
+                      marginBottom: isMobile ? 0 : 16,
+                      transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+                    }}
+                  >
+                    <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 26, lineHeight: 1, color: on ? '#22D3EE' : '#F1F5F9', transition: 'color 0.3s ease' }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    {/* small icon chip on the node shoulder */}
+                    <span aria-hidden style={{ position: 'absolute', top: -4, right: -4, width: 26, height: 26, borderRadius: '50%', background: '#0D1117', border: '1px solid rgba(0,188,212,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name={PROOF_ICONS[p.id] ?? 'search'} size={14} color="#22D3EE" />
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'flex-start' : 'center', gap: 6, minWidth: 0 }}>
+                    <StepMotif id={p.id} reduced={reduced} />
+                    <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 14, letterSpacing: '0.06em', color: '#F1F5F9' }}>{p.label}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', lineHeight: 1.5, maxWidth: 220 }}>{p.sub}</div>
+                    {/* hover underline — draws in on hover/focus */}
+                    <span aria-hidden style={{ height: 2, marginTop: 2, width: on ? 28 : 0, background: 'linear-gradient(90deg, #22D3EE, #00BCD4)', borderRadius: 2, transition: 'width 0.3s cubic-bezier(0.23,1,0.32,1)' }} />
+                  </div>
+                </motion.button>
+              )
+            })}
+          </div>
+
+          {/* CONNECTIVE DROP — the rail flows down into the process section (HowItWorks). */}
+          <div aria-hidden style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: isMobile ? 20 : 30 }}>
+            <div style={{ width: 2, height: isMobile ? 34 : 48, background: 'linear-gradient(180deg, rgba(0,188,212,0.45), rgba(0,188,212,0.12))' }} />
+            <motion.svg width="18" height="12" viewBox="0 0 18 12" fill="none" style={{ marginTop: -1 }} animate={reduced ? undefined : { y: [0, 5, 0], opacity: [0.5, 1, 0.5] }} transition={reduced ? undefined : { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}>
+              <path d="M2 2l7 7 7-7" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </motion.svg>
           </div>
         </div>
       </div>
