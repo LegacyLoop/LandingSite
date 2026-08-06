@@ -1,0 +1,41 @@
+# CMD-LANDING-PASS3 · W2 · perf budget as BUILD-FAIL
+#
+# The playbook's "initial JS under 200KB gzipped" is enforced here, not left
+# advisory: the landing route is built and the shared initial JS is gzip-measured;
+# over budget fails the build with a per-chunk breakdown. Deferring GSAP keeps this
+# green (167.5KB now, 32.5KB headroom — a ~50KB engine would break it).
+#
+# See scripts/perf-budget.mjs for what is and isn't counted (NO-SILENT-CAPS).
+
+name: perf-budget
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: perf-budget-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  perf-budget:
+    name: initial-JS budget — LANDING (Node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Initial-JS budget gate (build-fail if over 200KB gz)
+        run: npm run perf:budget

@@ -13,6 +13,7 @@ import {
 import { QRCodeSVG } from 'qrcode.react'
 import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
 import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE } from './landing-content'
+import { reveal } from './motion'
 
 // CMD-WAITLIST-INTAKE-ELEVATE — a captured "reserve this offering" intent,
 // lifted to the landing page so section CTAs (white-glove / estate care /
@@ -4432,6 +4433,8 @@ function ProofLabelsSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const isMobile = width < 768
+  const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   return (
     <section id="proof-labels" style={{ ...sp, position: 'relative', zIndex: 5 }}>
@@ -4447,9 +4450,15 @@ function ProofLabelsSection() {
           }}
         >
           {PROOF_LABELS.map((p, i) => (
-            <button
-              key={p.id}
+            <motion.button
+              key={`${p.id}-${reduced || isTouch ? 's' : 'a'}`}
               type="button"
+              variants={reveal(reduced, i, isTouch)}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              whileHover={reduced || isTouch ? undefined : { y: -4, borderColor: 'rgba(0,188,212,0.5)' }}
+              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
               onClick={() => scrollTo(p.target)}
               aria-label={`${p.label}: ${p.sub}`}
               style={{
@@ -4469,7 +4478,7 @@ function ProofLabelsSection() {
               <div style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', lineHeight: 1.5 }}>
                 {p.sub}
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -4482,6 +4491,7 @@ function HowItWorksSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const isTouch = useIsTouch()
+  const reduced = useReducedMotion()
   const steps = [
     // FIX 5 · D-2 truth fences: honest capability language on every step.
     // Step 3 carries the CEO-ratified handoff line verbatim (never "publishes everywhere").
@@ -4647,10 +4657,14 @@ function HowItWorksSection() {
               seniors and touch users, where a native tooltip never appears. aria-label folds
               label + note into one accessible name for screen readers. */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, maxWidth: 720, margin: '0 auto' }}>
-            {LISTING_STATES.map((s) => (
-              <div
-                key={s.id}
+            {LISTING_STATES.map((s, i) => (
+              <motion.div
+                key={`${s.id}-${reduced || isTouch ? 's' : 'a'}`}
                 aria-label={`${s.label}. ${s.note}`}
+                variants={reveal(reduced, i, isTouch)}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.4 }}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -4667,7 +4681,7 @@ function HowItWorksSection() {
                   {s.label}
                 </div>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', lineHeight: 1.45 }}>{s.note}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -5254,6 +5268,7 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
   const isMobile = width < 768
   const cols = width >= 1200 ? 'repeat(4, 1fr)' : width >= 640 ? 'repeat(2, 1fr)' : '1fr'
 
@@ -5537,9 +5552,17 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
           </div>
 
           {/* SERVICE GRID (W1 · §7.1 regression restored): what each tier INCLUDES at a glance,
-              from the typed config. Static, no animation. Answers "what do I get for $10 vs $25
-              vs $75" without leaving the page. Founding numbers only (R-10). */}
-          <div style={{ marginTop: 56, overflowX: 'auto', WebkitOverflowScrolling: 'touch' as const }}>
+              from the typed config. Answers "what do I get for $10 vs $25 vs $75" without leaving
+              the page. Founding numbers only (R-10). W2: one house-rhythm reveal on the block
+              (rows stay put — no per-row motion, which would jank the table). */}
+          <motion.div
+            key={`grid-${reduced || isTouch ? 's' : 'a'}`}
+            variants={reveal(reduced, 0, isTouch)}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            style={{ marginTop: 56, overflowX: 'auto', WebkitOverflowScrolling: 'touch' as const }}
+          >
             <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontFamily: 'var(--font-body)' }}>
               <caption style={{ captionSide: 'top', textAlign: 'left', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 18, color: '#F1F5F9', marginBottom: 16 }}>
                 What each plan includes
@@ -5574,7 +5597,7 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
                 ))}
               </tbody>
             </table>
-          </div>
+          </motion.div>
 
           <p
             style={{
@@ -6081,6 +6104,8 @@ function EstateSection() {
 function SocialProofSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
   const [barActive, setBarActive] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
 
@@ -6215,11 +6240,18 @@ function SocialProofSection() {
             without your approval.
           </p>
           <dl style={{ margin: 0, display: 'grid', gap: 14 }}>
-            {PRIVACY_DISCLOSURE.map((d) => (
-              <div key={d.q} style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            {PRIVACY_DISCLOSURE.map((d, i) => (
+              <motion.div
+                key={`${d.q}-${reduced || isTouch ? 's' : 'a'}`}
+                variants={reveal(reduced, i, isTouch)}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.3 }}
+                style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
                 <dt style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14, color: '#F1F5F9', marginBottom: 4 }}>{d.q}</dt>
                 <dd style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#CBD5E1', lineHeight: 1.55 }}>{d.a}</dd>
-              </div>
+              </motion.div>
             ))}
           </dl>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#6B7280', textAlign: 'center', marginTop: 16 }}>
