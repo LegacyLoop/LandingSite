@@ -203,7 +203,7 @@ export default function JourneyChapter({ reduced, isTouch, width }: JourneyChapt
         const st = ScrollTrigger.create({
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=' + STEPS.length * 90 + '%',
+          end: '+=' + STEPS.length * 68 + '%',
           pin: true,
           pinSpacing: true,
           scrub: 0.5,

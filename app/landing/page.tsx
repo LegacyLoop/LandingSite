@@ -3523,12 +3523,65 @@ function MarketOpportunitySection() {
 // CMD-LANDING-MASTER-ARC V21 · WAVE 3 / FIX 3 · beat B2. The differentiator, led hardest:
 // a free AI tool writes a listing; we find the buyer. Honest BuyerBot fence copy
 // ("finds real interested buyers - you approve every contact"). Zero emoji (inline SVG).
+// The Moat's money shot: BuyerBot surfacing real interested buyers. Honest — each is an
+// INTEREST SIGNAL with a source, not a confirmed buyer, and every contact is yours to approve.
+const BUYER_MATCHES = [
+  { who: 'Collector', what: 'Vintage guitars, 60s–70s', src: 'Marketplace signal' },
+  { who: 'Local musician', what: 'Nearby, actively looking', src: 'Local match' },
+  { who: 'Specialty reseller', what: 'Watching this category', src: 'Category watch' },
+]
+
+function BuyerMatchDemo({ reduced, isTouch }: { reduced: boolean; isTouch: boolean }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.4 })
+  const on = reduced || isTouch || inView
+  return (
+    <div
+      ref={ref}
+      style={{ position: 'relative', padding: '22px 22px 18px', borderRadius: 20, background: 'rgba(13,17,23,0.55)', border: '1px solid rgba(0,188,212,0.28)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 24px 60px rgba(0,0,0,0.4)' }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+        <span aria-hidden style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: '#22C55E', flexShrink: 0 }}>
+          {!reduced && <motion.span style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: '1px solid #22C55E' }} animate={{ scale: [1, 2], opacity: [0.6, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }} />}
+        </span>
+        <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12.5, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#F1F5F9' }}>BuyerBot</span>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', marginLeft: 'auto' }}>finding interested buyers</span>
+      </div>
+      <div style={{ display: 'grid', gap: 10 }}>
+        {BUYER_MATCHES.map((m, i) => (
+          <motion.div
+            key={m.who}
+            initial={reduced ? false : { opacity: 0, x: -18 }}
+            animate={on ? { opacity: 1, x: 0 } : undefined}
+            transition={{ duration: 0.5, delay: 0.3 + i * 0.28, ease: [0.23, 1, 0.32, 1] }}
+            style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 12, background: 'rgba(0,188,212,0.06)', border: '1px solid rgba(0,188,212,0.2)' }}
+          >
+            <span aria-hidden style={{ width: 34, height: 34, minWidth: 34, borderRadius: '50%', background: 'rgba(0,188,212,0.14)', border: '1px solid rgba(0,188,212,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="target" size={16} color="#22D3EE" />
+            </span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14, color: '#F1F5F9' }}>{m.who}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8' }}>{m.what}</div>
+            </div>
+            <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 10, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#22D3EE', background: 'rgba(0,188,212,0.1)', border: '1px solid rgba(0,188,212,0.25)', borderRadius: 6, padding: '4px 7px', whiteSpace: 'nowrap' }}>{m.src}</span>
+          </motion.div>
+        ))}
+      </div>
+      <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#CBD5E1' }}>
+        <Icon name="shield" size={14} color="#22C55E" />
+        A signal, not a sale &mdash; you approve every contact. Manual mode today.
+      </div>
+    </div>
+  )
+}
+
 function MoatSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
   const isMobile = width < 768
+  const isDesktop = width >= 900
   // B05 climax: the punchline is the PEAK — the one camera-fly on the page. The stage
   // scales as it passes (camera moves through), and the line reveals through an
   // expanding-light mask (Amaterasu dossier §2/§3). Reduced/touch skip both.
@@ -3616,55 +3669,37 @@ function MoatSection() {
           That is the difference between a listing and a sale.
         </p>
 
-        {/* The three-step promise */}
+        {/* The money shot: BuyerBot finding real interested buyers, beside the promise. */}
         <div
           style={{
-            display: isMobile ? 'flex' : 'grid',
-            flexDirection: 'column',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: 20,
+            display: 'grid',
+            gridTemplateColumns: isDesktop ? '1fr 0.92fr' : '1fr',
+            gap: isDesktop ? 48 : 32,
             marginTop: 48,
+            alignItems: 'center',
           }}
         >
-          {steps.map((s, i) => (
-            <GlowCard
-              key={s.title}
-              delay={i * 80}
-              defaultBorderColor={i === 1 ? 'rgba(0,188,212,0.4)' : 'rgba(0,188,212,0.15)'}
-              hoverBorderColor="rgba(0,188,212,0.55)"
-              style={{ padding: '30px 26px' }}
-            >
-              <div
-                style={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: 14,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(0,188,212,0.08)',
-                  border: '1px solid rgba(0,188,212,0.2)',
-                  marginBottom: 18,
-                }}
+          <BuyerMatchDemo reduced={reduced} isTouch={isTouch} />
+          <div style={{ display: 'grid', gap: 20 }}>
+            {steps.map((s, i) => (
+              <motion.div
+                key={s.title}
+                initial={reduced || isTouch ? false : { opacity: 0, y: 18 }}
+                whileInView={reduced || isTouch ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: i * 0.1, ease: [0.23, 1, 0.32, 1] }}
+                style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}
               >
-                {s.icon}
-              </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 700,
-                  fontSize: 18,
-                  color: '#F1F5F9',
-                  marginBottom: 10,
-                }}
-              >
-                {s.title}
-              </div>
-              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 15, color: '#CBD5E1', lineHeight: 1.6, margin: 0 }}>
-                {s.body}
-              </p>
-            </GlowCard>
-          ))}
+                <div style={{ flexShrink: 0, width: 48, height: 48, borderRadius: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.22)' }}>
+                  {s.icon}
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: '#F1F5F9', marginBottom: 5 }}>{s.title}</div>
+                  <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14.5, color: '#CBD5E1', lineHeight: 1.55, margin: 0 }}>{s.body}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* THE PEAK — the one camera-fly on the page + expanding-light mask-reveal.
@@ -4267,6 +4302,8 @@ function MegaBotSection() {
 // CMD-LANDING-PASS3 W1: high on the page, the four things the product does, each a door to its
 // beat. Reads only the label + sub + primary action (the senior-simplicity test). STATIC — zero
 // animation this wave; W2 lays the shared motion. Data from landing-content.ts.
+const PROOF_ICONS: Record<string, string> = { identify: 'camera', price: 'chart', 'find-buyer': 'target', ship: 'box' }
+
 function ProofLabelsSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
@@ -4279,45 +4316,40 @@ function ProofLabelsSection() {
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <SectionEyebrow text="WHAT LEGACY-LOOP DOES" />
         <SectionHeading>Four steps. One platform.</SectionHeading>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
-            gap: isMobile ? 12 : 16,
-            marginTop: 40,
-          }}
-        >
-          {PROOF_LABELS.map((p, i) => (
-            <motion.button
-              key={`${p.id}-${reduced || isTouch ? 's' : 'a'}`}
-              type="button"
-              variants={reveal(reduced, i, isTouch)}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              whileHover={reduced || isTouch ? undefined : { y: -4, borderColor: 'rgba(0,188,212,0.5)' }}
-              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-              onClick={() => scrollTo(p.target)}
-              aria-label={`${p.label}: ${p.sub}`}
-              style={{
-                textAlign: 'left',
-                padding: isMobile ? '18px 16px' : '22px 20px',
-                borderRadius: 16,
-                cursor: 'pointer',
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(0,188,212,0.18)',
-                color: 'inherit',
-                minHeight: 44,
-              }}
-            >
-              <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, letterSpacing: '0.08em', color: '#22D3EE', marginBottom: 8 }}>
-                {String(i + 1).padStart(2, '0')} &middot; {p.label}
-              </div>
-              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', lineHeight: 1.5 }}>
-                {p.sub}
-              </div>
-            </motion.button>
-          ))}
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px, 1.7vw, 18px)', color: '#CBD5E1', textAlign: 'center', maxWidth: 620, margin: '0 auto', lineHeight: 1.6 }}>
+          One photo starts it. We carry it from a snapshot to a sold, shipped item &mdash; and you
+          approve the moments that matter.
+        </p>
+        <div style={{ position: 'relative', marginTop: isMobile ? 40 : 56 }}>
+          {/* the flow line connecting the four icon nodes (desktop) */}
+          {!isMobile && (
+            <div aria-hidden style={{ position: 'absolute', top: 42, left: '13%', right: '13%', height: 2, background: 'linear-gradient(90deg, transparent, rgba(0,188,212,0.45) 20%, rgba(0,188,212,0.45) 80%, transparent)', zIndex: 0 }} />
+          )}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 20 : 16, position: 'relative', zIndex: 1 }}>
+            {PROOF_LABELS.map((p, i) => (
+              <motion.button
+                key={`${p.id}-${reduced || isTouch ? 's' : 'a'}`}
+                type="button"
+                variants={reveal(reduced, i, isTouch)}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.3 }}
+                whileHover={reduced || isTouch ? undefined : { y: -6 }}
+                transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                onClick={() => scrollTo(p.target)}
+                aria-label={`${p.label}: ${p.sub}`}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 4, padding: '4px 8px', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', minHeight: 44 }}
+              >
+                {/* icon node */}
+                <div style={{ position: 'relative', width: 84, height: 84, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at 35% 30%, rgba(0,188,212,0.18), rgba(13,17,23,0.9))', border: '1px solid rgba(0,188,212,0.4)', boxShadow: '0 0 28px rgba(0,188,212,0.12)', marginBottom: 14 }}>
+                  <Icon name={PROOF_ICONS[p.id] ?? 'search'} size={32} color="#22D3EE" />
+                  <span style={{ position: 'absolute', top: -6, right: -2, width: 24, height: 24, borderRadius: '50%', background: '#00BCD4', color: '#0D1117', fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #0D1117' }}>{i + 1}</span>
+                </div>
+                <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 14, letterSpacing: '0.06em', color: '#F1F5F9' }}>{p.label}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', lineHeight: 1.5, maxWidth: 220 }}>{p.sub}</div>
+              </motion.button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -4575,37 +4607,53 @@ function HowItWorksSection() {
   const width = useWindowWidth()
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
+  const isMobile = width < 768
   return (
     <>
       {/* F-3: the four-step "PowerPoint" is now the pinned, choreographed JourneyChapter
           (five steps, TMS given real weight). The loop-guitar clip moved to See It Work
           (one clip, one home). */}
       <JourneyChapter reduced={reduced} isTouch={isTouch} width={width} />
-      {/* LISTING STATE LABELS (W1 · B04 truth surface) — preserved: the page never implies
-          a listing published when the live flow is a draft or a guided handoff. */}
-      <section style={{ position: 'relative', zIndex: 5, padding: width < 480 ? '0 16px 56px' : '0 24px 72px' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#94A3B8', textAlign: 'center', marginBottom: 16 }}>
-            You see every step. Nothing posts without you.
+      {/* LISTING STATE TIMELINE (W1 B04 truth surface, redesigned): the honest states a
+          listing moves through, on a connected track — you see every step, nothing posts
+          without you. Tightened up against the journey. */}
+      <section style={{ position: 'relative', zIndex: 5, padding: width < 480 ? '8px 16px 56px' : '16px 24px 72px' }}>
+        <div style={{ maxWidth: 940, margin: '0 auto' }}>
+          <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#22D3EE', textAlign: 'center', marginBottom: 6 }}>
+            You see every step
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, maxWidth: 720, margin: '0 auto' }}>
-            {LISTING_STATES.map((s, i) => (
-              <motion.div
-                key={`${s.id}-${reduced || isTouch ? 's' : 'a'}`}
-                aria-label={`${s.label}. ${s.note}`}
-                variants={reveal(reduced, i, isTouch)}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.4 }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '12px 16px', borderRadius: 14, maxWidth: 220, background: s.status === 'unavailable' ? 'rgba(255,255,255,0.02)' : 'rgba(0,188,212,0.06)', border: `1px solid ${s.status === 'manual' ? 'rgba(34,197,94,0.3)' : s.status === 'unavailable' ? 'rgba(255,255,255,0.1)' : 'rgba(0,188,212,0.2)'}` }}
-              >
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 13.5, color: '#F1F5F9' }}>
-                  <span aria-hidden style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: s.status === 'manual' ? '#22C55E' : s.status === 'unavailable' ? '#484F58' : '#22D3EE' }} />
-                  {s.label}
-                </div>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', lineHeight: 1.45 }}>{s.note}</span>
-              </motion.div>
-            ))}
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 'clamp(18px, 2.4vw, 24px)', color: '#F1F5F9', textAlign: 'center', marginBottom: 32 }}>
+            Nothing posts without you.
+          </div>
+          <div style={{ position: 'relative' }}>
+            {/* the track line through the nodes (desktop) */}
+            {!isMobile && (
+              <div aria-hidden style={{ position: 'absolute', top: 9, left: '10%', right: '10%', height: 2, background: 'linear-gradient(90deg, rgba(0,188,212,0.4) 0%, rgba(0,188,212,0.4) 60%, rgba(72,79,88,0.5) 75%, rgba(72,79,88,0.5) 100%)', zIndex: 0 }} />
+            )}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(5, 1fr)', gap: isMobile ? 14 : 8, position: 'relative', zIndex: 1 }}>
+              {LISTING_STATES.map((s, i) => {
+                const dot = s.status === 'manual' ? '#22C55E' : s.status === 'unavailable' ? '#484F58' : '#22D3EE'
+                return (
+                  <motion.div
+                    key={`${s.id}-${reduced || isTouch ? 's' : 'a'}`}
+                    aria-label={`${s.label}. ${s.note}`}
+                    variants={reveal(reduced, i, isTouch)}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.4 }}
+                    style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'flex-start' : 'center', textAlign: isMobile ? 'left' : 'center', gap: isMobile ? 12 : 10 }}
+                  >
+                    <span aria-hidden style={{ width: 20, height: 20, minWidth: 20, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0D1117', border: `2px solid ${dot}`, boxShadow: `0 0 12px ${dot}66` }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: dot }} />
+                    </span>
+                    <div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 13.5, color: '#F1F5F9' }}>{s.label}</div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#94A3B8', lineHeight: 1.45, marginTop: 2 }}>{s.note}</div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
           </div>
         </div>
       </section>
