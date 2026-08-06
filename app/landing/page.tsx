@@ -113,7 +113,7 @@ function Preloader({ isLoaded }: { isLoaded: boolean }) {
           textTransform: 'uppercase' as const,
         }}
       >
-        LEGACYLOOP
+        LEGACY-LOOP
       </span>
       <div
         style={{
@@ -1735,12 +1735,6 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           2.2s-delayed cinematic reveal preserved via native CSS
           @keyframes heroVideoReveal in globals.css — identical delay,
           duration, easing, fill-mode to the prior framer-motion path. */}
-      {/* W3 HERO SCRUB: the ambient loop is replaced by a scroll-scrubbed canvas
-          image-sequence — the frame index rides the hero's OWN Framer scroll
-          progress (heroScroll), so the proven iPad WAAPI hardening below is left
-          untouched (no GSAP pin on the hero). Touch/reduced fall back to a single
-          static poster frame inside the component — mobile never fetches the
-          sequence. A scrim holds the centered headline at WCAG AA over the motion. */}
       <motion.div
         aria-hidden
         style={{
@@ -1750,36 +1744,27 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           y: reduced ? 0 : heroVideoY,
           scale: reduced ? 1 : heroVideoScale,
           willChange: 'transform',
-          opacity: 0.5,
           animation: reduced
             ? 'none'
             : 'heroVideoReveal 1.2s cubic-bezier(0.23, 1, 0.32, 1) 2.2s both',
         }}
       >
-        <ScrollSequenceCanvas
-          progress={heroScroll}
-          frameBase="/sequences/hero/frame_"
-          frameCount={90}
-          posterFrame={30}
-          reduced={reduced}
-          isTouch={isTouch}
-          alt="Legacy-Loop hero — a cinematic pass across the resale journey"
-          style={{ position: 'absolute', inset: 0 }}
+        <AutoPlayVideo
+          preload="metadata"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.12,
+          }}
+          sources={[
+            { src: '/hero-loop.webm', type: 'video/webm' },
+            { src: '/hero-loop.mp4', type: 'video/mp4' },
+          ]}
         />
       </motion.div>
-      {/* Scrim: radial darkening toward center keeps the headline/CTA at AA
-          contrast over the brighter scrubbed frames. */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 0,
-          background:
-            'radial-gradient(ellipse at center, rgba(13,17,23,0.55) 0%, rgba(13,17,23,0.78) 55%, rgba(13,17,23,0.92) 100%)',
-          pointerEvents: 'none',
-        }}
-      />
 
       {/* Fallback bg image — always layered underneath */}
       <div
@@ -4499,6 +4484,88 @@ function ProofLabelsSection() {
             </motion.button>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+// ---------- CINEMATIC JOURNEY BAND (relocated scroll-scrub) ----------
+// Full-bleed cinematic beat: the resale-journey frames scrub as the band passes
+// through the viewport. NON-pinned, no HUD (distinct from the B03 eval pin) — an
+// emotional bridge from the market stakes to "here's how." Reuses ScrollSequenceCanvas;
+// touch/reduced show one static poster. CEO-relocated from the hero (2026-08-06).
+function CinematicJourneyBand() {
+  const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
+  const ref = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  return (
+    <section
+      ref={ref}
+      id="the-journey"
+      style={{
+        position: 'relative',
+        height: '100vh',
+        minHeight: 520,
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 5,
+      }}
+    >
+      <div aria-hidden style={{ position: 'absolute', inset: 0, opacity: 0.85 }}>
+        <ScrollSequenceCanvas
+          progress={scrollYProgress}
+          frameBase="/sequences/hero/frame_"
+          frameCount={90}
+          posterFrame={45}
+          reduced={reduced}
+          isTouch={isTouch}
+          alt="A lifetime of belongings finding their next home"
+          style={{ position: 'absolute', inset: 0 }}
+        />
+      </div>
+      {/* Scrim: bottom-weighted so the line holds AA over the moving frames */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(180deg, rgba(13,17,23,0.5) 0%, rgba(13,17,23,0.35) 45%, rgba(13,17,23,0.85) 100%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div style={{ position: 'relative', width: '100%', maxWidth: 960, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
+        <h2
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 700,
+            fontSize: 'clamp(28px, 5vw, 52px)',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.1,
+            color: '#F1F5F9',
+            margin: 0,
+            textShadow: '0 2px 30px rgba(0,0,0,0.6)',
+          }}
+        >
+          Every home holds more value than it knows.
+        </h2>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 500,
+            fontSize: 'clamp(15px, 2vw, 19px)',
+            color: '#CBD5E1',
+            maxWidth: 560,
+            margin: '18px auto 0',
+            lineHeight: 1.6,
+            textShadow: '0 2px 20px rgba(0,0,0,0.6)',
+          }}
+        >
+          Legacy-Loop helps you find it — one item at a time.
+        </p>
       </div>
     </section>
   )
@@ -9306,6 +9373,7 @@ export default function LandingPage() {
         <GarageSaleSection isLoaded={isLoaded} />
         <MarketplaceTicker />
         <MarketOpportunitySection />
+        <CinematicJourneyBand />
         <ProofLabelsSection />
         <MoatSection />
         <HowItWorksSection />
