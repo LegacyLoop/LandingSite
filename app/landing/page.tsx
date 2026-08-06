@@ -17,6 +17,7 @@ import { reveal } from './motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
 import PinnedEvalBeat from './PinnedEvalBeat'
 import CinematicMoment from './CinematicMoment'
+import ConstellationField from './ConstellationField'
 import { setLenis } from './lenis-instance'
 
 // CMD-WAITLIST-INTAKE-ELEVATE — a captured "reserve this offering" intent,
@@ -3523,7 +3524,15 @@ function MoatSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
   const isMobile = width < 768
+  // B05 climax: the punchline is the PEAK — the one camera-fly on the page. The stage
+  // scales as it passes (camera moves through), and the line reveals through an
+  // expanding-light mask (Amaterasu dossier §2/§3). Reduced/touch skip both.
+  const peakRef = useRef<HTMLDivElement>(null)
+  const peakInView = useInView(peakRef, { once: true, amount: 0.5 })
+  const { scrollYProgress: peakScroll } = useScroll({ target: peakRef, offset: ['start end', 'end start'] })
+  const flyScale = useTransform(peakScroll, [0, 0.5, 1], [0.9, 1, 1.1])
 
   const steps = [
     {
@@ -3561,6 +3570,9 @@ function MoatSection() {
 
   return (
     <section id="buyerbot" style={{ ...sp, position: 'relative', zIndex: 5, overflow: 'hidden' }}>
+      {/* B05 point-cloud: buyers out there in the market; the highlighted nodes are the
+          ones BuyerBot found. Cursor-parallax on desktop, ambient drift on touch. */}
+      <ConstellationField reduced={reduced} isTouch={isTouch} />
       {/* T3 ambient glow field — time-based, reduced-motion gated */}
       <motion.div
         aria-hidden
@@ -3652,65 +3664,93 @@ function MoatSection() {
           ))}
         </div>
 
-        {/* The contrast — free AI vs Legacy-Loop (the Dr. Kersten test, made explicit) */}
-        <div
-          style={{
-            display: isMobile ? 'flex' : 'grid',
-            flexDirection: 'column',
-            gridTemplateColumns: isMobile ? '1fr' : '1fr auto 1fr',
-            alignItems: 'center',
-            gap: 16,
-            marginTop: 24,
-          }}
-        >
-          <div
+        {/* THE PEAK — the one camera-fly on the page + expanding-light mask-reveal.
+            The contrast resolves into the verbatim punchline; the stage scales as it
+            passes (camera through content). Reduced/touch: no fly, no mask. */}
+        <div ref={peakRef} style={{ perspective: 1200, marginTop: isMobile ? 44 : 72 }}>
+          <motion.div
             style={{
-              padding: '22px 24px',
-              borderRadius: 16,
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              position: 'relative',
+              scale: reduced || isTouch ? 1 : flyScale,
+              padding: isMobile ? '32px 20px' : '52px 40px',
+              borderRadius: 24,
+              overflow: 'hidden',
+              background: 'rgba(13,17,23,0.4)',
+              border: '1px solid rgba(0,188,212,0.2)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
             }}
           >
-            <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B7280', marginBottom: 8 }}>
-              A free AI tool
+            {/* Expanding light — the mask "wipes" the peak in on enter */}
+            <motion.div
+              aria-hidden
+              initial={reduced ? false : { opacity: 0, scale: 0.15 }}
+              animate={peakInView ? { opacity: 1, scale: 1 } : undefined}
+              transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'radial-gradient(45% 55% at 50% 42%, rgba(34,211,238,0.2), transparent 72%)',
+                pointerEvents: 'none',
+              }}
+            />
+            <div
+              style={{
+                position: 'relative',
+                display: isMobile ? 'flex' : 'grid',
+                flexDirection: 'column',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr auto 1fr',
+                alignItems: 'center',
+                gap: 16,
+              }}
+            >
+              <div style={{ padding: '20px 22px', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B7280', marginBottom: 8 }}>
+                  A free AI tool
+                </div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 19, color: '#94A3B8' }}>
+                  Hands you a listing.
+                </div>
+              </div>
+              <div aria-hidden style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B7280', textAlign: 'center', padding: isMobile ? '4px 0' : '0 4px' }}>
+                vs
+              </div>
+              <div style={{ padding: '20px 22px', borderRadius: 16, background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.35)', boxShadow: '0 0 34px rgba(0,188,212,0.12)' }}>
+                <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 8 }}>
+                  Legacy-Loop
+                </div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 19, color: '#F1F5F9' }}>
+                  Brings you the buyer.
+                </div>
+              </div>
             </div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 19, color: '#94A3B8' }}>
-              Hands you a listing.
+            {/* The verbatim punchline, revealed through a left-to-right light wipe */}
+            <motion.p
+              initial={reduced ? false : { clipPath: 'inset(0 100% 0 0)' }}
+              animate={peakInView ? { clipPath: 'inset(0 0% 0 0)' } : undefined}
+              transition={{ duration: 1.1, ease: [0.23, 1, 0.32, 1], delay: 0.25 }}
+              style={{
+                position: 'relative',
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 700,
+                fontSize: 'clamp(20px, 3vw, 30px)',
+                letterSpacing: '-0.01em',
+                lineHeight: 1.25,
+                textAlign: 'center',
+                color: '#F1F5F9',
+                margin: '28px auto 0',
+                maxWidth: 720,
+              }}
+            >
+              A free AI hands you a listing. <GradientText>Legacy-Loop brings you the buyer.</GradientText>
+            </motion.p>
+            <div style={{ position: 'relative', fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#94A3B8', textAlign: 'center', marginTop: 14 }}>
+              Manual mode today &mdash; you choose when to search, and you approve every contact.
             </div>
-          </div>
-          <div
-            aria-hidden
-            style={{
-              fontFamily: 'var(--font-data)',
-              fontWeight: 700,
-              fontSize: 13,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: '#6B7280',
-              textAlign: 'center',
-              padding: isMobile ? '4px 0' : '0 4px',
-            }}
-          >
-            vs
-          </div>
-          <div
-            style={{
-              padding: '22px 24px',
-              borderRadius: 16,
-              background: 'rgba(0,188,212,0.06)',
-              border: '1px solid rgba(0,188,212,0.28)',
-            }}
-          >
-            <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 8 }}>
-              Legacy-Loop
-            </div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 19, color: '#F1F5F9' }}>
-              Brings you the buyer.
-            </div>
-          </div>
+          </motion.div>
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: 44 }}>
+        <div style={{ textAlign: 'center', marginTop: 44, position: 'relative', zIndex: 1 }}>
           <MagneticButton href="#waitlist">See BuyerBot in Early Access</MagneticButton>
         </div>
       </div>
