@@ -16,6 +16,7 @@ import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE } from '
 import { reveal } from './motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
 import PinnedEvalBeat from './PinnedEvalBeat'
+import CinematicMoment from './CinematicMoment'
 import { setLenis } from './lenis-instance'
 
 // CMD-WAITLIST-INTAKE-ELEVATE — a captured "reserve this offering" intent,
@@ -4566,6 +4567,71 @@ function CinematicJourneyBand() {
         >
           Legacy-Loop helps you find it — one item at a time.
         </p>
+      </div>
+    </section>
+  )
+}
+
+// ---------- SEE IT IN ACTION (R-6 cinematic moment) ----------
+// First cinematic chapter: the guitar->listing loop clip in a device frame, full R-6
+// treatment (aperture reveal · poster crossfade · scrim · considered in/out). A concrete
+// "watch it work" beat after the how-it-works steps. Honest copy — the AI drafts, you post.
+function SeeItWorkSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
+  const isDesktop = width >= 900
+  return (
+    <section id="see-it-work" style={{ ...sp, position: 'relative', zIndex: 5 }}>
+      <div
+        style={{
+          maxWidth: 1080,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: isDesktop ? '0.9fr 1.1fr' : '1fr',
+          gap: isDesktop ? 56 : 36,
+          alignItems: 'center',
+        }}
+      >
+        <CinematicMoment base="loop-guitar" alt="A guitar photographed, identified, and turned into a ready listing" isTouch={isTouch} />
+        <motion.div
+          initial={reduced ? false : { opacity: 0, y: 24 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+          style={{ textAlign: isDesktop ? 'left' : 'center' }}
+        >
+          <SectionEyebrow text="SEE IT IN ACTION" />
+          <h2
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 'clamp(28px, 4vw, 44px)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              color: '#F1F5F9',
+              margin: '10px 0 16px',
+            }}
+          >
+            From a photo to a listing.
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 'clamp(15px, 1.6vw, 18px)',
+              color: '#CBD5E1',
+              lineHeight: 1.6,
+              maxWidth: 460,
+              margin: isDesktop ? '0' : '0 auto',
+            }}
+          >
+            Snap the guitar. The AI identifies it, writes the listing, and prices it with
+            MegaBot&rsquo;s four-engine consensus. You review it and post in one tap &mdash;
+            nothing goes live until you say so.
+          </p>
+        </motion.div>
       </div>
     </section>
   )
@@ -9377,6 +9443,7 @@ export default function LandingPage() {
         <ProofLabelsSection />
         <MoatSection />
         <HowItWorksSection />
+        <SeeItWorkSection />
         <MessageCenterSection />
         <AIEvaluationBeat />
         <MegaBotSection />
