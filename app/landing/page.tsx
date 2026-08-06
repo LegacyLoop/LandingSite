@@ -4971,282 +4971,119 @@ function ProductPreviewSection() {
    ============================================== */
 
 // ---------- 10 AI BOTS + MEGABOT ----------
+// F-4: the 18 flat bot cards regrouped BY JOB with progressive disclosure. MegaBot is
+// the crown. Mobile = a horizontal snap gallery. Every bot preserved, one home each.
+const BOT_GROUPS: { key: string; icon: string; name: string; line: string; bots: string[] }[] = [
+  { key: 'see', icon: 'search', name: 'See it', line: 'Point your camera — the AI reads the item and flags anything valuable.', bots: ['AI AnalysisBot', 'PhotoBot', 'High Value Alert'] },
+  { key: 'price', icon: 'chart', name: 'Price it', line: 'A fair number, backed by MegaBot’s four-engine consensus.', bots: ['PriceBot', 'AntiqueBot', 'CollectiblesBot'] },
+  { key: 'sell', icon: 'broadcast', name: 'Sell it', line: 'Listings written, real buyers found, video ads made — you approve every step.', bots: ['ListingBot', 'BuyerBot', 'ReconBot', 'Intel Market + Ready', 'Intel Sell + Alerts + Action', 'VideoBot Standard', 'VideoBot Pro', 'VideoBot MegaBot', 'Ask Claude'] },
+  { key: 'special', icon: 'star', name: 'Specialists', line: 'Cars, antiques, collectibles — deeper analysis, plus priority when it counts.', bots: ['CarBot', 'Priority Bot Queue'] },
+]
+
+function BotGroupCard({ g, reduced }: { g: (typeof BOT_GROUPS)[number]; reduced: boolean }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ scrollSnapAlign: 'center', display: 'flex', flexDirection: 'column', padding: '26px 24px', borderRadius: 18, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,188,212,0.16)', minHeight: 210 }}>
+      <div style={{ width: 46, height: 46, borderRadius: 12, background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+        <Icon name={g.icon} size={24} color="#22D3EE" />
+      </div>
+      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 20, color: '#F1F5F9', marginBottom: 8 }}>{g.name}</div>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: 14.5, color: '#CBD5E1', lineHeight: 1.55, margin: '0 0 16px' }}>{g.line}</p>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        style={{ marginTop: 'auto', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 6, minHeight: 44, padding: '8px 4px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12.5, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#22D3EE' }}
+      >
+        {open ? 'Hide' : `See the ${g.bots.length} bots`}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }}><path d="M6 9l6 6 6-6" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={reduced ? false : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingTop: 12 }}>
+              {g.bots.map((b) => (
+                <span key={b} style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 12.5, color: '#CBD5E1', padding: '5px 10px', borderRadius: 8, background: 'rgba(0,188,212,0.06)', border: '1px solid rgba(0,188,212,0.18)' }}>{b}</span>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 function AIAgentsSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
   const isTouch = useIsTouch()
-  const cols =
-    width >= 1200
-      ? 'repeat(3, 1fr)'
-      : width >= 640
-        ? 'repeat(2, 1fr)'
-        : '1fr'
-
-  const bots = [
-    {
-      emoji: 'search',
-      name: 'AI AnalysisBot',
-      desc: 'Dozens of details from one photo',
-      tier: 'ALL TIERS',
-      tierColor: '#00BCD4',
-      tierBg: 'rgba(0,188,212,0.15)',
-    },
-    {
-      emoji: 'chart',
-      name: 'PriceBot',
-      desc: 'Fair market value, regional intelligence',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: 'camera',
-      name: 'PhotoBot',
-      desc: 'Photo quality scoring and tips',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: 'note',
-      name: 'ListingBot',
-      desc: 'Listings prepped for every marketplace',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: 'target',
-      name: 'BuyerBot',
-      desc: 'Finds real interested buyers — you approve every contact',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: 'satellite',
-      name: 'ReconBot',
-      desc: 'Real-time market monitoring',
-      tier: 'POWER+',
-      tierColor: '#8B5CF6',
-      tierBg: 'rgba(139,92,246,0.15)',
-    },
-    {
-      emoji: 'clock',
-      name: 'AntiqueBot',
-      // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · Rule 4): "Never undersell" outcome guarantee softened.
-      desc: 'Flags likely antiques so a valuable heirloom is not missed',
-      tier: 'POWER+',
-      tierColor: '#8B5CF6',
-      tierBg: 'rgba(139,92,246,0.15)',
-    },
-    {
-      emoji: 'star',
-      name: 'CollectiblesBot',
-      desc: 'Expert-level collectible analysis',
-      tier: 'POWER+',
-      tierColor: '#8B5CF6',
-      tierBg: 'rgba(139,92,246,0.15)',
-    },
-    {
-      emoji: 'film',
-      name: 'VideoBot Standard',
-      desc: 'AI video ads for TikTok, Reels, Shorts (8cr)',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: 'film',
-      name: 'VideoBot Pro',
-      desc: 'Advanced video with custom branding (15cr)',
-      tier: 'POWER+',
-      tierColor: '#8B5CF6',
-      tierBg: 'rgba(139,92,246,0.15)',
-    },
-    {
-      emoji: 'film',
-      name: 'VideoBot MegaBot',
-      desc: 'Full MegaBot-powered video production (25cr)',
-      tier: 'ESTATE',
-      tierColor: '#FBBF24',
-      tierBg: 'rgba(251,191,36,0.15)',
-    },
-    {
-      emoji: 'car',
-      name: 'CarBot',
-      desc: 'VIN decoding + vehicle specialist',
-      tier: 'ESTATE',
-      tierColor: '#FBBF24',
-      tierBg: 'rgba(251,191,36,0.15)',
-    },
-    {
-      emoji: 'broadcast',
-      name: 'Intel Market + Ready',
-      desc: 'Market intelligence and listing readiness',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: 'broadcast',
-      name: 'Intel Sell + Alerts + Action',
-      desc: 'Sell signals, price alerts, and action triggers',
-      tier: 'POWER+',
-      tierColor: '#8B5CF6',
-      tierBg: 'rgba(139,92,246,0.15)',
-    },
-    {
-      emoji: 'chat',
-      name: 'Ask Claude',
-      desc: 'AI assistant for any question (0.25cr/q)',
-      tier: 'DIY+',
-      tierColor: '#22C55E',
-      tierBg: 'rgba(34,197,94,0.15)',
-    },
-    {
-      emoji: 'bolt',
-      name: 'Priority Bot Queue',
-      desc: 'Skip the line — bots process your items first',
-      tier: 'ESTATE',
-      tierColor: '#FBBF24',
-      tierBg: 'rgba(251,191,36,0.15)',
-    },
-    {
-      emoji: 'bell',
-      name: 'High Value Alert',
-      desc: 'Flags potentially valuable items for a closer look',
-      tier: 'ALL TIERS',
-      tierColor: '#00BCD4',
-      tierBg: 'rgba(0,188,212,0.15)',
-    },
+  const isDesktop = width >= 900
+  const engines = [
+    { n: 'OpenAI', c: '#22c55e' },
+    { n: 'Claude', c: '#a78bfa' },
+    { n: 'Gemini', c: '#3b82f6' },
+    { n: 'Grok', c: '#f97316' },
   ]
-
   return (
-    <section
-      id="bots"
-      style={{
-        ...sp,
-        position: 'relative',
-        zIndex: 5,
-      }}
-    >
+    <section id="bots" style={{ ...sp, position: 'relative', zIndex: 5 }}>
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        {/* Entry variant: SLIDE-FROM-LEFT — cinematic horizontal sweep.
-            Touch-safe: initial state = final state on touch. */}
+        <SectionEyebrow text="YOUR AI TEAM" />
+        <SectionHeading>
+          <StaggeredWords text="A specialist for every job." />{' '}
+          <GradientText>Crowned by MegaBot.</GradientText>
+        </SectionHeading>
+
+        {/* MegaBot crown — the council */}
         <motion.div
-          initial={isTouch ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
+          initial={reduced || isTouch ? false : { opacity: 0, y: 24 }}
+          whileInView={reduced || isTouch ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+          style={{ marginTop: 40, position: 'relative', overflow: 'hidden', padding: isDesktop ? '34px 40px' : '28px 22px', borderRadius: 22, background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(0,188,212,0.06))', border: '1px solid rgba(139,92,246,0.35)' }}
         >
-          <SectionEyebrow text="YOUR AI TEAM" />
-          <SectionHeading>
-            A Specialist For Every Step. Plus MegaBot.{' '}
-            <GradientText>All Working For You.</GradientText>
-          </SectionHeading>
-          <p
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontWeight: 400,
-              fontSize: 15,
-              color: '#94A3B8',
-              textAlign: 'center',
-              maxWidth: 640,
-              margin: '0 auto 48px',
-              lineHeight: 1.65,
-            }}
-          >
-            MegaBot powers them all — our 4-engine consensus system that
-            ensures every valuation is fair.
-          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr auto' : '1fr', gap: 24, alignItems: 'center' }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#a78bfa', marginBottom: 10 }}>
+                <Icon name="brain" size={17} color="#a78bfa" /> The crown
+              </div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(22px, 3vw, 30px)', letterSpacing: '-0.01em', color: '#F1F5F9', marginBottom: 8 }}>MegaBot — the four-engine council.</div>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#CBD5E1', lineHeight: 1.6, maxWidth: 520, margin: 0 }}>Every price runs through OpenAI, Claude, Gemini, and Grok at once. When four independent engines agree, you can trust the number.</p>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: isDesktop ? 'flex-end' : 'flex-start' }}>
+              {engines.map((e) => (
+                <div key={e.n} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'rgba(13,17,23,0.5)', border: `1px solid ${e.c}55` }}>
+                  <span style={{ width: 9, height: 9, borderRadius: '50%', background: e.c }} />
+                  <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 13.5, color: '#F1F5F9' }}>{e.n}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </motion.div>
 
+        {/* Job groups — grid on desktop, snap gallery on mobile */}
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: cols,
-            gap: 20,
-          }}
+          style={
+            isDesktop
+              ? { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginTop: 24 }
+              : { display: 'flex', gap: 16, marginTop: 24, overflowX: 'auto', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', paddingBottom: 8, scrollPaddingLeft: 16 }
+          }
         >
-          {bots.map((bot, i) => (
-            <GlowCard key={bot.name} delay={i * 60}>
-              <div style={{ marginBottom: 8, color: '#00BCD4', display: 'flex' }}><Icon name={bot.emoji} size={28} /></div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 600,
-                  fontSize: 17,
-                  color: '#F1F5F9',
-                }}
-              >
-                {bot.name}
-              </div>
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontWeight: 400,
-                  fontSize: 14,
-                  color: '#CBD5E1',
-                  marginTop: 4,
-                }}
-              >
-                {bot.desc}
-              </p>
-              <span
-                style={{
-                  display: 'inline-block',
-                  fontFamily: 'var(--font-data)',
-                  fontWeight: 600,
-                  fontSize: 11,
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: '0.05em',
-                  padding: '3px 8px',
-                  borderRadius: 4,
-                  marginTop: 12,
-                  background: bot.tierBg,
-                  color: bot.tierColor,
-                }}
-              >
-                {bot.tier}
-              </span>
-            </GlowCard>
+          {BOT_GROUPS.map((g) => (
+            <div key={g.key} style={isDesktop ? undefined : { flex: '0 0 82%', maxWidth: 320 }}>
+              <BotGroupCard g={g} reduced={reduced} />
+            </div>
           ))}
         </div>
-
-        {/* MegaBot Callout */}
-        <GlowCard
-          defaultBorderColor="rgba(139,92,246,0.3)"
-          hoverBorderColor="rgba(139,92,246,0.6)"
-          style={{ marginTop: 32, textAlign: 'center' }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 600,
-              fontSize: 18,
-              color: '#F1F5F9',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <Icon name="brain" size={20} color="#8B5CF6" /> MegaBot — Master Consensus Engine
-          </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontWeight: 400,
-              fontSize: 15,
-              color: '#CBD5E1',
-              marginTop: 8,
-              lineHeight: 1.55,
-            }}
-          >
-            The 11th bot. Runs your item through the MegaBot council — OpenAI, Claude, Gemini,
-            and Grok — at once. When those four agree, you can trust the number.
-          </p>
-        </GlowCard>
+        {!isDesktop && (
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', textAlign: 'center', marginTop: 12 }}>Swipe to see every job &rarr;</div>
+        )}
       </div>
     </section>
   )
