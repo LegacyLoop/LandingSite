@@ -12,6 +12,7 @@ import {
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
+import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE } from './landing-content'
 
 // CMD-WAITLIST-INTAKE-ELEVATE — a captured "reserve this offering" intent,
 // lifted to the landing page so section CTAs (white-glove / estate care /
@@ -4423,6 +4424,59 @@ function CinematicClip({ base, alt, caption, accentBorder = 'rgba(0,188,212,0.25
   )
 }
 
+// ---------- THE FOUR PROOF LABELS — the page's table of contents (W1, static) ----------
+// CMD-LANDING-PASS3 W1: high on the page, the four things the product does, each a door to its
+// beat. Reads only the label + sub + primary action (the senior-simplicity test). STATIC — zero
+// animation this wave; W2 lays the shared motion. Data from landing-content.ts.
+function ProofLabelsSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const isMobile = width < 768
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  return (
+    <section id="proof-labels" style={{ ...sp, position: 'relative', zIndex: 5 }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <SectionEyebrow text="WHAT LEGACY-LOOP DOES" />
+        <SectionHeading>Four steps. One platform.</SectionHeading>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+            gap: isMobile ? 12 : 16,
+            marginTop: 40,
+          }}
+        >
+          {PROOF_LABELS.map((p, i) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => scrollTo(p.target)}
+              aria-label={`${p.label}: ${p.sub}`}
+              style={{
+                textAlign: 'left',
+                padding: isMobile ? '18px 16px' : '22px 20px',
+                borderRadius: 16,
+                cursor: 'pointer',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(0,188,212,0.18)',
+                color: 'inherit',
+                minHeight: 44,
+              }}
+            >
+              <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, letterSpacing: '0.08em', color: '#22D3EE', marginBottom: 8 }}>
+                {String(i + 1).padStart(2, '0')} &middot; {p.label}
+              </div>
+              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#CBD5E1', lineHeight: 1.5 }}>
+                {p.sub}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ---------- HOW IT WORKS ----------
 function HowItWorksSection() {
   const width = useWindowWidth()
@@ -4578,6 +4632,42 @@ function HowItWorksSection() {
                   </div>
                 </div>
               </GlowCard>
+            ))}
+          </div>
+        </div>
+
+        {/* LISTING STATE LABELS (W1 · B04 truth surface): the page never implies a listing
+            published when the live flow is a draft or a guided handoff. Static, from the typed
+            config. Honest states a listing moves through. */}
+        <div style={{ marginTop: 40 }}>
+          <div style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#94A3B8', textAlign: 'center', marginBottom: 16 }}>
+            You see every step. Nothing posts without you.
+          </div>
+          {/* Note is shown as VISIBLE text (not title-only): the honesty context must reach
+              seniors and touch users, where a native tooltip never appears. aria-label folds
+              label + note into one accessible name for screen readers. */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, maxWidth: 720, margin: '0 auto' }}>
+            {LISTING_STATES.map((s) => (
+              <div
+                key={s.id}
+                aria-label={`${s.label}. ${s.note}`}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6,
+                  padding: '12px 16px',
+                  borderRadius: 14,
+                  maxWidth: 220,
+                  background: s.status === 'unavailable' ? 'rgba(255,255,255,0.02)' : 'rgba(0,188,212,0.06)',
+                  border: `1px solid ${s.status === 'manual' ? 'rgba(34,197,94,0.3)' : s.status === 'unavailable' ? 'rgba(255,255,255,0.1)' : 'rgba(0,188,212,0.2)'}`,
+                }}
+              >
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 13.5, color: '#F1F5F9' }}>
+                  <span aria-hidden style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: s.status === 'manual' ? '#22C55E' : s.status === 'unavailable' ? '#484F58' : '#22D3EE' }} />
+                  {s.label}
+                </div>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', lineHeight: 1.45 }}>{s.note}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -5446,6 +5536,46 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
             ))}
           </div>
 
+          {/* SERVICE GRID (W1 · §7.1 regression restored): what each tier INCLUDES at a glance,
+              from the typed config. Static, no animation. Answers "what do I get for $10 vs $25
+              vs $75" without leaving the page. Founding numbers only (R-10). */}
+          <div style={{ marginTop: 56, overflowX: 'auto', WebkitOverflowScrolling: 'touch' as const }}>
+            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontFamily: 'var(--font-body)' }}>
+              <caption style={{ captionSide: 'top', textAlign: 'left', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 18, color: '#F1F5F9', marginBottom: 16 }}>
+                What each plan includes
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col" style={{ textAlign: 'left', padding: '10px 12px', fontSize: 13, fontWeight: 600, color: '#94A3B8', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Feature</th>
+                  {[['Free', ''], ['DIY', '$10'], ['Power', '$25'], ['Estate Mgr', '$75']].map(([n, p]) => (
+                    <th key={n} scope="col" style={{ textAlign: 'center', padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14, color: '#F1F5F9' }}>{n}</div>
+                      {p && <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, color: '#22D3EE' }}>{p}<span style={{ color: '#6B7280', fontWeight: 400 }}>/mo</span></div>}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {SERVICE_GRID.map((row) => (
+                  <tr key={row.feature}>
+                    <th scope="row" style={{ textAlign: 'left', padding: '11px 12px', fontSize: 13.5, fontWeight: 500, color: '#CBD5E1', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{row.feature}</th>
+                    {([row.free, row.diy, row.power, row.estateManager]).map((v, ci) => (
+                      <td key={ci} style={{ textAlign: 'center', padding: '11px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        {v === 'yes' ? (
+                          <span style={{ display: 'inline-flex', color: '#22C55E' }} aria-label="Included"><Icon name="check" size={18} color="#22C55E" /></span>
+                        ) : v === 'no' ? (
+                          <span aria-label="Not included" style={{ color: '#484F58', fontSize: 16 }}>&ndash;</span>
+                        ) : (
+                          <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13, color: '#CBD5E1' }}>{v}</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
           <p
             style={{
               fontFamily: 'var(--font-body)',
@@ -6073,6 +6203,30 @@ function SocialProofSection() {
             <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: 6, color: '#22C55E' }}><Icon name="medal" size={18} /></span>Veterans &amp; First Responders: 25% off subscriptions &bull; 20% off white-glove services &bull; 25% reduced commissions
           </p>
         </GlowCard>
+
+        {/* PRIVACY & OUTREACH DISCLOSURE (W1 · B08): you stay in control. Short, honest, from the
+            typed config. BuyerBot is manual today; nothing sends until you approve. Static. */}
+        <div id="control" style={{ maxWidth: 620, margin: '56px auto 0', textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 20, color: '#F1F5F9', textAlign: 'center', marginBottom: 8 }}>
+            You stay in control.
+          </div>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#94A3B8', textAlign: 'center', margin: '0 auto 24px', maxWidth: 480, lineHeight: 1.6 }}>
+            BuyerBot is manual today. You choose when to search and when to send — nothing goes out
+            without your approval.
+          </p>
+          <dl style={{ margin: 0, display: 'grid', gap: 14 }}>
+            {PRIVACY_DISCLOSURE.map((d) => (
+              <div key={d.q} style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <dt style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14, color: '#F1F5F9', marginBottom: 4 }}>{d.q}</dt>
+                <dd style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#CBD5E1', lineHeight: 1.55 }}>{d.a}</dd>
+              </div>
+            ))}
+          </dl>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#6B7280', textAlign: 'center', marginTop: 16 }}>
+            Full detail lives in our{' '}
+            <a href="/privacy" style={{ color: '#22D3EE', textDecoration: 'none' }}>Privacy Policy</a>.
+          </p>
+        </div>
       </div>
     </section>
   )
@@ -6668,7 +6822,7 @@ function AppDownloadSection() {
       emoji: 'apple',
       title: 'iPhone & iPad',
       subtitle: 'iOS Safari',
-      steps: ['Open in Safari', 'Tap Share ⬆', 'Add to Home Screen', 'Tap "Add"'],
+      steps: ['Open in Safari', 'Tap the Share button', 'Add to Home Screen', 'Tap "Add"'],
     },
     {
       platform: 'Android',
@@ -9091,6 +9245,7 @@ export default function LandingPage() {
         <GarageSaleSection isLoaded={isLoaded} />
         <MarketplaceTicker />
         <MarketOpportunitySection />
+        <ProofLabelsSection />
         <MoatSection />
         <HowItWorksSection />
         <MessageCenterSection />
