@@ -1,28 +1,22 @@
 'use client'
 // ─────────────────────────────────────────────────────────────────────────────
-// PinnedEvalBeat — B03 "it knows what it is" (CMD-LANDING-PASS3 · W3)
+// PinnedEvalBeat — B03 "it knows what it is" (CMD-LANDING-PASS3 · W3 · eval-unpinned)
 //
-// The AI-evaluation beat, Cleo-class outcome-as-motion: the section PINS and, as
-// you scroll, a canvas image-sequence of the valuation plays while an evaluation
-// HUD resolves (analyzing -> identified -> scoring). Leads into the existing
-// MegaBot consensus section below — that hand-tuned section is NOT touched.
-//
-// GSAP ScrollTrigger is DYNAMICALLY IMPORTED here (code-split, below-fold chunk) —
-// it is never in the initial bundle. Pin discipline: ~120vh per pinned beat,
-// disabled below tablet (static), reduced-motion = unpinned static. The canvas
-// reuses ScrollSequenceCanvas, driven by a MotionValue bridged from ScrollTrigger.
-// NO EMOJI.
+// The AI-evaluation beat, Cleo-class outcome-as-motion: a canvas image-sequence of the
+// valuation scrubs on the section's OWN scroll (NON-pinned, no GSAP — the end-to-end
+// eval unpinned it so it no longer stacks against the journey pin) while an evaluation
+// HUD resolves (analyzing -> identified -> hands to MegaBot). Sets up the MegaBot
+// consensus section below — that hand-tuned section is NOT touched. The canvas reuses
+// ScrollSequenceCanvas; touch/reduced fall back to a static poster. NO EMOJI.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useRef, useEffect, useState } from 'react'
-import { motion, useMotionValue, useTransform, useMotionValueEvent } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
-import { getLenis } from './lenis-instance'
 
 interface PinnedEvalBeatProps {
   reduced: boolean
   isTouch: boolean
-  width: number
 }
 
 const PHASES = [
@@ -31,84 +25,25 @@ const PHASES = [
   { key: 'scoring', label: 'Handing to MegaBot', sub: 'The four-engine council takes it from here.' },
 ]
 
-export default function PinnedEvalBeat({ reduced, isTouch, width }: PinnedEvalBeatProps) {
+export default function PinnedEvalBeat({ reduced, isTouch }: PinnedEvalBeatProps) {
   const sectionRef = useRef<HTMLElement>(null)
-  const progress = useMotionValue(0)
   const [phase, setPhase] = useState(0)
-  // Pin only where it earns its frame budget: desktop-motion, tablet and up.
-  const canPin = !reduced && !isTouch && width >= 768
-
-  useEffect(() => {
-    if (!canPin || !sectionRef.current) return
-    let cancelled = false
-    let killer: (() => void) | null = null
-    ;(async () => {
-      try {
-        const [{ gsap }, stMod] = await Promise.all([
-          import('gsap'),
-          import('gsap/ScrollTrigger'),
-        ])
-        // The dynamic-import namespace types .ScrollTrigger as the plugin class; this
-        // cast narrows to that known export (no `any`, matches the runtime shape).
-        const ScrollTrigger = (stMod as { ScrollTrigger: typeof import('gsap/ScrollTrigger').ScrollTrigger }).ScrollTrigger
-        if (cancelled || !sectionRef.current) return
-        gsap.registerPlugin(ScrollTrigger)
-
-        const st = ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=120%',
-          pin: true,
-          pinSpacing: true,
-          scrub: 0.5,
-          onUpdate: (self) => progress.set(self.progress),
-        })
-
-        // Bridge to Lenis: it runs autoRaf:false on its own rAF, so ScrollTrigger must
-        // be told to update on every Lenis scroll frame or the pin reads a stale scroll
-        // position and judders. This is THE integration that makes the pin butter-smooth.
-        const lenis = getLenis()
-        const onLenisScroll = () => ScrollTrigger.update()
-        if (lenis) lenis.on('scroll', onLenisScroll)
-
-        // Re-measure the pin start/end + spacer once late layout (fonts, frames) settles,
-        // and on resize/orientation — otherwise the spacer mis-sizes MegaBotSection below.
-        const refresh = () => ScrollTrigger.refresh()
-        const refreshTimer = window.setTimeout(refresh, 300)
-        window.addEventListener('resize', refresh)
-        window.addEventListener('orientationchange', refresh)
-
-        killer = () => {
-          window.clearTimeout(refreshTimer)
-          window.removeEventListener('resize', refresh)
-          window.removeEventListener('orientationchange', refresh)
-          if (lenis) lenis.off('scroll', onLenisScroll)
-          st.kill()
-        }
-      } catch (err) {
-        // Chunk load / gsap failure: the section degrades to a normal-scroll block —
-        // the canvas + HUD still render. Surface it (post-deploy chunk 404s are real)
-        // and resolve the HUD to its final state so the payoff copy still shows.
-        console.error('[PinnedEvalBeat] gsap/ScrollTrigger failed; static fallback', err)
-        if (!cancelled) setPhase(2)
-      }
-    })()
-    return () => {
-      cancelled = true
-      if (killer) killer()
-    }
-  }, [canPin, progress])
+  // NON-PINNED (eval reorder): the eval scrubs on the section's OWN scroll as it passes
+  // the viewport — no GSAP pin, so it never stacks against the journey pin above and the
+  // scroll never "catches." Progress 0 (entering) -> 1 (leaving). Reduced = static final.
+  const { scrollYProgress: progress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
 
   useMotionValueEvent(progress, 'change', (v) => {
-    const next = v < 0.4 ? 0 : v < 0.75 ? 1 : 2
+    if (reduced) return
+    const next = v < 0.4 ? 0 : v < 0.72 ? 1 : 2
     setPhase((prev) => (prev === next ? prev : next))
   })
 
   // App-UI parallax (5B.2): the HUD card drifts and the scan bar fills with scrub.
   const cardY = useTransform(progress, [0, 1], [36, -28])
-  const barScale = useTransform(progress, [0, 1], [0.04, 1])
-  // Static (reduced / touch / mobile) shows the resolved final state.
-  const shownPhase = canPin ? phase : 2
+  const barScale = useTransform(progress, [0, 1], [0.1, 1])
+  // Reduced-motion shows the resolved final state, no drift.
+  const shownPhase = reduced ? 2 : phase
 
   return (
     <section
@@ -154,7 +89,7 @@ export default function PinnedEvalBeat({ reduced, isTouch, width }: PinnedEvalBe
       <div style={{ position: 'relative', width: '100%', maxWidth: 1080, margin: '0 auto', padding: '0 24px' }}>
         <motion.div
           style={{
-            y: canPin ? cardY : 0,
+            y: reduced ? 0 : cardY,
             maxWidth: 460,
             padding: '28px 30px',
             borderRadius: 20,
@@ -201,13 +136,13 @@ export default function PinnedEvalBeat({ reduced, isTouch, width }: PinnedEvalBe
                 height: '100%',
                 borderRadius: 6,
                 transformOrigin: 'left',
-                scaleX: canPin ? barScale : 1,
+                scaleX: reduced ? 1 : barScale,
                 background: 'linear-gradient(90deg, #00bcd4, #22D3EE)',
               }}
             />
           </div>
           <div style={{ marginTop: 14, fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8' }}>
-            A free AI hands you a listing. Legacy-Loop brings you the buyer.
+            One photo in. A fair, checked price out.
           </div>
         </motion.div>
       </div>

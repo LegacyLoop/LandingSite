@@ -1281,8 +1281,8 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
     // WAVE 8 / FIX 9: dot order MUST match the new vertical section order (scroll-tracking drift-safe).
     { id: 'hero', label: 'Home', icon: '◆' },
     { id: 'garage-sale', label: 'Weekend', icon: '◆' },
-    { id: 'buyerbot', label: 'BuyerBot', icon: '◆' },
     { id: 'how-it-works', label: 'How It Works', icon: '◆' },
+    { id: 'buyerbot', label: 'BuyerBot', icon: '◆' },
     { id: 'megabot', label: 'MegaBot', icon: '◆' },
     { id: 'bots', label: 'AI Bots', icon: '◆' },
     { id: 'shipping', label: 'Shipping', icon: '◆' },
@@ -4475,14 +4475,21 @@ function SeeItWorkSection() {
 // Second cinematic chapter, Sotheby's-class: the tea-set -> antique-alert clip in a
 // device frame, mirror layout (copy left, device right). Honest AntiqueBot framing —
 // it flags pieces worth a closer look; no regulated "appraisal" claim.
-function AntiqueAlertSection() {
+// The alert FAMILY (CEO note): not just antiques — three watchers, each a real bot.
+const ALERTS = [
+  { icon: 'vase', name: 'Antique Alert', line: 'AntiqueBot reads maker’s marks and era — the details most listings miss.' },
+  { icon: 'star', name: 'Collectibles Alert', line: 'CollectiblesBot gives cards, coins, and collectibles expert-level analysis.' },
+  { icon: 'bell', name: 'High-Value Alert', line: 'Flags any item that could be worth more than it looks, for a closer look.' },
+]
+
+function AlertsSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
   const isDesktop = width >= 900
   return (
-    <section id="antique-alert" style={{ ...sp, position: 'relative', zIndex: 5 }}>
+    <section id="alerts" style={{ ...sp, position: 'relative', zIndex: 5 }}>
       <div
         style={{
           maxWidth: 1080,
@@ -4496,11 +4503,11 @@ function AntiqueAlertSection() {
         <motion.div
           initial={reduced ? false : { opacity: 0, y: 24 }}
           whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
+          viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
           style={{ textAlign: isDesktop ? 'left' : 'center' }}
         >
-          <SectionEyebrow text="ANTIQUE ALERT" color="#D4AF37" />
+          <SectionEyebrow text="THE ALERTS" color="#D4AF37" />
           <h2
             style={{
               fontFamily: 'var(--font-heading)',
@@ -4509,10 +4516,10 @@ function AntiqueAlertSection() {
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
               color: '#F1F5F9',
-              margin: '10px 0 16px',
+              margin: '10px 0 14px',
             }}
           >
-            When something rare turns up.
+            When something&rsquo;s worth more than it looks.
           </h2>
           <p
             style={{
@@ -4522,27 +4529,45 @@ function AntiqueAlertSection() {
               color: '#CBD5E1',
               lineHeight: 1.6,
               maxWidth: 460,
-              margin: isDesktop ? '0' : '0 auto',
+              margin: isDesktop ? '0 0 24px' : '0 auto 24px',
             }}
           >
-            AntiqueBot studies the maker&rsquo;s marks, the era, the details most listings
-            miss &mdash; and flags the pieces worth a closer look, so a hidden treasure never
-            leaves for the price of a teacup.
+            Three watchers on your items, so a hidden treasure never leaves for the price of a
+            teacup.
           </p>
+          <div style={{ display: 'grid', gap: 12, maxWidth: 480, margin: isDesktop ? 0 : '0 auto' }}>
+            {ALERTS.map((a, i) => (
+              <motion.div
+                key={a.name}
+                initial={reduced || isTouch ? false : { opacity: 0, y: 16 }}
+                whileInView={reduced || isTouch ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: i * 0.1, ease: [0.23, 1, 0.32, 1] }}
+                style={{ display: 'flex', gap: 14, alignItems: 'flex-start', textAlign: 'left', padding: '14px 16px', borderRadius: 14, background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.25)' }}
+              >
+                <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 10, background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name={a.icon} size={19} color="#D4AF37" />
+                </span>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 15.5, color: '#F1F5F9' }}>{a.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#CBD5E1', lineHeight: 1.5 }}>{a.line}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
-        <CinematicMoment base="estate-tea" alt="A vintage tea set that AntiqueBot flags for a closer look" isTouch={isTouch} />
+        <CinematicMoment base="estate-tea" alt="A vintage tea set an alert flags for a closer look before it sells" isTouch={isTouch} accent="gold" />
       </div>
     </section>
   )
 }
 
-// ---------- B03 · AI EVALUATION (pinned scrub) ----------
+// ---------- B03 · AI EVALUATION (non-pinned scrub) ----------
 // Thin wrapper: feeds the page's motion/viewport hooks into the pure PinnedEvalBeat.
 function AIEvaluationBeat() {
-  const width = useWindowWidth()
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
-  return <PinnedEvalBeat reduced={reduced} isTouch={isTouch} width={width} />
+  return <PinnedEvalBeat reduced={reduced} isTouch={isTouch} />
 }
 
 // ---------- HOW IT WORKS ----------
@@ -8977,19 +9002,23 @@ export default function LandingPage() {
         <MarketOpportunitySection />
         <CinematicJourneyBand />
         <ProofLabelsSection />
-        <MoatSection />
+        {/* Eval reorder: how-it-works (the mechanism) BEFORE the moat (the differentiator
+            payoff) — setup before punchline. */}
         <HowItWorksSection />
+        <MoatSection />
         <SeeItWorkSection />
         <MessageCenterSection />
         <AIEvaluationBeat />
         <MegaBotSection />
         <AIAgentsSection />
-        <AntiqueAlertSection />
         <ShippingCenterSection />
         <ProductPreviewSection />
         <TechSection />
         <SocialProofSection />
         <PricingSection setOfferingIntent={setOfferingIntent} />
+        {/* Eval reorder: the Alerts family (Antique · Collectibles · High-Value) — spotting
+            what's worth more than it looks — leads into the Estate service for whole homes. */}
+        <AlertsSection />
         <EstateSection />
         {/* ---- R-8 tail: read everything, then the join door is right here ---- */}
         <WaitlistSection
