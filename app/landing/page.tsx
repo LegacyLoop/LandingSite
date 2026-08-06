@@ -2389,25 +2389,68 @@ function V8Pill({
 
 // ---------- GARAGE SALE — THE WEEKEND GOLDMINE (Young-Seller Hook) ----------
 // Sits between HeroSection (brand intro) and MarketplaceTicker.
-// Awwwards-level integration:
-//   • Cinematic 16:9 hero video (left) + animated V8 price card (right)
-//   • 3 proof chips + dual CTAs
-//   • UGC 9:16 portrait video row below with ScrollRevealText quote
-// Design refs: Apple hero-as-film + Linear product cards + Stripe data pills
+// W3-POLISH target 2 restructure: a TRIPTYCH — two portrait films (snap-an-item +
+// real-Saturday UGC) flank the V8 price card (the "know the price" hero). Replaces the
+// old landscape-slot-crammed-with-a-portrait-clip layout; both films are now first-class
+// and truth-clean (the prior goldmine clip carried a fabricated $1,250 HUD — replaced).
+// Design refs: Apple hero-as-film + Linear product cards + Stripe data pills.
+
+// Shared portrait-film frame — one device treatment for both goldmine clips so the
+// triptych reads as a matched set. Poster + preload=metadata for LCP; muted autoplay via
+// AutoPlayVideo. Caption sits below the frame (never overlaid on the footage).
+function PortraitFilm({
+  sources,
+  poster,
+  caption,
+  reduced,
+}: {
+  sources: { src: string; type: string }[]
+  poster: string
+  caption: string
+  reduced: boolean
+}) {
+  return (
+    <motion.figure
+      initial={reduced ? false : { opacity: 0, y: 24 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+      style={{ margin: 0, width: '100%', maxWidth: 300, justifySelf: 'center', display: 'flex', flexDirection: 'column', gap: 14 }}
+    >
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          aspectRatio: '9 / 16',
+          borderRadius: 24,
+          overflow: 'hidden',
+          border: '1px solid rgba(0,188,212,0.22)',
+          boxShadow: '0 0 44px rgba(0,188,212,0.09), 0 26px 60px rgba(0,0,0,0.5)',
+          background: '#0D1117',
+        }}
+      >
+        <AutoPlayVideo
+          preload="metadata"
+          poster={poster}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          sources={sources}
+        />
+        {/* soft vignette — depth, keeps eyes on the subject */}
+        <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 42%, transparent 58%, rgba(13,17,23,0.4) 100%)', pointerEvents: 'none' }} />
+      </div>
+      <figcaption style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, textAlign: 'center' }}>
+        <span aria-hidden style={{ width: 5, height: 5, borderRadius: '50%', background: '#00BCD4', flexShrink: 0 }} />
+        <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#94A3B8' }}>{caption}</span>
+      </figcaption>
+    </motion.figure>
+  )
+}
+
 function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
   const width = useWindowWidth()
   const reduced = useReducedMotion()
   const isMobile = width < 900
   const isSmall = width < 600
-
-  // Edge-bleed parallax on the 16:9 hero video (Active Theory pattern)
-  const videoContainerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress: videoScroll } = useScroll({
-    target: videoContainerRef,
-    offset: ['start end', 'end start'],
-  })
-  const videoY = useTransform(videoScroll, [0, 1], ['-5%', '5%'])
-  const videoScale = useTransform(videoScroll, [0, 0.5, 1], [1.04, 1, 1.04])
 
   // Signature moment — gold "ignition" pulse fires when ACCEPT counter
   // hits its final value ($280). The screenshot-bait beat.
@@ -2569,74 +2612,34 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
           </div>
         </div>
 
-        {/* VIDEO + PRICE CARD SPLIT */}
+        {/* TRIPTYCH — portrait film · V8 price card · portrait film.
+            DOM order = snap → price → Saturday, so the mobile 1-col stack reads as the
+            narrative. Both films are truth-clean portrait clips (no fabricated HUD). */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1.35fr 1fr',
-            gap: isMobile ? 20 : 32,
+            gridTemplateColumns: isMobile
+              ? '1fr'
+              : 'minmax(0,0.8fr) minmax(0,1.16fr) minmax(0,0.8fr)',
+            gap: isMobile ? 40 : 32,
             alignItems: 'center',
+            maxWidth: 1180,
+            margin: '0 auto',
             marginBottom: isMobile ? 40 : 56,
           }}
         >
-          {/* LEFT — 16:9 cinematic hero video with edge-bleed parallax */}
-          <div
-            ref={videoContainerRef}
-            style={{
-              position: 'relative',
-              aspectRatio: '16 / 9',
-              borderRadius: 20,
-              overflow: 'hidden',
-              border: '1px solid rgba(0,188,212,0.2)',
-              boxShadow:
-                '0 0 48px rgba(0,188,212,0.08), 0 24px 56px rgba(0,0,0,0.45)',
-              background: '#0D1117',
-            }}
-          >
-            {/* Inner parallax wrapper — translates + breathes with scroll.
-                Slightly oversized (110% height, -5% marginTop) so the y
-                translation never exposes container background. */}
-            <motion.div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                height: '110%',
-                marginTop: '-5%',
-                y: reduced ? 0 : videoY,
-                scale: reduced ? 1 : videoScale,
-                willChange: 'transform',
-              }}
-            >
-              <AutoPlayVideo
-                preload="metadata"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-                sources={[
-                  { src: '/videos/goldmine.webm', type: 'video/webm' },
-                  { src: '/videos/goldmine.mp4', type: 'video/mp4' },
-                ]}
-              />
-            </motion.div>
-            {/* Subtle vignette for depth + keeps focus on center.
-                Sibling to motion wrapper so it stays perfectly still. */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'radial-gradient(ellipse at center, transparent 55%, rgba(13,17,23,0.4) 100%)',
-                pointerEvents: 'none',
-              }}
-            />
-          </div>
+          {/* 1 — SNAP: phone photographing an item (truth-clean goldmine clip) */}
+          <PortraitFilm
+            reduced={reduced}
+            caption="Snap any item"
+            poster="/videos/goldmine-poster.jpg"
+            sources={[
+              { src: '/videos/goldmine.webm', type: 'video/webm' },
+              { src: '/videos/goldmine.mp4', type: 'video/mp4' },
+            ]}
+          />
 
-          {/* RIGHT — Animated V8 Price Card wrapped in IGNITE layer.
+          {/* 2 — PRICE (center hero) — Animated V8 Price Card wrapped in IGNITE layer.
               When ACCEPT counter hits $280, a gold radial pulse fires
               behind the card + the card's shadow briefly glows gold.
               The screenshot-bait beat. */}
@@ -2828,6 +2831,53 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
             </div>
           </GlowCard>
           </div>
+
+          {/* 3 — SATURDAY: real-person UGC portrait (square clip, center-safe crop) */}
+          <PortraitFilm
+            reduced={reduced}
+            caption="What a Saturday looks like"
+            poster="/videos/girl-poster.jpg"
+            sources={[
+              { src: '/Legacyloop_Gs_Subsection_Girl_Web.webm', type: 'video/webm' },
+              { src: '/Legacyloop_Gs_Subsection_Girl_Web.mp4', type: 'video/mp4' },
+            ]}
+          />
+        </div>
+
+        {/* CLOSING LINE — the message once, tying both films together */}
+        <div
+          style={{
+            maxWidth: 720,
+            margin: isMobile ? '0 auto 34px' : '0 auto 46px',
+            textAlign: 'center',
+          }}
+        >
+          {reduced ? (
+            <p
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 500,
+                fontSize: isSmall ? 18 : 'clamp(20px, 2.6vw, 26px)',
+                lineHeight: 1.4,
+                color: '#F1F5F9',
+                margin: 0,
+              }}
+            >
+              Photograph the pile. Get a price on every piece. Decide what goes and what stays.
+            </p>
+          ) : (
+            <ScrollRevealText
+              text="Photograph the pile. Get a price on every piece. Decide what goes and what stays."
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 500,
+                fontSize: isSmall ? 18 : 'clamp(20px, 2.6vw, 26px)',
+                lineHeight: 1.4,
+                color: '#F1F5F9',
+                textAlign: 'center',
+              }}
+            />
+          )}
         </div>
 
         {/* PROOF POINTS — 3-up */}
@@ -2892,198 +2942,8 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
           <MagneticButton href="#waitlist">
             Join the Free Waitlist
           </MagneticButton>
-          <a
-            href="#ugc-proof"
-            onClick={(e) => {
-              e.preventDefault()
-              document
-                .getElementById('ugc-proof')
-                ?.scrollIntoView({ behavior: 'smooth' })
-            }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontFamily: 'var(--font-body)',
-              fontWeight: 500,
-              fontSize: 14,
-              color: '#00BCD4',
-              textDecoration: 'none',
-              padding: '12px 22px',
-              borderRadius: 10,
-              border: '1px solid rgba(0,188,212,0.35)',
-              minHeight: 44,
-              transition: 'all 0.3s ease',
-              cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              ;(e.currentTarget as HTMLAnchorElement).style.borderColor =
-                'rgba(0,188,212,0.7)'
-              ;(e.currentTarget as HTMLAnchorElement).style.background =
-                'rgba(0,188,212,0.05)'
-            }}
-            onMouseLeave={(e) => {
-              ;(e.currentTarget as HTMLAnchorElement).style.borderColor =
-                'rgba(0,188,212,0.35)'
-              ;(e.currentTarget as HTMLAnchorElement).style.background =
-                'transparent'
-            }}
-          >
-            Watch her find it ↓
-          </a>
         </div>
 
-        {/* Hairline divider between hero and UGC row */}
-        <div
-          aria-hidden
-          style={{
-            maxWidth: 260,
-            margin: isMobile ? '0 auto 48px' : '0 auto 72px',
-            height: 1,
-            background:
-              'linear-gradient(90deg, transparent, rgba(0,188,212,0.28), transparent)',
-          }}
-        />
-
-        {/* UGC PROOF ROW — real-people social layer */}
-        <div
-          id="ugc-proof"
-          style={{ textAlign: 'center', marginBottom: isMobile ? 28 : 40 }}
-        >
-          <SectionEyebrow text="WHAT A SATURDAY LOOKS LIKE" />
-        </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '260px 1fr',
-            gap: isMobile ? 28 : 56,
-            alignItems: 'center',
-            maxWidth: 920,
-            margin: '0 auto',
-          }}
-        >
-          {/* LEFT — Portrait 9:16 UGC video in phone-frame mockup */}
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: 260,
-              margin: isMobile ? '0 auto' : undefined,
-              aspectRatio: '9 / 16',
-              borderRadius: 28,
-              overflow: 'hidden',
-              border: '8px solid #0D1117',
-              outline: '1px solid rgba(0,188,212,0.25)',
-              boxShadow:
-                '0 0 40px rgba(0,188,212,0.1), 0 24px 56px rgba(0,0,0,0.55)',
-              background: '#000',
-            }}
-          >
-            <AutoPlayVideo
-              preload="metadata"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-              sources={[
-                {
-                  src: '/Legacyloop_Gs_Subsection_Girl_Web.webm',
-                  type: 'video/webm',
-                },
-                {
-                  src: '/Legacyloop_Gs_Subsection_Girl_Web.mp4',
-                  type: 'video/mp4',
-                },
-              ]}
-            />
-            {/* iOS-style top notch bar */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                top: 10,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 72,
-                height: 6,
-                background: 'rgba(0,0,0,0.7)',
-                borderRadius: 3,
-                zIndex: 2,
-              }}
-            />
-          </div>
-
-          {/* RIGHT — ScrollRevealText quote + mini CTA */}
-          <div style={{ maxWidth: 520 }}>
-            {reduced ? (
-              <p
-                style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 500,
-                  fontSize: isSmall ? 20 : 'clamp(22px, 2.8vw, 28px)',
-                  lineHeight: 1.4,
-                  color: '#F1F5F9',
-                  margin: 0,
-                }}
-              >
-                {/* WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2 · CANONICAL_FACTS §5): fabricated "$280
-                    Polaroid / she priced her whole garage" customer story removed (zero customers). */}
-                There's often{' '}
-                <span
-                  style={{
-                    color: '#22C55E',
-                    fontFamily: 'var(--font-data)',
-                    fontWeight: 700,
-                  }}
-                >
-                  real value
-                </span>{' '}
-                buried in a box of old things. Photograph the pile and price the whole garage in an afternoon.
-              </p>
-            ) : (
-              <ScrollRevealText
-                text="Photograph the pile. Get a price on every piece. Decide what goes and what stays."
-                style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 500,
-                  fontSize: isSmall ? 20 : 'clamp(22px, 2.8vw, 28px)',
-                  lineHeight: 1.4,
-                  color: '#F1F5F9',
-                }}
-              />
-            )}
-
-            <a
-              href="#waitlist"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                marginTop: 24,
-                fontFamily: 'var(--font-body)',
-                fontWeight: 500,
-                fontSize: 15,
-                color: '#00BCD4',
-                textDecoration: 'none',
-                minHeight: 44,
-                transition: 'opacity 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                ;(e.currentTarget as HTMLAnchorElement).style.textDecoration =
-                  'underline'
-              }}
-              onMouseLeave={(e) => {
-                ;(e.currentTarget as HTMLAnchorElement).style.textDecoration =
-                  'none'
-              }}
-            >
-              See your goldmine →
-            </a>
-          </div>
-        </div>
       </div>
     </section>
   )
