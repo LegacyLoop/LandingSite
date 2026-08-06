@@ -4707,132 +4707,113 @@ function HowItWorksSection() {
 }
 
 // ---------- AI SHIPPING CENTER ----------
+// Morphing mode chip for the shipping header (label -> pickup -> parcel -> LTL).
+function MorphingMode({ modes, reduced }: { modes: string[]; reduced: boolean }) {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    if (reduced) return
+    const id = setInterval(() => setI((v) => (v + 1) % modes.length), 1900)
+    return () => clearInterval(id)
+  }, [reduced, modes.length])
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 9999, background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.3)', minWidth: 168, justifyContent: 'center' }}>
+      <span aria-hidden style={{ width: 7, height: 7, borderRadius: '50%', background: '#22D3EE' }} />
+      <AnimatePresence mode="wait">
+        <motion.span key={modes[i]} initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={reduced ? undefined : { opacity: 0, y: -8 }} transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }} style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#F1F5F9' }}>
+          {modes[i]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  )
+}
+
+// ORIGINAL parcel-scales-to-pallet: a small parcel grows into a freight pallet —
+// "from a watch to a dining set, one platform." inView-driven; reduced = static.
+function ParcelToPallet({ reduced }: { reduced: boolean }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.5 })
+  const on = reduced || inView
+  const cap = { fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', marginTop: 10, textAlign: 'center' as const }
+  const tag = { fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' as const }
+  return (
+    <div ref={ref} style={{ marginTop: 56, padding: '36px 24px', borderRadius: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'clamp(24px, 6vw, 72px)', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <motion.div initial={reduced ? false : { scale: 0.6, opacity: 0 }} animate={on ? { scale: 1, opacity: 1 } : undefined} transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }} style={{ width: 64, height: 64, borderRadius: 12, background: 'rgba(0,188,212,0.1)', border: '1px solid rgba(0,188,212,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="box" size={28} color="#22D3EE" />
+        </motion.div>
+        <div style={{ ...tag, color: '#22D3EE', marginTop: 12 }}>Parcel</div>
+        <div style={cap}>A vintage watch</div>
+      </div>
+      <motion.div aria-hidden initial={reduced ? false : { opacity: 0 }} animate={on ? { opacity: 1 } : undefined} transition={{ delay: 0.3, duration: 0.5 }} style={{ display: 'flex', alignItems: 'center', color: '#8B949E' }}>
+        <svg width="70" height="20" viewBox="0 0 70 20" fill="none" aria-hidden><path d="M2 10h60" stroke="#8B949E" strokeWidth="1.5" strokeDasharray="4 4" /><path d="M60 4l8 6-8 6" stroke="#8B949E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" /></svg>
+      </motion.div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <motion.div initial={reduced ? false : { scale: 0.6, opacity: 0 }} animate={on ? { scale: 1, opacity: 1 } : undefined} transition={{ delay: 0.45, duration: 0.7, ease: [0.23, 1, 0.32, 1] }} style={{ width: 108, height: 84, borderRadius: 12, background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+          <Icon name="truck" size={34} color="#D4AF37" />
+        </motion.div>
+        <div style={{ ...tag, color: '#D4AF37', marginTop: 12 }}>Freight / LTL</div>
+        <div style={cap}>A full dining set</div>
+      </div>
+    </div>
+  )
+}
+
 function ShippingCenterSection() {
   const width = useWindowWidth()
   const sp = useSectionPadding(width)
-  const isMobile = width < 768
-
-  // FIX 5: carriers limited to the ones we actually integrate (USPS/UPS/FedEx);
-  // DHL and Arta removed (not integrated — CANONICAL_FACTS §6, disposition §3).
+  const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
+  const isDesktop = width >= 900
   const carriers = [
-    { name: 'USPS', emoji: 'mailbox' },
-    { name: 'UPS', emoji: 'box' },
-    { name: 'FedEx', emoji: 'truck' },
+    { name: 'USPS', c: '#333366' },
+    { name: 'UPS', c: '#351c15' },
+    { name: 'FedEx', c: '#4d148c' },
   ]
-
   const features = [
-    { emoji: 'robot', title: 'AI Rate Comparison', desc: 'Compares live rates from real carriers and surfaces the cheapest, fastest option for every shipment.' },
-    { emoji: 'ruler', title: 'Parcel + LTL Freight', desc: 'From a vintage watch to a full dining set — small parcels and large freight, side by side.' },
-    { emoji: 'home', title: 'Local Pickup', desc: 'Coordinate local buyer pickup with built-in scheduling. No shipping needed.' },
-    { emoji: 'tag', title: 'Label + Tracking', desc: 'Print the label, share tracking, hand it off. You stay in control the whole way.' },
+    { emoji: 'robot', title: 'AI rate comparison', desc: 'Live rates from real carriers; the cheapest, fastest option surfaced for every shipment.' },
+    { emoji: 'ruler', title: 'Parcel + LTL freight', desc: 'A vintage watch or a full dining set — small parcels and large freight, side by side.' },
+    { emoji: 'home', title: 'Local pickup', desc: 'Coordinate buyer pickup with built-in scheduling. No shipping needed.' },
+    { emoji: 'tag', title: 'Label + tracking', desc: 'Print the label, share tracking, hand it off. You stay in control the whole way.' },
   ]
-
   return (
-    <section
-      id="shipping"
-      style={{
-        ...sp,
-        position: 'relative',
-        zIndex: 5,
-      }}
-    >
+    <section id="shipping" style={{ ...sp, position: 'relative', zIndex: 5 }}>
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <SectionEyebrow text="BUILT-IN LOGISTICS" />
-        <SectionHeading>
-          <StaggeredWords text="AI Shipping Center." />{' '}
-          <GradientText>Real Carrier Rates. One Click.</GradientText>
-        </SectionHeading>
-        <p
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
-            fontSize: 17,
-            color: '#CBD5E1',
-            textAlign: 'center',
-            maxWidth: 600,
-            margin: '0 auto 48px',
-            lineHeight: 1.65,
-          }}
-        >
-          Shipping tools built right into the platform. Compare live carrier rates,
-          print labels, and track shipments — without leaving Legacy-Loop.
-        </p>
-
-        {/* Carrier badges */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 16,
-            flexWrap: 'wrap',
-            marginBottom: 48,
-          }}
-        >
-          {carriers.map((c) => (
-            <div
-              key={c.name}
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(0,188,212,0.2)',
-                borderRadius: 12,
-                padding: '12px 20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <span style={{ display: 'inline-flex', alignItems: 'center', color: '#00BCD4' }}><Icon name={c.emoji} size={20} /></span>
-              <span
-                style={{
-                  fontFamily: 'var(--font-data)',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  color: '#F1F5F9',
-                  letterSpacing: '0.03em',
-                }}
-              >
-                {c.name}
-              </span>
+        <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1.1fr 0.9fr' : '1fr', gap: isDesktop ? 56 : 36, alignItems: 'center' }}>
+          <div style={{ textAlign: isDesktop ? 'left' : 'center' }}>
+            <SectionEyebrow text="BUILT-IN LOGISTICS · TMS" />
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(30px, 4.5vw, 50px)', letterSpacing: '-0.02em', lineHeight: 1.05, color: '#F1F5F9', margin: '10px 0 18px' }}>
+              Parcel to freight,<br />handled.
+            </h2>
+            <div style={{ display: 'flex', justifyContent: isDesktop ? 'flex-start' : 'center', marginBottom: 18 }}>
+              <MorphingMode modes={['Printed label', 'Local pickup', 'Parcel', 'LTL freight']} reduced={reduced} />
             </div>
-          ))}
+            <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 'clamp(15px, 1.7vw, 18px)', color: '#CBD5E1', lineHeight: 1.65, maxWidth: 480, margin: isDesktop ? '0 0 22px' : '0 auto 22px' }}>
+              From a vintage watch to a full dining set. Compare live carrier rates, print the
+              label, ship it &mdash; parcel or freight, straight out of the sale.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: isDesktop ? 'flex-start' : 'center' }}>
+              {carriers.map((c) => (
+                <div key={c.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: c.c, boxShadow: '0 0 0 1px rgba(255,255,255,0.15)' }} />
+                  <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13.5, color: '#F1F5F9', letterSpacing: '0.03em' }}>{c.name}</span>
+                </div>
+              ))}
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', alignSelf: 'center' }}>live rates at checkout</span>
+            </div>
+          </div>
+          <CinematicMoment base="ship-tms" alt="Legacy-Loop shipping: comparing carrier rates and printing a label" isTouch={isTouch} />
         </div>
 
-        {/* Feature cards */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-            gap: 20,
-          }}
-        >
+        <ParcelToPallet reduced={reduced} />
+
+        <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : '1fr', gap: 20, marginTop: 40 }}>
           {features.map((f, i) => (
             <GlowCard key={f.title} delay={i * 80}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                 <span style={{ flexShrink: 0, display: 'inline-flex', color: '#00BCD4' }}><Icon name={f.emoji} size={24} /></span>
                 <div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: 600,
-                      fontSize: 17,
-                      color: '#F1F5F9',
-                    }}
-                  >
-                    {f.title}
-                  </div>
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontWeight: 400,
-                      fontSize: 15,
-                      color: '#CBD5E1',
-                      marginTop: 4,
-                      lineHeight: 1.55,
-                    }}
-                  >
-                    {f.desc}
-                  </p>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 17, color: '#F1F5F9' }}>{f.title}</div>
+                  <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 15, color: '#CBD5E1', marginTop: 4, lineHeight: 1.55 }}>{f.desc}</p>
                 </div>
               </div>
             </GlowCard>
