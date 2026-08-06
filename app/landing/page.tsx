@@ -5279,33 +5279,39 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
             viewport={{ once: true, amount: 0.2 }}
             style={{ marginTop: 56, overflowX: 'auto', WebkitOverflowScrolling: 'touch' as const }}
           >
-            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontFamily: 'var(--font-body)' }}>
+            {/* B09 craft treatment: the recommended Power column is tinted + badged so the eye
+                lands on it; zebra rows aid scan; rounded container for the premium register. */}
+            <table style={{ width: '100%', minWidth: 660, borderCollapse: 'separate', borderSpacing: 0, fontFamily: 'var(--font-body)', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
               <caption style={{ captionSide: 'top', textAlign: 'left', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 18, color: '#F1F5F9', marginBottom: 16 }}>
                 What each plan includes
               </caption>
               <thead>
                 <tr>
-                  <th scope="col" style={{ textAlign: 'left', padding: '10px 12px', fontSize: 13, fontWeight: 600, color: '#94A3B8', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Feature</th>
-                  {[['Free', ''], ['DIY', '$10'], ['Power', '$25'], ['Estate Mgr', '$75']].map(([n, p]) => (
-                    <th key={n} scope="col" style={{ textAlign: 'center', padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14, color: '#F1F5F9' }}>{n}</div>
-                      {p && <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, color: '#22D3EE' }}>{p}<span style={{ color: '#6B7280', fontWeight: 400 }}>/mo</span></div>}
-                    </th>
-                  ))}
+                  <th scope="col" style={{ textAlign: 'left', padding: '14px 12px', fontSize: 13, fontWeight: 600, color: '#94A3B8', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Feature</th>
+                  {[['Free', ''], ['DIY', '$10'], ['Power', '$25'], ['Estate Mgr', '$75']].map(([n, p], hi) => {
+                    const hot = hi === 2
+                    return (
+                      <th key={n} scope="col" style={{ textAlign: 'center', padding: '14px 12px', background: hot ? 'rgba(0,188,212,0.08)' : 'rgba(255,255,255,0.02)', borderBottom: `2px solid ${hot ? '#22D3EE' : 'rgba(255,255,255,0.1)'}`, position: 'relative' }}>
+                        {hot && <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 3 }}>Most popular</div>}
+                        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: hot ? 700 : 600, fontSize: 14, color: '#F1F5F9' }}>{n}</div>
+                        {p && <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, color: '#22D3EE' }}>{p}<span style={{ color: '#94A3B8', fontWeight: 400 }}>/mo</span></div>}
+                      </th>
+                    )
+                  })}
                 </tr>
               </thead>
               <tbody>
-                {SERVICE_GRID.map((row) => (
-                  <tr key={row.feature}>
-                    <th scope="row" style={{ textAlign: 'left', padding: '11px 12px', fontSize: 13.5, fontWeight: 500, color: '#CBD5E1', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{row.feature}</th>
+                {SERVICE_GRID.map((row, ri) => (
+                  <tr key={row.feature} style={{ background: ri % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                    <th scope="row" style={{ textAlign: 'left', padding: '12px', fontSize: 13.5, fontWeight: 500, color: '#CBD5E1' }}>{row.feature}</th>
                     {([row.free, row.diy, row.power, row.estateManager]).map((v, ci) => (
-                      <td key={ci} style={{ textAlign: 'center', padding: '11px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td key={ci} style={{ textAlign: 'center', padding: '12px', background: ci === 2 ? 'rgba(0,188,212,0.05)' : 'transparent' }}>
                         {v === 'yes' ? (
                           <span style={{ display: 'inline-flex', color: '#22C55E' }} aria-label="Included"><Icon name="check" size={18} color="#22C55E" /></span>
                         ) : v === 'no' ? (
                           <span aria-label="Not included" style={{ color: '#484F58', fontSize: 16 }}>&ndash;</span>
                         ) : (
-                          <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13, color: '#CBD5E1' }}>{v}</span>
+                          <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13, color: '#F1F5F9' }}>{v}</span>
                         )}
                       </td>
                     ))}
