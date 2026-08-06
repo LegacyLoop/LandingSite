@@ -4637,6 +4637,71 @@ function SeeItWorkSection() {
   )
 }
 
+// ---------- ANTIQUE ALERT (R-6 cinematic moment, chapter 2) ----------
+// Second cinematic chapter, Sotheby's-class: the tea-set -> antique-alert clip in a
+// device frame, mirror layout (copy left, device right). Honest AntiqueBot framing —
+// it flags pieces worth a closer look; no regulated "appraisal" claim.
+function AntiqueAlertSection() {
+  const width = useWindowWidth()
+  const sp = useSectionPadding(width)
+  const reduced = useReducedMotion()
+  const isTouch = useIsTouch()
+  const isDesktop = width >= 900
+  return (
+    <section id="antique-alert" style={{ ...sp, position: 'relative', zIndex: 5 }}>
+      <div
+        style={{
+          maxWidth: 1080,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: isDesktop ? '1.1fr 0.9fr' : '1fr',
+          gap: isDesktop ? 56 : 36,
+          alignItems: 'center',
+        }}
+      >
+        <motion.div
+          initial={reduced ? false : { opacity: 0, y: 24 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+          style={{ textAlign: isDesktop ? 'left' : 'center' }}
+        >
+          <SectionEyebrow text="ANTIQUE ALERT" color="#D4AF37" />
+          <h2
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: 'clamp(28px, 4vw, 44px)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              color: '#F1F5F9',
+              margin: '10px 0 16px',
+            }}
+          >
+            When something rare turns up.
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 'clamp(15px, 1.6vw, 18px)',
+              color: '#CBD5E1',
+              lineHeight: 1.6,
+              maxWidth: 460,
+              margin: isDesktop ? '0' : '0 auto',
+            }}
+          >
+            AntiqueBot studies the maker&rsquo;s marks, the era, the details most listings
+            miss &mdash; and flags the pieces worth a closer look, so a hidden treasure never
+            leaves for the price of a teacup.
+          </p>
+        </motion.div>
+        <CinematicMoment base="estate-tea" alt="A vintage tea set that AntiqueBot flags for a closer look" isTouch={isTouch} />
+      </div>
+    </section>
+  )
+}
+
 // ---------- B03 · AI EVALUATION (pinned scrub) ----------
 // Thin wrapper: feeds the page's motion/viewport hooks into the pure PinnedEvalBeat.
 function AIEvaluationBeat() {
@@ -9448,6 +9513,7 @@ export default function LandingPage() {
         <AIEvaluationBeat />
         <MegaBotSection />
         <AIAgentsSection />
+        <AntiqueAlertSection />
         <ShippingCenterSection />
         <ProductPreviewSection />
         <TechSection />
