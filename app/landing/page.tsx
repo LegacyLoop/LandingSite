@@ -14,6 +14,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
 import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE } from './landing-content'
 import { reveal } from './motion'
+import ScrollSequenceCanvas from './ScrollSequenceCanvas'
 
 // CMD-WAITLIST-INTAKE-ELEVATE — a captured "reserve this offering" intent,
 // lifted to the landing page so section CTAs (white-glove / estate care /
@@ -1732,6 +1733,12 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           2.2s-delayed cinematic reveal preserved via native CSS
           @keyframes heroVideoReveal in globals.css — identical delay,
           duration, easing, fill-mode to the prior framer-motion path. */}
+      {/* W3 HERO SCRUB: the ambient loop is replaced by a scroll-scrubbed canvas
+          image-sequence — the frame index rides the hero's OWN Framer scroll
+          progress (heroScroll), so the proven iPad WAAPI hardening below is left
+          untouched (no GSAP pin on the hero). Touch/reduced fall back to a single
+          static poster frame inside the component — mobile never fetches the
+          sequence. A scrim holds the centered headline at WCAG AA over the motion. */}
       <motion.div
         aria-hidden
         style={{
@@ -1741,27 +1748,36 @@ function HeroSection({ isLoaded }: { isLoaded: boolean }) {
           y: reduced ? 0 : heroVideoY,
           scale: reduced ? 1 : heroVideoScale,
           willChange: 'transform',
+          opacity: 0.5,
           animation: reduced
             ? 'none'
             : 'heroVideoReveal 1.2s cubic-bezier(0.23, 1, 0.32, 1) 2.2s both',
         }}
       >
-        <AutoPlayVideo
-          preload="metadata"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: 0.12,
-          }}
-          sources={[
-            { src: '/hero-loop.webm', type: 'video/webm' },
-            { src: '/hero-loop.mp4', type: 'video/mp4' },
-          ]}
+        <ScrollSequenceCanvas
+          progress={heroScroll}
+          frameBase="/sequences/hero/frame_"
+          frameCount={90}
+          posterFrame={30}
+          reduced={reduced}
+          isTouch={isTouch}
+          alt="Legacy-Loop hero — a cinematic pass across the resale journey"
+          style={{ position: 'absolute', inset: 0 }}
         />
       </motion.div>
+      {/* Scrim: radial darkening toward center keeps the headline/CTA at AA
+          contrast over the brighter scrubbed frames. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          background:
+            'radial-gradient(ellipse at center, rgba(13,17,23,0.55) 0%, rgba(13,17,23,0.78) 55%, rgba(13,17,23,0.92) 100%)',
+          pointerEvents: 'none',
+        }}
+      />
 
       {/* Fallback bg image — always layered underneath */}
       <div
