@@ -2615,8 +2615,8 @@ function GarageSaleSection({ isLoaded }: { isLoaded: boolean }) {
                   objectFit: 'cover',
                 }}
                 sources={[
-                  { src: '/LegacyLoop_Landing_GS_Hero.webm', type: 'video/webm' },
-                  { src: '/LegacyLoop_Landing_GS_Hero.mp4', type: 'video/mp4' },
+                  { src: '/videos/goldmine.webm', type: 'video/webm' },
+                  { src: '/videos/goldmine.mp4', type: 'video/mp4' },
                 ]}
               />
             </motion.div>
