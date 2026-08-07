@@ -12,7 +12,8 @@ import {
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
-import { PROOF_LABELS, LISTING_STATES, PRIVACY_DISCLOSURE, FOUNDING_COHORT, FOUNDING_LIVE_THRESHOLD, FOUNDING_FRAMING, PRICING_TIERS, PRICING_GROUPS, PRICING_EXPANDER, type PricingTier, type GridCell, type TierSlug } from './landing-content'
+import { PROOF_LABELS, LISTING_STATES, PRIVACY_DISCLOSURE, FOUNDING_COHORT, PRICING_TIERS, PRICING_GROUPS, PRICING_EXPANDER, type PricingTier, type GridCell, type TierSlug } from './landing-content'
+import FoundingCountLine from './FoundingCountLine'
 import { reveal } from './motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
 import PinnedEvalBeat from './PinnedEvalBeat'
@@ -7639,32 +7640,11 @@ function WaitlistSection({
           Founding access — pre-launch pricing locked while you stay subscribed
         </p>
 
-        {/* Founding cohort indicator (L0-2 · CEO ruling): framing until the real claimed
-            count reaches the threshold, then the live count. Framing is the SSR default so a
-            slow/no-JS visitor never reads "0 of 100" (sold-out). No fabricated fill. */}
-        {live && live.claimed >= FOUNDING_LIVE_THRESHOLD ? (
-          <div style={{ marginBottom: 40 }}>
-            <p
-              style={{
-                fontFamily: 'var(--font-data)',
-                fontWeight: 600,
-                fontSize: 14,
-                letterSpacing: '0.05em',
-                color: '#00BCD4',
-                margin: 0,
-              }}
-            >
-              {live.claimed} of {live.cohortSize} founding spots claimed
-              <span style={{ color: '#94A3B8', fontWeight: 400 }}> &middot; {live.spotsLeft} still open</span>
-            </p>
-          </div>
-        ) : (
-          <div style={{ marginBottom: 40 }}>
-            <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#94A3B8', margin: 0 }}>
-              {FOUNDING_FRAMING}
-            </p>
-          </div>
-        )}
+        {/* Founding cohort indicator — S4: the one shared FoundingCountLine (fail-safe:
+            framing until the real claimed count reaches the threshold; never "0 of 100"). */}
+        <div style={{ marginBottom: 40 }}>
+          <FoundingCountLine live={live} />
+        </div>
 
         {submitted ? (
           /* ===== B8 — SUCCESS STATE ===== */

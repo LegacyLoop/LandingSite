@@ -16,7 +16,7 @@
 // ════════════════════════════════════════════════════════════════
 
 import { useEffect, useMemo, useState } from 'react'
-import { FOUNDING_LIVE_THRESHOLD, FOUNDING_FRAMING } from './landing-content'
+import FoundingCountLine from './FoundingCountLine'
 
 // ── Types ───────────────────────────────────────────────────────────
 
@@ -1097,18 +1097,11 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
               </div>
             )}
 
-            {/* Real founding counter (L0-2 · CEO ruling): live count only once the real
-                claimed count reaches the threshold; below it, framing — never "0 of 100". */}
-            {live && live.claimed >= FOUNDING_LIVE_THRESHOLD ? (
-              <p style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 14, color: pal.accent, textAlign: 'center', margin: '20px 0 0', letterSpacing: '0.03em' }}>
-                {live.claimed} of {live.cohortSize} founding spots claimed
-                <span style={{ color: '#94A3B8', fontWeight: 400 }}> &middot; {live.spotsLeft} still open</span>
-              </p>
-            ) : (
-              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 13.5, color: '#94A3B8', textAlign: 'center', margin: '20px 0 0' }}>
-                {FOUNDING_FRAMING}
-              </p>
-            )}
+            {/* Real founding counter — S4: the one shared FoundingCountLine (fail-safe:
+                framing until the real claimed count reaches the threshold; never "0 of 100"). */}
+            <div style={{ margin: '20px 0 0' }}>
+              <FoundingCountLine live={live} accent={pal.accent} center />
+            </div>
 
             {/* Primary CTA — waitlist-honest */}
             <button
