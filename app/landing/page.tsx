@@ -3430,8 +3430,8 @@ function MoatSection() {
       ),
     },
     {
-      title: 'It finds the buyers',
-      body: 'It surfaces real, interested buyers for that item and points you to the marketplaces where they already are — not a shot in the dark.',
+      title: 'It finds and reaches your buyers',
+      body: 'It surfaces real, interested buyers for your item and reaches out on your behalf — coming as we build to launch, working every marketplace where they already are.',
       icon: (
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden>
           <circle cx="12" cy="12" r="8" stroke="#22D3EE" strokeWidth="1.6" />
@@ -3506,8 +3506,8 @@ function MoatSection() {
           }}
         >
           A free AI tool writes you a listing and leaves you there. BuyerBot goes further: it finds
-          real, interested buyers for each item and points you to them. You approve every contact.
-          That is the difference between a listing and a sale.
+          real, interested buyers for each item, reaches out for you, and brings you the offer.
+          This is the BuyerBot we are building toward launch — and you always approve every contact.
         </p>
 
         {/* The money shot: BuyerBot finding real interested buyers, beside the promise. */}
@@ -3624,7 +3624,7 @@ function MoatSection() {
               A free AI hands you a listing. <GradientText>Legacy-Loop brings you the buyer.</GradientText>
             </motion.p>
             <div style={{ position: 'relative', fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#94A3B8', textAlign: 'center', marginTop: 14 }}>
-              Manual mode today &mdash; you choose when to search, and you approve every contact.
+              Coming as we build to launch &mdash; BuyerBot finds and reaches your buyers, and you always approve every contact.
             </div>
           </motion.div>
         </div>
@@ -4712,14 +4712,14 @@ function ShippingCenterSection() {
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
   const isDesktop = width >= 900
-  // USPS/UPS/FedEx: live carrier rates today (CANONICAL_FACTS §6 approved framing). DHL: a
-  // `planned` add — a real roadmap carrier not yet wired on the landing, with its honest limits
-  // stated below. Never invent 'coming'; the status is the existing 'planned' (W3).
+  // Live carrier rates via the shipping integration (CANONICAL_FACTS §6 approved framing). DHL
+  // joins the live lineup (CEO 2026-08-07: integration imminent with the app pivot); its
+  // international scope is stated as a factual note below, not a roadmap marker.
   const carriers: { name: string; c: string; status?: 'planned' }[] = [
     { name: 'USPS', c: '#333366' },
     { name: 'UPS', c: '#351c15' },
     { name: 'FedEx', c: '#4d148c' },
-    { name: 'DHL', c: '#D40511', status: 'planned' },
+    { name: 'DHL', c: '#D40511' },
   ]
   // W3 · LTL freight honed as a customer capability (bill of lading + tracking), backend never
   // named. Marked `planned` — the freight lane is not wired live yet; the customer sees the
@@ -4756,10 +4756,10 @@ function ShippingCenterSection() {
               ))}
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', alignSelf: 'center' }}>live rates at checkout</span>
             </div>
-            {/* DHL honest limits (W3) — a planned add, stated exactly, never implied domestic. */}
+            {/* DHL scope note (W3) — factual limits, stated exactly, never implied domestic. */}
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', lineHeight: 1.55, maxWidth: 480, margin: isDesktop ? '12px 0 0' : '12px auto 0' }}>
-              DHL is coming with the app for US exports only, with package dimensions required on
-              every quote and an ITN filing on shipments over $2,500.
+              DHL handles international exports — US exports only, with package dimensions required
+              on every quote and an ITN filing on shipments over $2,500.
             </p>
             {/* Arta (W3) — a planned add, one honest line, no capability claim, no logo. */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 14, padding: '10px 14px', borderRadius: 10, background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.28)' }}>

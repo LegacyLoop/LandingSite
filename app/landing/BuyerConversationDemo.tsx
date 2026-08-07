@@ -47,7 +47,7 @@ const SR_TRANSCRIPT =
   'BuyerBot evaluates it and suggests: that lines up with your listing, looks like a ' +
   'real collector, want me to surface them to you? A match resolves: a collector who ' +
   'follows 60s to 70s guitars, nearby, from an interest signal. ' +
-  'Manual mode — nothing is sent; you review and approve every contact.'
+  'The full BuyerBot experience is coming as we build to launch; you always review and approve every contact.'
 
 const visuallyHidden: React.CSSProperties = {
   position: 'absolute',
@@ -304,11 +304,12 @@ export default function BuyerConversationDemo({
         </AnimatePresence>
       </div>
 
-      {/* ── Footer: the standing manual-mode truth + a real replay control ── */}
+      {/* ── Footer: the full coming experience (Rule 4 · marked, never claimed live) + the
+          permanent control promise + a real replay control ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
         <Icon name="shield" size={14} color="#22C55E" />
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, lineHeight: 1.4, color: '#CBD5E1' }}>
-          Manual mode &mdash; nothing is sent. You approve every contact.
+          The full BuyerBot, coming as we build to launch. You always approve every contact.
         </span>
         {!still && (
           <button
