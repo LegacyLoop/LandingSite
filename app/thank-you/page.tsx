@@ -87,7 +87,7 @@ export default function ThankYouPage() {
         <p style={{ fontFamily: "var(--font-plus-jakarta, 'Plus Jakarta Sans', sans-serif)", fontSize: 16, lineHeight: 1.7, color: "#CBD5E1", margin: "0 0 32px" }}>
           {already
             ? "Good news — you're already on the founding list. Your original confirmation is in your inbox (check Promotions the first time). We'll email you the moment your cohort opens."
-            : "You're on the founding list. We'll email you from hello@legacy-loop.com the moment your cohort opens (it may land in Promotions the first time). Founding members lock in early pricing for life."}
+            : "You're on the founding list. We'll email you from hello@legacy-loop.com the moment your cohort opens (it may land in Promotions the first time). Founding members lock in early pricing for as long as their subscription stays active."}
         </p>
         <Link
           href="/landing"

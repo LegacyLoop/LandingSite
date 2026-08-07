@@ -69,6 +69,15 @@ export const PROOF_LABELS = [
   { id: 'ship', label: 'SHIP IT', sub: 'Real carrier rates. Parcel to freight.', target: 'shipping' },
 ] as const satisfies readonly ProofLabel[]
 
+// ── FOUNDING COUNTER RULE (L0-2 · CEO ruling) ──
+// The total cohort, and the threshold below which the page shows FRAMING ONLY — never a
+// live count that reads "0 of 100" (which reads as sold-out on our most important CTA).
+// Server-render safe: framing is the SSR default; the live count appears only once the
+// real claimed count reaches the threshold. No count-up-from-zero animation on this stat.
+export const FOUNDING_COHORT = 100
+export const FOUNDING_LIVE_THRESHOLD = 10
+export const FOUNDING_FRAMING = 'Founding pricing — limited to the first 100 members.'
+
 // ── LISTING STATE LABELS (B04 truth surface) — the page never implies "published"
 //    when the live flow is a draft or a guided handoff. ──
 export interface ListingState {

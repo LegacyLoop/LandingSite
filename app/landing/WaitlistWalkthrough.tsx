@@ -16,6 +16,7 @@
 // ════════════════════════════════════════════════════════════════
 
 import { useEffect, useMemo, useState } from 'react'
+import { FOUNDING_LIVE_THRESHOLD, FOUNDING_FRAMING } from './landing-content'
 
 // ── Types ───────────────────────────────────────────────────────────
 
@@ -150,7 +151,7 @@ export const OFFERINGS: Record<string, Offering> = {
     price: 'By consultation',
     commission: '',
     tagline: 'AI-guided estate help, planned with you — a conversation first.',
-    features: ['Up to 200 active items', 'Priority AI processing', 'BuyerBot & NegotiationBot', 'Advanced analytics dashboard', 'Phone & email support'],
+    features: ['Priority AI processing', 'BuyerBot buyer matching', 'Advanced analytics dashboard', 'Phone & email support'],
     register: 'estate',
     tierInterest: 'estate',
     sellerType: 'estate',
@@ -1096,11 +1097,16 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
               </div>
             )}
 
-            {/* Real founding counter — never fabricated, hides on fail */}
-            {live && (
+            {/* Real founding counter (L0-2 · CEO ruling): live count only once the real
+                claimed count reaches the threshold; below it, framing — never "0 of 100". */}
+            {live && live.claimed >= FOUNDING_LIVE_THRESHOLD ? (
               <p style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 14, color: pal.accent, textAlign: 'center', margin: '20px 0 0', letterSpacing: '0.03em' }}>
                 {live.claimed} of {live.cohortSize} founding spots claimed
                 <span style={{ color: '#94A3B8', fontWeight: 400 }}> &middot; {live.spotsLeft} still open</span>
+              </p>
+            ) : (
+              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 13.5, color: '#94A3B8', textAlign: 'center', margin: '20px 0 0' }}>
+                {FOUNDING_FRAMING}
               </p>
             )}
 
@@ -1161,7 +1167,7 @@ export default function WaitlistWalkthrough({ live, isMobile, onExit }: Waitlist
           <div>
             {stepHeading(
               register === 'estate' ? 'We’ll hold your place — gently.' : 'Lock in your founding spot.',
-              `You’re reserving early access to ${primary.name}. Pre-launch pricing is locked for life.`,
+              `You’re reserving your founding spot for ${primary.name}. Pre-launch pricing is locked while your subscription stays active.`,
             )}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 12 }}>

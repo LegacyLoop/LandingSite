@@ -12,7 +12,7 @@ import {
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
-import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE } from './landing-content'
+import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE, FOUNDING_COHORT, FOUNDING_LIVE_THRESHOLD, FOUNDING_FRAMING } from './landing-content'
 import { reveal } from './motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
 import PinnedEvalBeat from './PinnedEvalBeat'
@@ -5126,7 +5126,7 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
           <SectionEyebrow text="FOUNDING PRICING" />
           <SectionHeading>
             Lock Your Founding Rate.{' '}
-            <GradientText>Keep It for Life.</GradientText>
+            <GradientText>Keep It While You Stay.</GradientText>
           </SectionHeading>
           <p
             style={{
@@ -5140,8 +5140,27 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
               lineHeight: 1.7,
             }}
           >
-            Join the first 100. Founding members lock pre-launch pricing for life — the rate you
-            start at is the rate you keep, even after public launch.
+            Join the first 100. Founding members lock pre-launch pricing for as long as their
+            subscription stays active — the rate you start at is the rate you keep, even after
+            public launch.
+          </p>
+
+          {/* L0-6: processing-fee disclosure — the commission is not the only transaction
+              cost. Visible on the pricing surface (was Terms-only). L1 formalizes this as a
+              per-card data row that flips to the 0%-tier processing sentence with the ladder. */}
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 14,
+              color: '#94A3B8',
+              textAlign: 'center',
+              maxWidth: 640,
+              margin: '-32px auto 40px',
+              lineHeight: 1.6,
+            }}
+          >
+            Plus standard payment processing (currently 1.75% seller-side) on completed sales.
           </p>
 
           {/* Tier grid — glow cards, staggered reveal, Barlow Condensed on every number */}
@@ -5918,7 +5937,7 @@ function SocialProofSection() {
             marginTop: 8,
           }}
         >
-          Founding spots open — locked-for-life pricing
+          Founding spots open — pricing locked while you stay subscribed
         </p>
 
         <div ref={barRef} style={{ marginTop: 40 }}>
@@ -5980,7 +5999,7 @@ function SocialProofSection() {
               color: '#F1F5F9',
             }}
           >
-            <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: 6, color: '#22C55E' }}><Icon name="medal" size={18} /></span>Veterans &amp; First Responders: 25% off subscriptions &bull; 20% off white-glove services &bull; 25% reduced commissions
+            <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: 6, color: '#22C55E' }}><Icon name="medal" size={18} /></span>Veterans &amp; First Responders: 25% off subscriptions &bull; 25% reduced commissions &bull; and a discount on white-glove estate services, applied when we build your plan
           </p>
         </GlowCard>
 
@@ -6424,7 +6443,7 @@ function VideoShowcaseSection() {
                 { icon: 'faith', title: 'Faith-Driven', desc: 'Guided by purpose and conviction in every decision we make.' },
                 { icon: 'heart', title: 'Compassion', desc: 'Serving seniors, families, veterans, and communities with empathy.' },
                 { icon: 'handshake', title: 'Integrity', desc: 'Honest, ethical, and transparent in every interaction.' },
-                { icon: 'medal', title: 'Veterans First', desc: '25% off subscriptions, 20% off white-glove, 25% reduced commissions.' },
+                { icon: 'medal', title: 'Veterans First', desc: '25% off subscriptions, 25% reduced commissions, and a white-glove estate discount applied when we build your plan.' },
               ].map((value, i) => (
                 <GlowCard
                   key={value.title}
@@ -7513,16 +7532,16 @@ function WaitlistSection({
             marginRight: 'auto',
           }}
         >
-          Lock in pre-launch pricing forever. Get priority access before public launch. Be part of Legacy-Loop from day one.
+          Lock in pre-launch pricing that holds as long as your subscription stays active. Get priority access before public launch. Be part of Legacy-Loop from day one.
         </p>
 
         {/* Founding spots counter — BIG number, AnimatedStat count-up on viewport.
             CMD-ESTATE-EXPERIENCE-V2 V20 (FIX 5 · CEO G3): canon = 100 founding spots. The
             real "first cohort" size lives in the live Sheet indicator below (ONE story). */}
+        {/* L0-2: static cohort total (was AnimatedStat count-up 0->100). The count-up
+            rendered "0" pre-hydration — reading as sold-out. This is the total, not a fill. */}
         <div style={{ marginBottom: 12 }}>
-          <AnimatedStat
-            target={100}
-            duration={2200}
+          <span
             style={{
               fontFamily: 'var(--font-data)',
               fontWeight: 800,
@@ -7534,7 +7553,9 @@ function WaitlistSection({
               lineHeight: 1,
               display: 'inline-block',
             }}
-          />
+          >
+            {FOUNDING_COHORT}
+          </span>
         </div>
         <p
           style={{
@@ -7557,11 +7578,13 @@ function WaitlistSection({
             marginBottom: 36,
           }}
         >
-          Early access — pre-launch pricing locked for life
+          Founding access — pre-launch pricing locked while you stay subscribed
         </p>
 
-        {/* Founding cohort indicator — real count from the Sheet (no fabricated fill). Hidden until loaded. */}
-        {live ? (
+        {/* Founding cohort indicator (L0-2 · CEO ruling): framing until the real claimed
+            count reaches the threshold, then the live count. Framing is the SSR default so a
+            slow/no-JS visitor never reads "0 of 100" (sold-out). No fabricated fill. */}
+        {live && live.claimed >= FOUNDING_LIVE_THRESHOLD ? (
           <div style={{ marginBottom: 40 }}>
             <p
               style={{
@@ -7578,7 +7601,11 @@ function WaitlistSection({
             </p>
           </div>
         ) : (
-          <div style={{ marginBottom: 40 }} />
+          <div style={{ marginBottom: 40 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#94A3B8', margin: 0 }}>
+              {FOUNDING_FRAMING}
+            </p>
+          </div>
         )}
 
         {submitted ? (
@@ -7994,7 +8021,7 @@ function WaitlistSection({
             {[
               { icon: 'lock', text: 'No credit card required' },
               { icon: 'shield', text: 'Your data is never sold' },
-              { icon: 'tag', text: 'Pre-launch pricing locked forever' },
+              { icon: 'tag', text: 'Pre-launch pricing locked while subscribed' },
             ].map((signal) => (
               <div
                 key={signal.text}
@@ -8034,7 +8061,7 @@ function WaitlistSection({
           >
             {[
               'Priority access before public launch',
-              'Pre-launch pricing locked in forever',
+              'Pre-launch pricing locked while subscribed',
               'Direct line to the founding team',
               'Shape the product with your feedback',
             ].map((benefit) => (
@@ -8251,7 +8278,7 @@ function FinalCTASection() {
             marginTop: 20,
           }}
         >
-          <AnimatedStat target={100} duration={2200} style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#00BCD4' }} /> founding member spots — early access, open now
+          <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#00BCD4' }}>{FOUNDING_COHORT}</span> founding member spots — open now
         </p>
       </div>
     </section>
