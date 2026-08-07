@@ -9055,14 +9055,16 @@ export default function LandingPage() {
         <AlertsSection />
         <EstateSection />
         {/* ---- R-8 tail: read everything, then the join door is right here ---- */}
+        {/* CEO: group the two join moments — the Early Access signup form and the "Join Early
+            Access" closing CTA sit together; App Download + the video gallery follow below. */}
         <WaitlistSection
           activeSection={activeSection}
           offeringIntent={offeringIntent}
           setOfferingIntent={setOfferingIntent}
         />
+        <FinalCTASection />
         <AppDownloadSection />
         <VideoShowcaseSection />
-        <FinalCTASection />
         <Footer />
       </main>
     </>
