@@ -4721,9 +4721,12 @@ function ShippingCenterSection() {
     { name: 'FedEx', c: '#4d148c' },
     { name: 'DHL', c: '#D40511', status: 'planned' },
   ]
-  const features = [
+  // W3 · LTL freight honed as a customer capability (bill of lading + tracking), backend never
+  // named. Marked `planned` — the freight lane is not wired live yet; the customer sees the
+  // outcome, marked honestly, never the plumbing.
+  const features: { emoji: string; title: string; desc: string; status?: 'planned' }[] = [
     { emoji: 'robot', title: 'AI rate comparison', desc: 'Live rates from real carriers; the cheapest, fastest option surfaced for every shipment.' },
-    { emoji: 'ruler', title: 'Parcel + LTL freight', desc: 'A vintage watch or a full dining set — small parcels and large freight, side by side.' },
+    { emoji: 'ruler', title: 'LTL freight', desc: 'Oversized and heavy items shipped by freight — bill of lading and tracking generated for you.', status: 'planned' },
     { emoji: 'home', title: 'Local pickup', desc: 'Coordinate buyer pickup with built-in scheduling. No shipping needed.' },
     { emoji: 'tag', title: 'Label + tracking', desc: 'Print the label, share tracking, hand it off. You stay in control the whole way.' },
   ]
@@ -4777,7 +4780,10 @@ function ShippingCenterSection() {
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                 <span style={{ flexShrink: 0, display: 'inline-flex', color: '#00BCD4' }}><Icon name={f.emoji} size={24} /></span>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 17, color: '#F1F5F9' }}>{f.title}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 17, color: '#F1F5F9' }}>{f.title}</span>
+                    {f.status === 'planned' && <PlannedMark compact />}
+                  </div>
                   <p style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 15, color: '#CBD5E1', marginTop: 4, lineHeight: 1.55 }}>{f.desc}</p>
                 </div>
               </div>
