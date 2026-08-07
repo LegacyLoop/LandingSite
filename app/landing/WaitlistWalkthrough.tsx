@@ -17,6 +17,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import FoundingCountLine from './FoundingCountLine'
+import { PRICING_TIERS } from './landing-content'
 
 // ── Types ───────────────────────────────────────────────────────────
 
@@ -73,17 +74,21 @@ interface WaitlistWalkthroughProps {
 }
 
 // ── The ONE pricing object — all 9 offerings (WCS §3 tokens) ─────────
-// Values verified byte-true against app/landing/page.tsx at HEAD 82785c9:
-// PricingSection L4568-4613 · whiteGloveTiers L5213-5236 · Estate Care
-// L5667-5689 · Neighborhood Bundle L5850/5872/5922.
+// W4: the SaaS tiers (free/diy/power/estateManager) now READ their price and commission from
+// the typed PRICING_TIERS (the single pricing source) — no retyped tier facts, no manual
+// byte-true sync. Estate uses its LIVE rate (4%), never the planned canon 0%. Estate service
+// offerings (estateCare/wgProfessional/neighborhood) carry no price (K-1 · consult-first).
+const _tier = (slug: string) => PRICING_TIERS.find((t) => t.slug === slug)
+const saasPrice = (slug: string): string => { const t = _tier(slug); return t ? `$${t.foundingPrice}` : '$0' }
+const saasCommission = (slug: string): string => { const t = _tier(slug); const r = t?.liveRate ?? t?.rate; return r ? `${r} commission` : '' }
 
 export const OFFERINGS: Record<string, Offering> = {
   free: {
     id: 'free',
     name: 'Free',
-    price: '$0',
+    price: saasPrice('free'),
     priceSuffix: '/mo',
-    commission: '12% commission',
+    commission: saasCommission('free'),
     tagline: 'Start selling with AI at zero cost.',
     features: ['Basic AI identification', 'Public store page', 'Email support'],
     register: 'energetic',
@@ -95,11 +100,9 @@ export const OFFERINGS: Record<string, Offering> = {
   diy: {
     id: 'diy',
     name: 'DIY Seller',
-    price: '$10',
+    price: saasPrice('diy'),
     priceSuffix: '/mo',
-    // CMD-LANDING-SHOWCASE-ARC (FIX 5): deceptive "was $20" strikethrough removed — a former price
-    // that never existed (pre-revenue, zero customers), same class as the estateManager "was $99" kill.
-    commission: '8% commission',
+    commission: saasCommission('diy'),
     tagline: 'AI pricing and core bots for the hands-on seller.',
     features: ['Enhanced AI pricing', '5 core bots included', '20 credits/month included', 'BuyerBot matching', 'Priority email support'],
     register: 'energetic',
@@ -111,10 +114,9 @@ export const OFFERINGS: Record<string, Offering> = {
   power: {
     id: 'power',
     name: 'Power Seller',
-    price: '$25',
+    price: saasPrice('power'),
     priceSuffix: '/mo',
-    // CMD-LANDING-SHOWCASE-ARC (FIX 5): deceptive "was $49" strikethrough removed (never a real price).
-    commission: '5% commission',
+    commission: saasCommission('power'),
     tagline: 'MegaBot and every specialty bot for serious volume.',
     features: ['MegaBot (credit-based)', 'All specialty bots', '50 credits/month included', 'Advanced analytics', 'Phone support'],
     register: 'energetic',
@@ -126,11 +128,9 @@ export const OFFERINGS: Record<string, Offering> = {
   estateManager: {
     id: 'estateManager',
     name: 'Estate Manager',
-    price: '$75',
+    price: saasPrice('estateManager'),
     priceSuffix: '/mo',
-    // WAVE 0 TRUTH SWEEP 2026-07-29 (CMD-LANE-A2): "was $99" strikethrough removed — a former price that
-    // never existed (pre-revenue, zero customers). Current pre-launch price stays (real SaaS tier).
-    commission: '4% commission',
+    commission: saasCommission('estateManager'),
     tagline: 'Manage an entire estate yourself with every AI tool.',
     // CMD-LANDING-MASTER-ARC (FIX 5): "Dedicated account manager" (staffing claim, solo pre-revenue)
     // + "API access" (unverified) removed; "White-label store" -> "Branded store page". Truth-safe,
