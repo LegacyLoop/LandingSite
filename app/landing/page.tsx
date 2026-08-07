@@ -4712,10 +4712,14 @@ function ShippingCenterSection() {
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
   const isDesktop = width >= 900
-  const carriers = [
+  // USPS/UPS/FedEx: live carrier rates today (CANONICAL_FACTS §6 approved framing). DHL: a
+  // `planned` add — a real roadmap carrier not yet wired on the landing, with its honest limits
+  // stated below. Never invent 'coming'; the status is the existing 'planned' (W3).
+  const carriers: { name: string; c: string; status?: 'planned' }[] = [
     { name: 'USPS', c: '#333366' },
     { name: 'UPS', c: '#351c15' },
     { name: 'FedEx', c: '#4d148c' },
+    { name: 'DHL', c: '#D40511', status: 'planned' },
   ]
   const features = [
     { emoji: 'robot', title: 'AI rate comparison', desc: 'Live rates from real carriers; the cheapest, fastest option surfaced for every shipment.' },
@@ -4741,12 +4745,25 @@ function ShippingCenterSection() {
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: isDesktop ? 'flex-start' : 'center' }}>
               {carriers.map((c) => (
-                <div key={c.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div key={c.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 10, background: c.status === 'planned' ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.03)', border: `1px solid ${c.status === 'planned' ? 'rgba(139,92,246,0.28)' : 'rgba(255,255,255,0.08)'}` }}>
                   <span style={{ width: 8, height: 8, borderRadius: 2, background: c.c, boxShadow: '0 0 0 1px rgba(255,255,255,0.15)' }} />
                   <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13.5, color: '#F1F5F9', letterSpacing: '0.03em' }}>{c.name}</span>
+                  {c.status === 'planned' && <PlannedMark compact />}
                 </div>
               ))}
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', alignSelf: 'center' }}>live rates at checkout</span>
+            </div>
+            {/* DHL honest limits (W3) — a planned add, stated exactly, never implied domestic. */}
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#94A3B8', lineHeight: 1.55, maxWidth: 480, margin: isDesktop ? '12px 0 0' : '12px auto 0' }}>
+              DHL is coming with the app for US exports only, with package dimensions required on
+              every quote and an ITN filing on shipments over $2,500.
+            </p>
+            {/* Arta (W3) — a planned add, one honest line, no capability claim, no logo. */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 14, padding: '10px 14px', borderRadius: 10, background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.28)' }}>
+              <PlannedMark compact />
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#CBD5E1', lineHeight: 1.5 }}>
+                Arta &mdash; white-glove handling for fine art, antiques, and high-value pieces.
+              </span>
             </div>
           </div>
           <CinematicMoment base="ship-tms" alt="Legacy-Loop shipping: comparing carrier rates and printing a label" isTouch={isTouch} />
