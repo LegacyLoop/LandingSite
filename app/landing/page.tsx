@@ -3017,10 +3017,11 @@ function MarketplaceTicker() {
    ============================================== */
 
 // ---------- SECTION EYEBROW ----------
-// W2 · the section-name marker — the thing a visitor reads to answer "where am I?".
-// Raised materially from a faint 12px line to a clear chapter marker: a leading accent rule,
-// 700 weight, larger and higher-contrast, more space beneath. Senior-first (the CEO could not
-// tell what section he was in). One change lifts every section name on the page.
+// W2 (elevated) · the section-name marker — the thing a visitor reads to answer "where am I?".
+// A DEFINED chapter badge: a bordered, tinted pill with a leading dot and short flanking rules,
+// materially larger (clamp 14-18) and high-contrast, so a section announces itself and a
+// visitor never cruises past without knowing where they are. Senior-first. One change lifts
+// every section that uses it; the page's custom pill eyebrows are unified onto it too.
 function SectionEyebrow({
   text,
   color = '#00BCD4',
@@ -3029,21 +3030,30 @@ function SectionEyebrow({
   color?: string
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 22 }}>
-      <span aria-hidden style={{ width: 44, height: 2, borderRadius: 2, background: color, opacity: 0.85 }} />
-      <div
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, marginBottom: 24 }}>
+      <span aria-hidden style={{ width: 'clamp(18px, 4vw, 40px)', height: 2, borderRadius: 2, background: `linear-gradient(90deg, transparent, ${color})`, opacity: 0.7 }} />
+      <span
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 9,
+          padding: '8px 18px',
+          borderRadius: 999,
+          background: `${color}14`,
+          border: `1px solid ${color}55`,
           fontFamily: 'var(--font-data)',
           fontWeight: 700,
-          fontSize: 'clamp(13px, 1.4vw, 15px)',
-          color,
-          letterSpacing: '0.16em',
+          fontSize: 'clamp(14px, 1.7vw, 18px)',
+          letterSpacing: '0.14em',
           textTransform: 'uppercase' as const,
-          textAlign: 'center',
+          color,
+          whiteSpace: 'nowrap',
         }}
       >
+        <span aria-hidden style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
         {text}
-      </div>
+      </span>
+      <span aria-hidden style={{ width: 'clamp(18px, 4vw, 40px)', height: 2, borderRadius: 2, background: `linear-gradient(90deg, ${color}, transparent)`, opacity: 0.7 }} />
     </div>
   )
 }
@@ -7528,42 +7538,8 @@ function WaitlistSection({
 
       <div style={{ maxWidth: 580, margin: '0 auto', position: 'relative', zIndex: 2, textAlign: 'center' }}>
 
-        {/* Eyebrow — animated pulse dot */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            marginBottom: 24,
-            padding: '6px 16px',
-            borderRadius: 20,
-            background: 'rgba(0,188,212,0.08)',
-            border: '1px solid rgba(0,188,212,0.2)',
-          }}
-        >
-          <div
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: '#00BCD4',
-              boxShadow: '0 0 8px rgba(0,188,212,0.6)',
-              animation: 'pulse 2s infinite',
-            }}
-          />
-          <span
-            style={{
-              fontFamily: 'var(--font-data)',
-              fontWeight: 600,
-              fontSize: 11,
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase' as const,
-              color: '#00BCD4',
-            }}
-          >
-            Early Access
-          </span>
-        </div>
+        {/* Eyebrow — unified onto the defined SectionEyebrow marker (bigger, consistent) */}
+        <SectionEyebrow text="EARLY ACCESS" />
 
         {/* Headline */}
         <SectionHeading>
@@ -8228,45 +8204,8 @@ function FinalCTASection() {
         </span>
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          {/* Founding pricing HUD pill */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: 14,
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '4px 10px',
-                borderRadius: 9999,
-                background: 'rgba(212,175,55,0.12)',
-                border: '1px solid rgba(212,175,55,0.4)',
-                fontFamily: 'var(--font-data)',
-                fontWeight: 700,
-                fontSize: 10,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase' as const,
-                color: '#D4AF37',
-              }}
-            >
-              <span
-                aria-hidden
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: '#D4AF37',
-                  boxShadow: '0 0 8px rgba(212,175,55,0.7)',
-                  animation: 'pulse 1.4s ease-in-out infinite',
-                }}
-              />
-              Founding pricing · Limited
-            </span>
-          </div>
+          {/* Eyebrow — unified onto the defined SectionEyebrow marker (bigger, consistent) */}
+          <SectionEyebrow text="JOIN THE FIRST 100" color="#D4AF37" />
 
           <h2
             style={{
