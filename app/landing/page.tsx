@@ -12,7 +12,7 @@ import {
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
-import { PROOF_LABELS, LISTING_STATES, PRIVACY_DISCLOSURE, FOUNDING_COHORT, PRICING_TIERS, PRICING_GROUPS, PRICING_EXPANDER, type PricingTier, type GridCell, type TierSlug } from './landing-content'
+import { PROOF_LABELS, LISTING_STATES, PRIVACY_DISCLOSURE, FOUNDING_COHORT, PRICING_TIERS, PRICING_GROUPS, PRICING_EXPANDER, SECTION_MAP, type PricingTier, type GridCell, type TierSlug } from './landing-content'
 import FoundingCountLine from './FoundingCountLine'
 import { reveal } from './motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
@@ -1279,21 +1279,9 @@ function SectionNavigator({ isLoaded }: { isLoaded: boolean }) {
   const { scrollYProgress } = useScroll()
   const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
 
-  const sections = [
-    // WAVE 8 / FIX 9: dot order MUST match the new vertical section order (scroll-tracking drift-safe).
-    { id: 'hero', label: 'Home', icon: '◆' },
-    { id: 'garage-sale', label: 'Weekend', icon: '◆' },
-    { id: 'how-it-works', label: 'How It Works', icon: '◆' },
-    { id: 'buyerbot', label: 'BuyerBot', icon: '◆' },
-    { id: 'megabot', label: 'MegaBot', icon: '◆' },
-    { id: 'bots', label: 'AI Bots', icon: '◆' },
-    { id: 'shipping', label: 'Shipping', icon: '◆' },
-    { id: 'pricing', label: 'Pricing', icon: '◆' },
-    { id: 'estate', label: 'Estates', icon: '◆' },
-    { id: 'waitlist', label: 'Join', icon: '◆' },
-    { id: 'download', label: 'Download', icon: '◆' },
-    { id: 'mission', label: 'Mission', icon: '◆' },
-  ]
+  // W2: nav labels + order come from the typed SECTION_MAP so a dot and its section eyebrow
+  // can never disagree. Order still matches the vertical section order (SECTION_MAP authors it).
+  const sections = SECTION_MAP.map((s) => ({ id: s.id, label: s.navLabel, icon: '◆' }))
 
   // Measure each section's "mid-active" scroll position as a percentage of
   // total page scroll. This is the exact scroll position where the section's
@@ -3029,6 +3017,10 @@ function MarketplaceTicker() {
    ============================================== */
 
 // ---------- SECTION EYEBROW ----------
+// W2 · the section-name marker — the thing a visitor reads to answer "where am I?".
+// Raised materially from a faint 12px line to a clear chapter marker: a leading accent rule,
+// 700 weight, larger and higher-contrast, more space beneath. Senior-first (the CEO could not
+// tell what section he was in). One change lifts every section name on the page.
 function SectionEyebrow({
   text,
   color = '#00BCD4',
@@ -3037,19 +3029,21 @@ function SectionEyebrow({
   color?: string
 }) {
   return (
-    <div
-      style={{
-        fontFamily: 'var(--font-data)',
-        fontWeight: 600,
-        fontSize: 12,
-        color,
-        letterSpacing: '0.15em',
-        textTransform: 'uppercase' as const,
-        textAlign: 'center',
-        marginBottom: 16,
-      }}
-    >
-      {text}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+      <span aria-hidden style={{ width: 44, height: 2, borderRadius: 2, background: color, opacity: 0.85 }} />
+      <div
+        style={{
+          fontFamily: 'var(--font-data)',
+          fontWeight: 700,
+          fontSize: 'clamp(13px, 1.4vw, 15px)',
+          color,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase' as const,
+          textAlign: 'center',
+        }}
+      >
+        {text}
+      </div>
     </div>
   )
 }
@@ -3381,7 +3375,7 @@ function MarketOpportunitySection() {
   )
 }
 
-// ---------- THE MOAT — BUYERBOT (the promise) ----------
+// ---------- FINDING YOUR BUYER — BUYERBOT (the promise) ----------
 // CMD-LANDING-MASTER-ARC V21 · WAVE 3 / FIX 3 · beat B2. The differentiator, led hardest:
 // a free AI tool writes a listing; we find the buyer. Honest BuyerBot fence copy
 // ("finds real interested buyers - you approve every contact"). Zero emoji (inline SVG).
@@ -3484,7 +3478,7 @@ function MoatSection() {
       />
 
       <div style={{ maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <SectionEyebrow text="THE MOAT" />
+        <SectionEyebrow text="FINDING YOUR BUYER" />
         <SectionHeading>
           <StaggeredWords text="Anyone Can List." />{' '}
           <GradientText>We Find the Buyer.</GradientText>
@@ -3994,7 +3988,7 @@ function MegaBotSection() {
             </span>
           </div>
 
-          <SectionEyebrow text="THE INTELLIGENCE LAYER" color="#8B5CF6" />
+          <SectionEyebrow text="THE AI COUNCIL" color="#8B5CF6" />
           <h2
             style={{
               fontFamily: 'var(--font-heading)',
@@ -4724,7 +4718,7 @@ function ShippingCenterSection() {
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1.1fr 0.9fr' : '1fr', gap: isDesktop ? 56 : 36, alignItems: 'center' }}>
           <div style={{ textAlign: isDesktop ? 'left' : 'center' }}>
-            <SectionEyebrow text="BUILT-IN LOGISTICS · TMS" />
+            <SectionEyebrow text="SHIPPING AND LOGISTICS" />
             <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(30px, 4.5vw, 50px)', letterSpacing: '-0.02em', lineHeight: 1.05, color: '#F1F5F9', margin: '10px 0 18px' }}>
               Parcel to freight,<br />handled.
             </h2>
@@ -5623,7 +5617,7 @@ function EstateSection() {
         {/* FIX 6 (R-2) — downsizing/retirement leads; bereavement is one compassionate clause, never
             the headline. Dignity intact, service-first. */}
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <SectionEyebrow text="FOR FAMILIES & COMMUNITIES" color="#D4A017" />
+          <SectionEyebrow text="ESTATES AND DOWNSIZING" color="#D4A017" />
           <SectionHeading>Downsizing, Retiring, or Settling an Estate.</SectionHeading>
           <p
             style={{
@@ -6808,7 +6802,7 @@ function AppDownloadSection() {
           </span>
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <SectionEyebrow text="AVAILABLE ON ALL DEVICES" />
+            <SectionEyebrow text="GET THE APP" />
             <h2
               style={{
                 fontFamily: 'var(--font-heading)',

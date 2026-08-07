@@ -245,7 +245,7 @@ export default function JourneyChapter({ reduced, isTouch, width }: JourneyChapt
       <section ref={sectionRef} id="how-it-works" style={{ position: 'relative', height: '100vh', minHeight: 620, overflow: 'hidden', display: 'flex', alignItems: 'center', zIndex: 5 }}>
         <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 0.9fr', gap: 56, alignItems: 'center', width: '100%' }}>
           <div>
-            <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 12 }}>THE PROCESS</div>
+            <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 12 }}>HOW IT WORKS</div>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(28px, 3.5vw, 42px)', letterSpacing: '-0.02em', lineHeight: 1.08, color: '#F1F5F9', margin: '0 0 28px' }}>
               From photo to paid, in five steps.
             </h2>
@@ -275,7 +275,7 @@ export default function JourneyChapter({ reduced, isTouch, width }: JourneyChapt
   return (
     <section id="how-it-works" style={{ position: 'relative', zIndex: 5, padding: width < 480 ? '64px 16px' : '90px 24px' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
-        <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 12, textAlign: 'center' }}>THE PROCESS</div>
+        <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 12, textAlign: 'center' }}>HOW IT WORKS</div>
         <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(26px, 7vw, 38px)', letterSpacing: '-0.02em', lineHeight: 1.1, color: '#F1F5F9', margin: '0 auto 36px', textAlign: 'center' }}>
           From photo to paid, in five steps.
         </h2>

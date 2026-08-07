@@ -69,6 +69,32 @@ export const PROOF_LABELS = [
   { id: 'ship', label: 'SHIP IT', sub: 'Real carrier rates. Parcel to freight.', target: 'shipping' },
 ] as const satisfies readonly ProofLabel[]
 
+// ── SECTION IDENTITY MAP (W2) — ONE NAME PER SECTION, in customer language. The nav dot and
+// the section eyebrow resolve here so they can never disagree — the orientation defect the CEO
+// hit ("I'm at the buyer bot and it's labeled 'the moat'"). THE NAMING FENCE: internal strategy
+// vocabulary ("moat") never appears on a customer-facing name. Names are CTO recommendations;
+// the CEO rules them at the visual gate. ──
+export interface SectionIdentity {
+  id: string
+  navLabel: string   // the nav dot
+  eyebrow: string    // the section's small name marker ('' = no eyebrow, e.g. hero)
+}
+export const SECTION_MAP: readonly SectionIdentity[] = [
+  { id: 'hero',         navLabel: 'Home',            eyebrow: '' },
+  { id: 'garage-sale',  navLabel: 'Weekend Goldmine', eyebrow: 'THE WEEKEND GOLDMINE' },
+  { id: 'how-it-works', navLabel: 'How It Works',    eyebrow: 'HOW IT WORKS' },
+  { id: 'buyerbot',     navLabel: 'Finding Buyers',  eyebrow: 'FINDING YOUR BUYER' },
+  { id: 'megabot',      navLabel: 'AI Council',      eyebrow: 'THE AI COUNCIL' },
+  { id: 'bots',         navLabel: 'Your AI Team',    eyebrow: 'YOUR AI TEAM' },
+  { id: 'shipping',     navLabel: 'Shipping',        eyebrow: 'SHIPPING AND LOGISTICS' },
+  { id: 'pricing',      navLabel: 'Pricing',         eyebrow: 'FOUNDING PRICING' },
+  { id: 'estate',       navLabel: 'Estates',         eyebrow: 'ESTATES AND DOWNSIZING' },
+  { id: 'waitlist',     navLabel: 'Join',            eyebrow: '' },
+  { id: 'download',     navLabel: 'Get the App',     eyebrow: 'GET THE APP' },
+  { id: 'mission',      navLabel: 'Mission',         eyebrow: 'OUR MISSION' },
+]
+export const navLabelFor = (id: string): string => SECTION_MAP.find((s) => s.id === id)?.navLabel ?? id
+
 // ── FOUNDING COUNTER RULE (L0-2 · CEO ruling) ──
 // The total cohort, and the threshold below which the page shows FRAMING ONLY — never a
 // live count that reads "0 of 100" (which reads as sold-out on our most important CTA).
