@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, Fragment } from 'react'
 import {
   motion,
   AnimatePresence,
@@ -12,7 +12,7 @@ import {
 } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import WaitlistWalkthrough, { OFFERINGS } from './WaitlistWalkthrough'
-import { PROOF_LABELS, SERVICE_GRID, LISTING_STATES, PRIVACY_DISCLOSURE, FOUNDING_COHORT, FOUNDING_LIVE_THRESHOLD, FOUNDING_FRAMING } from './landing-content'
+import { PROOF_LABELS, LISTING_STATES, PRIVACY_DISCLOSURE, FOUNDING_COHORT, FOUNDING_LIVE_THRESHOLD, FOUNDING_FRAMING, PRICING_TIERS, PRICING_GROUPS, PRICING_EXPANDER, type PricingTier, type GridCell, type TierSlug } from './landing-content'
 import { reveal } from './motion'
 import ScrollSequenceCanvas from './ScrollSequenceCanvas'
 import PinnedEvalBeat from './PinnedEvalBeat'
@@ -5000,6 +5000,68 @@ function AIAgentsSection() {
   )
 }
 
+// ── W1 · PRICING SHARED COMPONENTS — one source feeds BOTH surfaces (grid + cards), so a
+// tier fact can never drift between them (S-3 / LS-12). Every value comes from the typed
+// PRICING_* config; nothing here is hand-typed. ──
+
+// The single de-weighted "planned" marker (MARKER LAW · P-6). A `planned` value must read
+// visibly quieter than a `live` one at a glance (the squint test).
+function PlannedMark({ compact = false }: { compact?: boolean }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: compact ? 8.5 : 9.5, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#A78BFA', background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 5, padding: compact ? '1px 5px' : '2px 7px', whiteSpace: 'nowrap' }}>
+      Coming with the app
+    </span>
+  )
+}
+
+// A discriminated cell. live -> value; planned -> the canon value MARKED with the live value
+// plainly beside it (P-6 dual — never one without the other).
+function GridCellView({ cell }: { cell: GridCell }) {
+  const val = (v: string) =>
+    v === 'Yes' ? <span aria-label="Yes" style={{ display: 'inline-flex', color: '#22C55E' }}><Icon name="check" size={17} color="#22C55E" /></span>
+      : v === 'No' || v === '—' ? <span aria-label="No" style={{ color: '#484F58', fontSize: 15 }}>&ndash;</span>
+        : <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13, color: '#F1F5F9' }}>{v}</span>
+  if (cell.status === 'live' || !cell.planned) return val(cell.live)
+  return (
+    <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>{val(cell.planned)}<PlannedMark compact /></span>
+      <span style={{ fontFamily: 'var(--font-body)', fontSize: 10.5, color: '#94A3B8' }}>{cell.live === '—' ? 'not yet' : `${cell.live} today`}</span>
+    </span>
+  )
+}
+
+// The TWO required commission sentences (P-2), one component, both surfaces. Paid tiers carry
+// the $0.75 floor; 0% tiers (Pro, Estate) carry the processing sentence and NO floor. Estate's
+// planned 0% shows its live 4% beside it.
+function CommissionLine({ tier, align = 'left' }: { tier: PricingTier; align?: 'left' | 'center' }) {
+  const base: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: 13, color: '#CBD5E1', lineHeight: 1.5, textAlign: align }
+  if (!tier.zeroTier) {
+    return <div style={base}><span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#F1F5F9' }}>{tier.rate} per sale</span>, minimum $0.75.</div>
+  }
+  return (
+    <div style={{ ...base, display: 'flex', flexDirection: 'column', gap: 4, alignItems: align === 'center' ? 'center' : 'flex-start' }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', justifyContent: align === 'center' ? 'center' : 'flex-start' }}>
+        <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#F1F5F9' }}>0% commission.</span>
+        {tier.rateStatus === 'planned' && <PlannedMark compact />}
+      </span>
+      <span>You pay only standard card processing.</span>
+      {tier.liveRate && <span style={{ fontSize: 11.5, color: '#94A3B8' }}>{tier.liveRate} today, while the app catches up.</span>}
+    </div>
+  )
+}
+
+// Card highlights derived from the grid data (NOT hand-typed · LS-12). One flat lookup.
+const PRICING_ALL_ROWS = [...PRICING_GROUPS.flatMap((g) => g.rows), ...PRICING_EXPANDER]
+const CARD_HIGHLIGHT_FEATURES = ['Active listings at once', 'Included credits / month', 'Specialty bots', 'MegaBot four-AI council', 'BuyerBot buyer matching'] as const
+function cardHighlights(slug: TierSlug): { feature: string; cell: GridCell }[] {
+  const out: { feature: string; cell: GridCell }[] = []
+  for (const f of CARD_HIGHLIGHT_FEATURES) {
+    const row = PRICING_ALL_ROWS.find((r) => r.feature === f)
+    if (row) out.push({ feature: f, cell: row[slug] })
+  }
+  return out
+}
+
 // ---------- PRICING (FOUNDING SUBSCRIPTION TIERS) ----------
 // CMD-LANDING-MASTER-ARC V21 (FIX 5 · CEO R-1): the numberless placeholder is DEAD. The
 // subscription pricing was never suspended — only the ESTATE side is consult-first. This is the
@@ -5015,7 +5077,8 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
   const reduced = useReducedMotion()
   const isTouch = useIsTouch()
   const isMobile = width < 768
-  const cols = width >= 1200 ? 'repeat(4, 1fr)' : width >= 640 ? 'repeat(2, 1fr)' : '1fr'
+  // N columns from data (P-7): the layout follows PRICING_TIERS.length, not a hardcoded count.
+  const cols = width >= 1100 ? `repeat(${PRICING_TIERS.length}, 1fr)` : width >= 640 ? 'repeat(2, 1fr)' : '1fr'
 
   // Carry the chosen tier into the waitlist and glide there — real CTA, no dead button, no new backend.
   const lockTier = (slug: string) => {
@@ -5023,52 +5086,7 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
     document.getElementById('waitlist')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
   }
 
-  const tiers = [
-    {
-      slug: 'free',
-      name: 'Free',
-      price: '0',
-      commission: '12%',
-      founding: false,
-      recommended: false,
-      blurb: 'Start selling with AI at zero cost.',
-      features: ['AI item identification', 'Public store page', 'List-ready photos and copy', 'Email support'],
-      cta: 'Start Free',
-    },
-    {
-      slug: 'diy',
-      name: 'DIY Seller',
-      price: '10',
-      commission: '8%',
-      founding: true,
-      recommended: false,
-      blurb: 'AI pricing and core bots for the hands-on seller.',
-      features: ['Everything in Free', 'Enhanced AI pricing', '5 core bots included', '20 credits / month', 'BuyerBot matching'],
-      cta: 'Lock Founding Rate',
-    },
-    {
-      slug: 'power',
-      name: 'Power Seller',
-      price: '25',
-      commission: '5%',
-      founding: true,
-      recommended: true,
-      blurb: 'MegaBot and every specialty bot for serious volume.',
-      features: ['Everything in DIY', 'MegaBot 4-AI consensus pricing', 'All specialty bots', '50 credits / month', 'Advanced analytics', 'Phone support'],
-      cta: 'Lock Founding Rate',
-    },
-    {
-      slug: 'estateManager',
-      name: 'Estate Manager',
-      price: '75',
-      commission: '4%',
-      founding: true,
-      recommended: false,
-      blurb: 'Every AI tool for managing an entire estate yourself.',
-      features: ['Everything in Power', 'All bots including CarBot', '100 credits / month', 'Branded store page', 'Priority support'],
-      cta: 'Lock Founding Rate',
-    },
-  ]
+  const [showAll, setShowAll] = useState(false)
 
   return (
     <section
@@ -5173,14 +5191,36 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
               alignItems: 'stretch',
             }}
           >
-            {tiers.map((tier, i) => (
+            {PRICING_TIERS.map((tier, i) => (
               <GlowCard
                 key={tier.slug}
                 delay={i * 80}
-                defaultBorderColor={tier.recommended ? 'rgba(0,188,212,0.45)' : 'rgba(0,188,212,0.15)'}
-                hoverBorderColor="rgba(0,188,212,0.55)"
+                defaultBorderColor={tier.planned ? 'rgba(139,92,246,0.4)' : tier.recommended ? 'rgba(0,188,212,0.45)' : 'rgba(0,188,212,0.15)'}
+                hoverBorderColor={tier.planned ? 'rgba(139,92,246,0.6)' : 'rgba(0,188,212,0.55)'}
                 style={{ display: 'flex', flexDirection: 'column', padding: '28px 24px', position: 'relative' }}
               >
+                {tier.planned && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      fontFamily: 'var(--font-data)',
+                      fontWeight: 700,
+                      fontSize: 10,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase' as const,
+                      background: 'rgba(139,92,246,0.18)',
+                      border: '1px solid rgba(139,92,246,0.4)',
+                      color: '#C4B5FD',
+                      padding: '4px 14px',
+                      borderRadius: '0 0 8px 8px',
+                    }}
+                  >
+                    Coming with the app
+                  </div>
+                )}
                 {tier.recommended && (
                   <div
                     style={{
@@ -5249,20 +5289,13 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
                       backgroundClip: 'text',
                     }}
                   >
-                    {tier.price}
+                    {tier.foundingPrice}
                   </span>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#94A3B8' }}>/mo</span>
                 </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 13,
-                    color: '#94A3B8',
-                    marginTop: 6,
-                    marginBottom: 16,
-                  }}
-                >
-                  <span style={{ fontFamily: 'var(--font-data)', fontWeight: 700, color: '#CBD5E1' }}>{tier.commission}</span> commission on sales
+                {/* P-2 · the two required commission sentences, shared component, both surfaces */}
+                <div style={{ marginTop: 8, marginBottom: 16, minHeight: 40 }}>
+                  <CommissionLine tier={tier} align="left" />
                 </div>
 
                 <p
@@ -5277,13 +5310,12 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
                   {tier.blurb}
                 </p>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 24, flex: 1 }}>
-                  {tier.features.map((f) => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden style={{ flexShrink: 0, marginTop: 2 }}>
-                        <path d="M3.5 8.5l3 3 6-7" stroke="#22D3EE" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#CBD5E1', lineHeight: 1.5 }}>{f}</span>
+                {/* Highlights derived from the typed grid data — no hand-typed features (LS-12) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24, flex: 1 }}>
+                  {cardHighlights(tier.slug).map((h) => (
+                    <div key={h.feature} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: 7 }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: '#CBD5E1', lineHeight: 1.35 }}>{h.feature}</span>
+                      <span style={{ flexShrink: 0, textAlign: 'right' }}><GridCellView cell={h.cell} /></span>
                     </div>
                   ))}
                 </div>
@@ -5315,10 +5347,11 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
             ))}
           </div>
 
-          {/* SERVICE GRID (W1 · §7.1 regression restored): what each tier INCLUDES at a glance,
-              from the typed config. Answers "what do I get for $10 vs $25 vs $75" without leaving
-              the page. Founding numbers only (R-10). W2: one house-rhythm reveal on the block
-              (rows stay put — no per-row motion, which would jank the table). */}
+          {/* COMPARISON GRID (W1 · N-from-data, P-7): five columns from PRICING_TIERS, grouped
+              rows from PRICING_GROUPS, discriminated cells with dual live/planned values (P-6).
+              At 375px this wide table is hidden — the per-tier cards above ARE the mobile view
+              (canon §9: never a scrolled five-column table). The keyboard expander adds depth. */}
+          {width >= 768 && (
           <motion.div
             key={`grid-${reduced || isTouch ? 's' : 'a'}`}
             variants={reveal(reduced, 0, isTouch)}
@@ -5327,47 +5360,72 @@ function PricingSection({ setOfferingIntent }: { setOfferingIntent: (i: Offering
             viewport={{ once: true, amount: 0.2 }}
             style={{ marginTop: 56, overflowX: 'auto', WebkitOverflowScrolling: 'touch' as const }}
           >
-            {/* B09 craft treatment: the recommended Power column is tinted + badged so the eye
-                lands on it; zebra rows aid scan; rounded container for the premium register. */}
-            <table style={{ width: '100%', minWidth: 660, borderCollapse: 'separate', borderSpacing: 0, fontFamily: 'var(--font-body)', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <table style={{ width: '100%', minWidth: 760, borderCollapse: 'separate', borderSpacing: 0, fontFamily: 'var(--font-body)', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
               <caption style={{ captionSide: 'top', textAlign: 'left', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 18, color: '#F1F5F9', marginBottom: 16 }}>
                 What each plan includes
               </caption>
               <thead>
                 <tr>
                   <th scope="col" style={{ textAlign: 'left', padding: '14px 12px', fontSize: 13, fontWeight: 600, color: '#94A3B8', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Feature</th>
-                  {[['Free', ''], ['DIY', '$10'], ['Power', '$25'], ['Estate Mgr', '$75']].map(([n, p], hi) => {
-                    const hot = hi === 2
-                    return (
-                      <th key={n} scope="col" style={{ textAlign: 'center', padding: '14px 12px', background: hot ? 'rgba(0,188,212,0.08)' : 'rgba(255,255,255,0.02)', borderBottom: `2px solid ${hot ? '#22D3EE' : 'rgba(255,255,255,0.1)'}`, position: 'relative' }}>
-                        {hot && <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 3 }}>Most popular</div>}
-                        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: hot ? 700 : 600, fontSize: 14, color: '#F1F5F9' }}>{n}</div>
-                        {p && <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, color: '#22D3EE' }}>{p}<span style={{ color: '#94A3B8', fontWeight: 400 }}>/mo</span></div>}
-                      </th>
-                    )
-                  })}
+                  {PRICING_TIERS.map((t) => (
+                    <th key={t.slug} scope="col" style={{ textAlign: 'center', padding: '14px 10px', background: t.recommended ? 'rgba(0,188,212,0.08)' : t.planned ? 'rgba(139,92,246,0.06)' : 'rgba(255,255,255,0.02)', borderBottom: `2px solid ${t.recommended ? '#22D3EE' : t.planned ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.1)'}` }}>
+                      {t.recommended && <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#22D3EE', marginBottom: 4 }}>Most popular</div>}
+                      {t.planned && <div style={{ marginBottom: 4 }}><PlannedMark compact /></div>}
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: t.recommended ? 700 : 600, fontSize: 13.5, color: '#F1F5F9' }}>{t.name}</div>
+                      <div style={{ fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 13, color: t.planned ? '#A78BFA' : '#22D3EE' }}>${t.foundingPrice}<span style={{ color: '#94A3B8', fontWeight: 400 }}>/mo</span></div>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {SERVICE_GRID.map((row, ri) => (
-                  <tr key={row.feature} style={{ background: ri % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
-                    <th scope="row" style={{ textAlign: 'left', padding: '12px', fontSize: 13.5, fontWeight: 500, color: '#CBD5E1' }}>{row.feature}</th>
-                    {([row.free, row.diy, row.power, row.estateManager]).map((v, ci) => (
-                      <td key={ci} style={{ textAlign: 'center', padding: '12px', background: ci === 2 ? 'rgba(0,188,212,0.05)' : 'transparent' }}>
-                        {v === 'yes' ? (
-                          <span style={{ display: 'inline-flex', color: '#22C55E' }} aria-label="Included"><Icon name="check" size={18} color="#22C55E" /></span>
-                        ) : v === 'no' ? (
-                          <span aria-label="Not included" style={{ color: '#484F58', fontSize: 16 }}>&ndash;</span>
-                        ) : (
-                          <span style={{ fontFamily: 'var(--font-data)', fontWeight: 600, fontSize: 13, color: '#F1F5F9' }}>{v}</span>
-                        )}
-                      </td>
+                {PRICING_GROUPS.map((group) => (
+                  <Fragment key={group.title}>
+                    <tr>
+                      <th colSpan={PRICING_TIERS.length + 1} style={{ textAlign: 'left', padding: '18px 12px 8px', fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#22D3EE' }}>{group.title}</th>
+                    </tr>
+                    {group.rows.map((row, ri) => (
+                      <tr key={row.feature} style={{ background: ri % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                        <th scope="row" style={{ textAlign: 'left', padding: '12px', fontSize: 13.5, fontWeight: 500, color: '#CBD5E1' }}>{row.feature}</th>
+                        {PRICING_TIERS.map((t) => (
+                          <td key={t.slug} style={{ textAlign: 'center', padding: '12px 10px', background: t.recommended ? 'rgba(0,188,212,0.05)' : t.planned ? 'rgba(139,92,246,0.04)' : 'transparent' }}>
+                            <GridCellView cell={row[t.slug]} />
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
+                  </Fragment>
                 ))}
+                {showAll && (
+                  <Fragment>
+                    <tr>
+                      <th colSpan={PRICING_TIERS.length + 1} style={{ textAlign: 'left', padding: '18px 12px 8px', fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#22D3EE' }}>More detail</th>
+                    </tr>
+                    {PRICING_EXPANDER.map((row, ri) => (
+                      <tr key={row.feature} style={{ background: ri % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                        <th scope="row" style={{ textAlign: 'left', padding: '12px', fontSize: 13.5, fontWeight: 500, color: '#CBD5E1' }}>{row.feature}</th>
+                        {PRICING_TIERS.map((t) => (
+                          <td key={t.slug} style={{ textAlign: 'center', padding: '12px 10px', background: t.recommended ? 'rgba(0,188,212,0.05)' : t.planned ? 'rgba(139,92,246,0.04)' : 'transparent' }}>
+                            <GridCellView cell={row[t.slug]} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </Fragment>
+                )}
               </tbody>
             </table>
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <button
+                type="button"
+                onClick={() => setShowAll((s) => !s)}
+                aria-expanded={showAll}
+                style={{ minHeight: 44, padding: '10px 22px', borderRadius: 10, border: '1px solid rgba(0,188,212,0.3)', background: 'rgba(0,188,212,0.06)', color: '#22D3EE', fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 12, letterSpacing: '0.05em', textTransform: 'uppercase', cursor: 'pointer' }}
+              >
+                {showAll ? 'Hide details' : 'Compare all plans'}
+              </button>
+            </div>
           </motion.div>
+          )}
 
           <p
             style={{

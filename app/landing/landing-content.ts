@@ -94,46 +94,92 @@ export const LISTING_STATES: readonly ListingState[] = [
   { id: 'unavailable', label: 'Not available', status: 'unavailable', note: 'A marketplace that does not permit automation is a guided handoff.' },
 ] as const satisfies readonly ListingState[]
 
-// ── PRICING TIERS (FOUNDING ONLY, R-10) — the price cards read from here. ──
+// ── PRICING (FOUNDING ONLY · canon v1.0 · order Free · DIY · Power · Pro · Estate) ──
+// Every value traces to LEGACYLOOP_PRICING_CANON_v1.0_RATIFIED_2026-08-07. Standard/at-launch
+// prices are NOT rendered (P-5 · R-10). Founding pricing is "locked while the subscription
+// stays active" (never "for life"). Per §0.1, the app is the follower: every `planned` cell
+// is a ticket in the app's build queue, not a claim about today.
 export interface PricingTier {
-  slug: 'free' | 'diy' | 'power' | 'estateManager'
+  slug: 'free' | 'diy' | 'power' | 'pro' | 'estateManager'
   name: string
-  foundingPrice: string   // display string, founding-only (no at-launch figures, R-10)
-  commission: string
+  foundingPrice: string        // founding-only display (no standard column, P-5)
   blurb: string
   cta: string
   founding: boolean
   recommended: boolean
+  zeroTier: boolean            // 0% commission tier (Pro, Estate) -> the processing sentence (P-2)
+  rate: string                 // canon commission: '12%' | '8%' | '5%' | '0%'
+  rateStatus: CapabilityStatus // 'live' for Free/DIY/Power; 'planned' for Pro and Estate 0%
+  liveRate?: string            // where the live value differs from canon (Estate: '4%' today)
+  planned?: boolean            // the whole tier is not built yet (Pro — no app tier exists)
 }
-export const PRICING_TIERS = [
-  { slug: 'free', name: 'Free', foundingPrice: '0', commission: '12%', blurb: 'Start selling with AI at zero cost.', cta: 'Start Free', founding: false, recommended: false },
-  { slug: 'diy', name: 'DIY Seller', foundingPrice: '10', commission: '8%', blurb: 'AI pricing and core bots for the hands-on seller.', cta: 'Lock Founding Rate', founding: true, recommended: false },
-  { slug: 'power', name: 'Power Seller', foundingPrice: '25', commission: '5%', blurb: 'MegaBot and every specialty bot for serious volume.', cta: 'Lock Founding Rate', founding: true, recommended: true },
-  { slug: 'estateManager', name: 'Estate Manager', foundingPrice: '75', commission: '4%', blurb: 'Every AI tool for managing an entire estate yourself.', cta: 'Lock Founding Rate', founding: true, recommended: false },
-] as const satisfies readonly PricingTier[]
+export const PRICING_TIERS: readonly PricingTier[] = [
+  { slug: 'free',          name: 'Free',           foundingPrice: '0',  blurb: 'Start selling with AI at zero cost.',                          cta: 'Start Free',         founding: false, recommended: false, zeroTier: false, rate: '12%', rateStatus: 'live' },
+  { slug: 'diy',           name: 'DIY Seller',     foundingPrice: '10', blurb: 'AI pricing and core bots for the hands-on seller.',            cta: 'Lock Founding Rate', founding: true,  recommended: false, zeroTier: false, rate: '8%',  rateStatus: 'live' },
+  { slug: 'power',         name: 'Power Seller',   foundingPrice: '25', blurb: 'MegaBot and every specialty bot for serious volume.',          cta: 'Lock Founding Rate', founding: true,  recommended: true,  zeroTier: false, rate: '5%',  rateStatus: 'live' },
+  { slug: 'pro',           name: 'Pro Seller',     foundingPrice: '39', blurb: 'Unlimited listings and zero commission for the full-time seller.', cta: 'Lock Founding Rate', founding: true, recommended: false, zeroTier: true, rate: '0%', rateStatus: 'planned', planned: true },
+  { slug: 'estateManager', name: 'Estate Manager', foundingPrice: '75', blurb: 'Every AI tool plus a branded store for a whole estate.',        cta: 'Lock Founding Rate', founding: true,  recommended: false, zeroTier: true,  rate: '0%',  rateStatus: 'planned', liveRate: '4%' },
+]
 
-// ── SERVICE GRID (the regression, restored, §7.1) — what each tier INCLUDES, at a glance.
-//    A row per capability, a value per tier. Sourced from the same OFFERINGS features. ──
 // TierSlug is derived from PricingTier so the grid columns can never drift from the tiers:
-// add a tier and every ServiceRow is forced to add its column. `(string & {})` keeps free-form
-// cell values ("20 / mo", "5 core") legal while type-checking the yes/no axis.
+// add a tier and every ServiceRow is forced to add its column (the compiler enforces P-7).
 export type TierSlug = PricingTier['slug']
-export type GridValue = 'yes' | 'no' | (string & {})
-export type ServiceRow = { feature: string } & Record<TierSlug, GridValue>
-export const SERVICE_GRID = [
-  { feature: 'AI item identification', free: 'yes', diy: 'yes', power: 'yes', estateManager: 'yes' },
-  { feature: 'Public store page', free: 'yes', diy: 'yes', power: 'yes', estateManager: 'yes' },
-  { feature: 'Listing prep for every marketplace', free: 'no', diy: 'yes', power: 'yes', estateManager: 'yes' },
-  { feature: 'Enhanced AI pricing', free: 'no', diy: 'yes', power: 'yes', estateManager: 'yes' },
-  { feature: 'Specialty bots', free: 'no', diy: '5 core', power: 'All', estateManager: 'All + CarBot' },
-  { feature: 'MegaBot four-AI consensus', free: 'no', diy: 'no', power: 'yes', estateManager: 'yes' },
-  { feature: 'BuyerBot buyer matching', free: 'no', diy: 'yes', power: 'yes', estateManager: 'yes' },
-  { feature: 'Included credits', free: 'no', diy: '20 / mo', power: '50 / mo', estateManager: '100 / mo' },
-  { feature: 'Advanced analytics', free: 'no', diy: 'no', power: 'yes', estateManager: 'yes' },
-  { feature: 'Branded store page', free: 'no', diy: 'no', power: 'no', estateManager: 'yes' },
-  { feature: 'Support', free: 'Email', diy: 'Priority email', power: 'Phone', estateManager: 'Priority' },
-  { feature: 'Commission on sales', free: '12%', diy: '8%', power: '5%', estateManager: '4%' },
-] as const satisfies readonly ServiceRow[]
+
+// ── S-b · THE DISCRIMINATED CELL (the load-bearing model). Carries the live value, an
+// optional canon (planned) value, and a status. Where both exist the grid renders the canon
+// value MARKED and the live value plainly beside it (P-6) — never one without the other,
+// never blurred, never hand-written in JSX (LS-12). ──
+export interface GridCell {
+  live: string                 // what is true today
+  planned?: string             // the canon value the app has not reached yet
+  status: CapabilityStatus     // 'live' when planned is absent
+}
+const L = (v: string): GridCell => ({ live: v, status: 'live' })
+const P = (canon: string, today = '—'): GridCell => ({ live: today, planned: canon, status: 'planned' })
+
+export type ServiceRow = { feature: string } & Record<TierSlug, GridCell>
+export interface PricingGroup { title: string; rows: readonly ServiceRow[] }
+
+// Six consumer groups (R-1), ~12 visible rows. Values VERIFIED AT SOURCE in the app repo
+// 2026-08-07 (READ-ONLY): BOT_ACCESS lib/constants/pricing.ts:165-217 · TIER_LIMITS :96-138.
+// P-6 reconciliation: independent verification matches Devin's map, zero delta. Free's bot
+// access is analyzeBot only today, so nearly every Free capability is `planned` (canon) with
+// its live value beside it. Pro is a `planned` COLUMN (no app tier exists yet). P-8: the
+// MegaBot row reads "Credits" in every column and the word "included" never appears.
+export const PRICING_GROUPS: readonly PricingGroup[] = [
+  { title: 'Your AI team', rows: [
+    { feature: 'AI item identification', free: L('Yes'), diy: L('Yes'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
+    { feature: 'AI pricing on live comps', free: P('Yes', 'No'), diy: L('Yes'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
+    { feature: 'AI listing copy written for you', free: P('Yes', 'No'), diy: L('Yes'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
+    { feature: 'Specialty bots', free: L('ID only'), diy: L('5 core'), power: L('All'), pro: P('All'), estateManager: L('All + CarBot') },
+    { feature: 'MegaBot four-AI council', free: P('Credits'), diy: L('Credits'), power: L('Credits'), pro: P('Credits'), estateManager: L('Credits') },
+  ] },
+  { title: 'What you can list', rows: [
+    { feature: 'Active listings at once', free: L('3'), diy: L('25'), power: L('100'), pro: P('Unlimited'), estateManager: L('Unlimited') },
+  ] },
+  { title: 'Finding buyers', rows: [
+    { feature: 'BuyerBot buyer matching', free: P('Yes', 'No'), diy: L('Yes'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
+  ] },
+  { title: 'Fees', rows: [
+    { feature: 'Commission on sales', free: L('12%'), diy: L('8%'), power: L('5%'), pro: P('0%'), estateManager: { live: '4%', planned: '0%', status: 'planned' } },
+  ] },
+  { title: 'Your store', rows: [
+    { feature: 'Public store page', free: L('Yes'), diy: L('Yes'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
+    { feature: 'Branded store page', free: L('No'), diy: L('No'), power: L('No'), pro: P('No'), estateManager: L('Yes') },
+  ] },
+  { title: 'Service', rows: [
+    { feature: 'Advanced analytics', free: L('No'), diy: L('No'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
+    { feature: 'Support', free: L('Email'), diy: L('Priority email'), power: L('Phone'), pro: P('Priority'), estateManager: L('Priority') },
+  ] },
+]
+
+// The "Compare all plans" expander depth. Monthly-credit grants are canon values; a live
+// per-tier monthly grant is NOT cited in the app today, so they render `planned` (FLAGGED
+// for app confirmation). Pro photos-per-item is canon-TBD, so it renders no number (LS-11).
+export const PRICING_EXPANDER: readonly ServiceRow[] = [
+  { feature: 'Photos per item', free: L('2'), diy: L('5'), power: L('8'), pro: P('With the app'), estateManager: L('15') },
+  { feature: 'Included credits / month', free: L('0'), diy: P('20 / mo'), power: P('50 / mo'), pro: P('75 / mo'), estateManager: P('100 / mo') },
+]
 
 // ── PRIVACY & OUTREACH DISCLOSURE (folded into B08) — short, honest, linkable. ──
 export interface DisclosureItem {
