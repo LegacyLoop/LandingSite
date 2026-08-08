@@ -45,3 +45,12 @@ next-env.d.ts
 
 # graphify knowledge-graph extraction artifacts (regenerable · ~205 files)
 graphify-out/
+
+# session-local working artifacts (never source · never staged)
+_INFLIGHT_SPEC.md
+_inflight-backup/
+.claude/settings.json
+
+# untracked landing media — G-6 CEO ship/hold decision OPEN (2026-08-08).
+# 842M · fenced from accidental staging. Un-ignore deliberately if G-6 = ship.
+public/Pictures & Videos for Landing Page/
