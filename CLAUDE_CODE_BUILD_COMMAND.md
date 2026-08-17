@@ -609,7 +609,20 @@ This section must feel like walking into a gallery. Slower pace. More whitespace
 - **AnimatedStat (Effect 10):** `47` | "Beta signups and counting" — big number, centered
 - **Progress bar:** "Pre-Launch Pricing: 47 of 100 early access spots remaining" — visual bar container (dark bg, `borderRadius: 8`, `height: 8px`), teal fill at 47%, `maxWidth: 400px`, centered. Text above bar: Plus Jakarta Sans 500, 14px.
 - **Tagline:** "Built in Maine. Serving America." — Exo 2 600, 18px, centered, `marginTop: 32px`
-- **Heroes Discount badge:** GlowCard with green accent border `rgba(34,197,94,0.3)`. "🎖️ 25% off for veterans and first responders" — Plus Jakarta Sans 500, 16px. This is a real offer — display it prominently.
+- **Heroes Program band:** SUPERSEDED 2026-08-17 (CMD-R3-LANDING, Devin CTO). This bullet used to
+  prescribe a percentage-discount badge for veterans and first responders, with an emoji, and told
+  the builder to "display it prominently." **All three parts of that instruction are now wrong:**
+  the percentage mechanism was retired (it is a TIER GRANT — verified service members move up one
+  plan and pay their own plan's price), the figure was killed in the app on 2026-08-13 (`ea53cd8`)
+  and on this site on 2026-08-17, and Section 0 of the standards bans emoji on product surfaces.
+  ★ **BUILD THIS INSTEAD:** the Heroes Program band already shipped in `app/landing/page.tsx` —
+  heading, "The Next Tier Up", the tier-grant sentence, four category chips (Military, Law
+  enforcement, Fire, EMS) using `Icon.tsx` only, and the verification/eligibility note. Clone it;
+  do not re-derive it. **No apply CTA until the app's `/api/heroes/apply` stops returning 503.**
+  ★ **WHY THIS NOTE EXISTS:** a build document that still prescribes a dead claim will rebuild it.
+  The page was swept and this file was not — the same repo-boundary blind spot that let the claim
+  survive here for four days after the app killed it. **A claim census that stops at rendered code
+  is not a census either: sweep the documents that tell us what to build.**
 
 **VERIFY:** `npx tsc --noEmit && npm run build` — must pass.
 
