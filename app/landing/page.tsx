@@ -6072,22 +6072,141 @@ function SocialProofSection() {
           Built in Maine. Serving America.
         </p>
 
-        <GlowCard
-          defaultBorderColor="rgba(34,197,94,0.3)"
-          hoverBorderColor="rgba(34,197,94,0.5)"
-          style={{ marginTop: 32, display: 'inline-block' }}
+        {/* ★★★ HEROES PROGRAM — PROMOTED (CMD-R3-F0b · 2026-08-17 · Devin, CTO · CEO-directed)
+            Was a one-line footnote inside a GlowCard carrying a DEAD percentage-discount claim for
+            veterans and first responders. The app killed all fifteen instances of it on 2026-08-13
+            (ea53cd8); the landing was never swept because this repo was closed.
+            ★ The dead figure is deliberately NOT reproduced here: a tombstone that quotes its own
+            corpse is what made a desk report the SOC 2 comment as a live claim (2026-08-15). Cite
+            the commit, never the string.
+            ★ A CLAIM CENSUS THAT STOPS AT A REPO BOUNDARY IS NOT A CENSUS.
+
+            The mechanism also changed: it is a TIER GRANT, not a percentage. Founding prices
+            already ARE the discount, so a hero percentage would be a discount off a discount.
+
+            ★ DELIBERATELY NO APPLY CTA YET: the app's /api/heroes/apply returns 503 at the time
+            of writing. Advertising an application we cannot accept would be a false claim. The
+            CTA lands with R-0, which opens the door — and per the closing step in
+            landing-content.ts, that lane adds it here. NO EMOJI: Icon.tsx only, colored by prop. */}
+        <div
+          style={{
+            marginTop: 40,
+            maxWidth: 780,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            textAlign: 'left',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(34,197,94,0.25)',
+            borderRadius: 16,
+            padding: 'clamp(24px, 4vw, 36px)',
+          }}
         >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, minWidth: 0 }}>
+            <span style={{ display: 'inline-flex', color: '#22C55E' }}><Icon name="medal" size={22} /></span>
+            <h3
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 600,
+                fontSize: 'clamp(1.35rem, 3vw, 1.75rem)',
+                letterSpacing: '-0.02em',
+                color: '#F1F5F9',
+                margin: 0,
+              }}
+            >
+              Heroes Program
+            </h3>
+          </div>
+
+          <p
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 600,
+              fontSize: 'clamp(1rem, 2vw, 1.15rem)',
+              color: '#22C55E',
+              margin: '0 0 14px',
+            }}
+          >
+            The Next Tier Up
+          </p>
+
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontWeight: 500,
+              fontWeight: 400,
               fontSize: 16,
+              lineHeight: 1.6,
               color: '#F1F5F9',
+              margin: '0 0 20px',
+              maxWidth: 620,
             }}
           >
-            <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: 6, color: '#22C55E' }}><Icon name="medal" size={18} /></span>Veterans &amp; First Responders: 25% off subscriptions &bull; 25% reduced commissions &bull; and a discount on white-glove estate services, applied when we build your plan
+            Verified service members move up one plan and pay their own plan&rsquo;s price. Free
+            becomes the first paid plan, free. Every paid plan moves to the one above it &mdash;
+            same price, more capability, a lower commission. It is a tier grant, not a discount.
           </p>
-        </GlowCard>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(0, 160px))',
+              gap: 10,
+              marginBottom: 20,
+            }}
+          >
+            {[
+              { icon: 'medal' as const, label: 'Military' },
+              { icon: 'shield' as const, label: 'Law enforcement' },
+              { icon: 'bolt' as const, label: 'Fire' },
+              { icon: 'heart' as const, label: 'EMS' },
+            ].map((g) => (
+              <div
+                key={g.label}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  minWidth: 0,
+                  minHeight: 44,
+                  padding: '10px 14px',
+                  background: 'rgba(34,197,94,0.08)',
+                  border: '1px solid rgba(34,197,94,0.22)',
+                  borderRadius: 9999,
+                }}
+              >
+                <span style={{ display: 'inline-flex', color: '#22C55E', flexShrink: 0 }} aria-hidden="true">
+                  <Icon name={g.icon} size={16} />
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 500,
+                    fontSize: 14,
+                    color: '#F1F5F9',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {g.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
+              fontSize: 14,
+              lineHeight: 1.6,
+              color: '#94A3B8',
+              margin: 0,
+              maxWidth: 620,
+            }}
+          >
+            Proof of service is verified before the grant applies. Your plan price stays locked
+            while your subscription stays active, and the grant follows the plan you hold &mdash;
+            not the invoice you pay. White-glove estate services are quoted by consultation.
+          </p>
+        </div>
 
         {/* PRIVACY & OUTREACH DISCLOSURE (W1 · B08): you stay in control. Short, honest, from the
             typed config. BuyerBot is manual today; nothing sends until you approve. Static. */}
@@ -6529,7 +6648,7 @@ function VideoShowcaseSection() {
                 { icon: 'faith', title: 'Faith-Driven', desc: 'Guided by purpose and conviction in every decision we make.' },
                 { icon: 'heart', title: 'Compassion', desc: 'Serving seniors, families, veterans, and communities with empathy.' },
                 { icon: 'handshake', title: 'Integrity', desc: 'Honest, ethical, and transparent in every interaction.' },
-                { icon: 'medal', title: 'Veterans First', desc: '25% off subscriptions, 25% reduced commissions, and a white-glove estate discount applied when we build your plan.' },
+                { icon: 'medal', title: 'Veterans First', desc: 'Verified military, law enforcement, fire and EMS move up one plan and pay their own plan’s price. A tier grant, not a discount.' },
               ].map((value, i) => (
                 <GlowCard
                   key={value.title}

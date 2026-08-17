@@ -17,6 +17,25 @@
 // NO EMOJI.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// ★★★ THE CLOSING STEP — RATIFIED 2026-08-17 (CMD-R3-F3 · Devin, CTO · CEO-directed)
+//
+//   WHEN A LANE SHIPS A CAPABILITY, FLIPPING ITS MARKER HERE IS PART OF
+//   DEFINITION OF DONE. Not a follow-up. Not a sweep. The same commit.
+//
+// WHY THIS EXISTS: we wrote a rule for tagging a thing not-built-yet and never wrote
+// the step for flipping the tag when it got built. Nobody owned it. The result was a
+// marker that told visitors Estate charges 4% for SEVEN DAYS after the app ratified 0%
+// (app CMD-R2, 2026-08-10 -> landing CMD-R3-F2, 2026-08-17).
+//
+// ★ A STALE MARKER THAT RUNS AGAINST US IS STILL A FALSE CLAIM. Understating what we
+// do is not "safe"; it is inaccurate, and on a public marketing page it costs a sale.
+//
+// Same shape as the baseline-retirement law: the topic that ships the thing closes its
+// own record. If your lane makes a `planned` capability real, you flip it here or your
+// lane is not done.
+// ─────────────────────────────────────────────────────────────────────────────
+
 // The honesty type. Every user-facing capability sorts into exactly one.
 export type CapabilityStatus =
   | 'live'         // works today, cite the route that proves it
@@ -135,8 +154,10 @@ export interface PricingTier {
   recommended: boolean
   zeroTier: boolean            // 0% commission tier (Pro, Estate) -> the processing sentence (P-2)
   rate: string                 // canon commission: '12%' | '8%' | '5%' | '0%'
-  rateStatus: CapabilityStatus // 'live' for Free/DIY/Power; 'planned' for Pro and Estate 0%
-  liveRate?: string            // where the live value differs from canon (Estate: '4%' today)
+  rateStatus: CapabilityStatus // 'live' for Free/DIY/Power/Estate; 'planned' for Pro (no app tier)
+  liveRate?: string            // where the live value differs from canon. Currently UNUSED —
+                               // Estate's 4% was flipped to 0% live 2026-08-17 (CMD-R3-F2).
+                               // Kept on the type: the next divergence should be declared, not inlined.
   planned?: boolean            // the whole tier is not built yet (Pro — no app tier exists)
 }
 export const PRICING_TIERS: readonly PricingTier[] = [
@@ -144,7 +165,12 @@ export const PRICING_TIERS: readonly PricingTier[] = [
   { slug: 'diy',           name: 'DIY Seller',     foundingPrice: '10', blurb: 'AI pricing and core bots for the hands-on seller.',            cta: 'Lock Founding Rate', founding: true,  recommended: false, zeroTier: false, rate: '8%',  rateStatus: 'live' },
   { slug: 'power',         name: 'Power Seller',   foundingPrice: '25', blurb: 'MegaBot and every specialty bot for serious volume.',          cta: 'Lock Founding Rate', founding: true,  recommended: true,  zeroTier: false, rate: '5%',  rateStatus: 'live' },
   { slug: 'pro',           name: 'Pro Seller',     foundingPrice: '39', blurb: 'Unlimited listings and zero commission for the full-time seller.', cta: 'Lock Founding Rate', founding: true, recommended: false, zeroTier: true, rate: '0%', rateStatus: 'planned', planned: true },
-  { slug: 'estateManager', name: 'Estate Manager', foundingPrice: '75', blurb: 'Every AI tool plus a branded store for a whole estate.',        cta: 'Lock Founding Rate', founding: true,  recommended: false, zeroTier: true,  rate: '0%',  rateStatus: 'planned', liveRate: '4%' },
+  // CMD-R3-F2 2026-08-17 · MARKER FLIPPED, Devin (CTO). Estate Manager is 0% LIVE, not planned.
+  // Ratified in the app 2026-08-10 (CMD-R2): lib/constants/pricing.ts ESTATE_MANAGER
+  // `commission: 0` / `commissionDisplay: "0%"` — "the 4% was never ratified."
+  // The landing had been telling visitors we charge 4% today while the app charged 0%.
+  // A stale marker that runs AGAINST us is still a false claim. `liveRate` removed.
+  { slug: 'estateManager', name: 'Estate Manager', foundingPrice: '75', blurb: 'Every AI tool plus a branded store for a whole estate.',        cta: 'Lock Founding Rate', founding: true,  recommended: false, zeroTier: true,  rate: '0%',  rateStatus: 'live' },
 ]
 
 // TierSlug is derived from PricingTier so the grid columns can never drift from the tiers:
@@ -187,7 +213,8 @@ export const PRICING_GROUPS: readonly PricingGroup[] = [
     { feature: 'BuyerBot buyer matching', free: P('Yes', 'No'), diy: L('Yes'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
   ] },
   { title: 'Fees', rows: [
-    { feature: 'Commission on sales', free: L('12%'), diy: L('8%'), power: L('5%'), pro: P('0%'), estateManager: { live: '4%', planned: '0%', status: 'planned' } },
+    // CMD-R3-F2 2026-08-17 · Estate 0% is LIVE (app ratified 2026-08-10, commission: 0).
+    { feature: 'Commission on sales', free: L('12%'), diy: L('8%'), power: L('5%'), pro: P('0%'), estateManager: L('0%') },
   ] },
   { title: 'Your store', rows: [
     { feature: 'Public store page', free: L('Yes'), diy: L('Yes'), power: L('Yes'), pro: P('Yes'), estateManager: L('Yes') },
